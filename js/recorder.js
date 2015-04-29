@@ -26,7 +26,8 @@ $(document).ready(function(){
                     // do nothing
 
                 },
-                
+
+                // DEBUG
                 error: function( xhr, status, errorThrown ) {
                     alert( "Sorry, there was a problem!" );
                     console.log( "Error: " + errorThrown );

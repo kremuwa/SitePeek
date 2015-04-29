@@ -19,6 +19,7 @@
         $dbh->commit();
 
     } catch (PDOException $e) {
-        print "Error: " . $e->getMessage() . '<br />';
+        print "Error: " . $e->getMessage() . '<br />'; // DEBUG
+        // print "Something went wrong"; // PRODUCTION
         die();
     }
