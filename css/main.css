@@ -10,6 +10,9 @@
    Base styles: opinionated defaults
    ========================================================================== */
 
+/* unikanie zmiennych globalnych (i co robi globalnie "var"?) */
+/* debugowanie AJAX requestow */
+
 html {
     color: #222;
     font-size: 1em;
@@ -102,9 +105,11 @@ h1 {
     text-shadow: 1px 1px 3px cyan;
 }
 
-
-
-
+#pointer {
+    background: blueviolet;
+    height: 20px;
+    width: 20px;
+}
 
 
 

@@ -1,6 +1,8 @@
 <?php
 
-    error_reporting(-1);
+    error_reporting(-1); // DEBUG
+
+    $frames = json_decode($_POST['frames']);
 
     try {
         $dbh = new PDO('mysql:host=localhost;dbname=peek_db', 'peek-user', 'B7FpQbpD6auDK2mr', array(
@@ -10,11 +12,18 @@
 
         $dbh->beginTransaction();
 
-        $stmt = $dbh->prepare("INSERT INTO frames (mouseX, mouseY) VALUES (?, ?)");
-        $stmt->bindParam(1, $_POST['mouseX']);
-        $stmt->bindParam(2, $_POST['mouseY']);
+        foreach($frames as $x) {
 
-        $stmt->execute();
+            // db columns have different names for "security by obscurity"
+
+            $stmt = $dbh->prepare("INSERT INTO frames (frameTimestamp, frameMouseX, frameMouseY) VALUES (?, ?, ?)");
+            $stmt->bindParam(1, $x->timestamp);
+            $stmt->bindParam(2, $x->mouseX);
+            $stmt->bindParam(3, $x->mouseY);
+
+            $stmt->execute();
+
+        }
 
         $dbh->commit();
 
