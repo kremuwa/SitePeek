@@ -14,7 +14,7 @@
 
         foreach($frames as $x) {
 
-            // db columns have different names for "security by obscurity"
+            // DB columns have different names for "security by obscurity"
 
             $stmt = $dbh->prepare("INSERT INTO frames (frameTimestamp, frameMouseX, frameMouseY) VALUES (?, ?, ?)");
             $stmt->bindParam(1, $x->timestamp);
