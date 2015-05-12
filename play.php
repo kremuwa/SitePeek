@@ -25,6 +25,12 @@
 
         <div id="pointer"></div>
 
+        <!-- sandbox property disables many functionalities of iframed site,
+         whitelisting the ones on property's value" -->
+
+        <!-- pisses me off that I can't suppress this watning -->
+        <iframe src="" sandbox="allow-scripts"></iframe>
+
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
@@ -32,6 +38,7 @@
         <script src="js/play.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <!--suppress JSUnresolvedFunction -->
         <script>
             (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
             function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;

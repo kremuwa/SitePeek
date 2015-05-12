@@ -37,7 +37,7 @@ function sendBatchedData() {
 
     $.ajax({
 
-        url: "php/record.php",
+        url: "ajax/putFrames.php",
         data: {
             frames: JSON.stringify(frames)
         },

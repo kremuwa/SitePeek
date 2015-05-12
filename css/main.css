@@ -111,10 +111,13 @@ h1 {
     width: 20px;
 }
 
+#loading-img {
+    display: none;
+}
 
-
-
-
+#xfo-check-fail {
+    display: none;
+}
 
 
 

@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="DigitalOcean 20 GB" uploadOnCheckin="a821d20d-3d3a-45c5-8357-868c45895518">
-    <serverData>
-      <paths name="DigitalOcean 20 GB">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/var/www/sitepeek.com/public_html" local="$PROJECT_DIR$" web="/sitepeek.com/public_html/" />
-          </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/.idea" />
-            <excludedPath local="true" path="$PROJECT_DIR$/doc" />
-            <excludedPath local="true" path="$PROJECT_DIR$/.gitattributes" />
-            <excludedPath local="true" path="$PROJECT_DIR$/.editorconfig" />
-            <excludedPath local="true" path="$PROJECT_DIR$/.gitignore" />
-          </excludedPaths>
-        </serverdata>
-      </paths>
-    </serverData>
-    <option name="myUploadOnCheckinName" value="DigitalOcean 20 GB" />
-  </component>
+  <component name="PublishConfigData" persistUploadOnCheckin="false" />
 </project>

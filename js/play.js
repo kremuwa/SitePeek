@@ -15,7 +15,7 @@ function getData() {
 
     $.ajax({
 
-        url: "php/play.php",
+        url: "ajax/getFrames.php",
         data: {
             lastTimestamp: lastTimestamp
         },

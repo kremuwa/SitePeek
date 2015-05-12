@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/css/main.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/play.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/js/record.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/obsolete/record.js" charset="UTF-8" />
   </component>
 </project>
