@@ -1,3 +1,29 @@
+<?php
+
+try {
+    $dbh = new PDO('mysql:host=localhost;dbname=peek_db', 'peek-user', 'B7FpQbpD6auDK2mr', array(
+        PDO::ATTR_PERSISTENT => true,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING /* DEBUG */
+    ));
+
+    $sql = "SELECT url
+            FROM playgrounds
+            WHERE playgroundID = ?";
+
+    $stmt = $dbh->prepare($sql);
+
+    $stmt->execute(array($_GET['id']));
+
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    print "Error: " . $e->getMessage() . '<br />'; // DEBUG
+    // print "Something went wrong"; // PRODUCTION
+    die();
+}
+
+?>
+
 <!doctype html>
 <html class="no-js" lang="">
     <head>
@@ -11,7 +37,7 @@
         <!-- Place favicon.ico in the root directory -->
 
         <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/playground.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
     <body>
@@ -19,18 +45,10 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- Add your site or application content here -->
-
-        Just watch it.
+        <!-- pisses me off that I can't suppress this watning -->
+        <iframe id="playing-frame" src="<?php echo $result['url']; ?>"></iframe>
 
         <div id="pointer"></div>
-
-        <!-- sandbox property disables many functionalities of iframed site,
-         whitelisting the ones on property's value" -->
-
-        <!-- pisses me off that I can't suppress this watning -->
-        <iframe src="" sandbox="allow-scripts"></iframe>
-
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>

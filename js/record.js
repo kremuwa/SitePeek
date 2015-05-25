@@ -12,7 +12,7 @@ function getCurrentTimestamp () {
     return Date.now(); // the result is in ms
 }
 
-function addData(event){
+function addData(event) {
 
     if(enableHandler) {
         $('#mousePosX').text(event.pageX);
@@ -59,11 +59,19 @@ function sendBatchedData() {
 
 }
 
-$(document).ready(function(){
+$(document).ready(function() {
 
-    $(window).mousemove(function(event) {
+    $("#recording-frame").contents().find('body').on('mousemove',function(event) {
+        alert($("#recording-frame"));
         addData (event);
     });
+
+    $('#overlay').one('click', handleClick);
+
+    /*$('#recording-frame').on('click', function(event){
+        console.log('kliknieto na ramke');
+        //event.stopPropagation();
+    });*/
 
     // to only add new data every 100 ms
 
@@ -74,3 +82,21 @@ $(document).ready(function(){
     setInterval(sendBatchedData, 2000);
 
 });
+
+function handleClick(event) {
+
+    // DEBUG
+    console.log(event.target);
+    console.log(event.currentTarget);
+
+    var overlay = $('#overlay');
+    var e = new $.Event("click");
+
+    e.pageX = event.pageX;
+    e.pageY = event.pageY;
+
+    overlay.addClass('pointer-events-none');
+    overlay.trigger(e);
+    console.log('clicked');
+
+}

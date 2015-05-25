@@ -1,9 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
+ * Returns HTTP Response headers as associative array, where the key is the name of a header.
  * User: kremuwa
  * Date: 2015-05-06
  * Time: 12:26
+ * @param $headers
+ * @return array
  */
 
 function parseHeaders( $headers )

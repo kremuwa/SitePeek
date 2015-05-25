@@ -10,9 +10,6 @@
    Base styles: opinionated defaults
    ========================================================================== */
 
-/* unikanie zmiennych globalnych (i co robi globalnie "var"?) */
-/* debugowanie AJAX requestow */
-
 html {
     color: #222;
     font-size: 1em;
@@ -98,11 +95,11 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
-h1 {
-    color: violet;
+/* so that the only scrollbars are those from the website */
 
-    text-decoration: none;
-    text-shadow: 1px 1px 3px cyan;
+html, body {
+    height: 100%;
+    overflow: hidden;
 }
 
 #pointer {
@@ -111,15 +108,32 @@ h1 {
     width: 20px;
 }
 
-#loading-img {
-    display: none;
+#recording-frame {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 0;
 }
 
-#xfo-check-fail {
-    display: none;
+#playing-frame {
+    height: 100%;
+    pointer-events: none;
+    width: 100%;
 }
 
+.pointer-events-none {
+    pointer-events: none;
+}
 
+#overlay {
+    background-color: rgba(255,0,255,0.5);
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
 
 
 /* ==========================================================================
