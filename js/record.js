@@ -1,7 +1,7 @@
 // global variables
 
 var enableHandler = false;
-var events = [];
+var frames = [];
 var fps = 50; // more is nonsense
 
 function getCurrentTimestamp () {
@@ -12,15 +12,15 @@ function getCurrentTimestamp () {
     return Date.now(); // the result is in ms
 }
 
-function addData(event) {
+function addMousemoveFrame(event) {
 
     if(enableHandler) {
-        jQuery('#mousePosX').text(event.pageX);
-        jQuery('#mousePosY').text(event.pageY);
+        $('#mousePosX').text(event.pageX);
+        $('#mousePosY').text(event.pageY);
 
-        // add new event
+        // add new frame
 
-        events[events.length] = {
+        frames[frames.length] = {
             timestamp: getCurrentTimestamp(),
             mouseX: event.pageX,
             mouseY: event.pageY
@@ -35,42 +35,37 @@ function addData(event) {
 
 function sendBatchedData() {
 
-    jQuery.ajax({
+    $.ajax({
 
-        url: "../ajax/putFrames.php",
+        url: "ajax/putFrames.php",
         data: {
-            events: JSON.stringify(events)
+            frames: JSON.stringify(frames)
         },
 
         type: "POST",
 
         // DEBUG
         error: function( xhr, status, errorThrown ) {
-            alert( "Sorry, there was a problem!" );
+            console.log( "Sorry, there was a problem!" );
             console.log( "Error: " + errorThrown );
             console.log( "Status: " + status );
             console.dir( xhr );
         }
     });
 
-    // clear the events buffer (hopefully after stringification)
+    // clear the frames buffer (hopefully after stringification)
 
-    events.length = 0;
+    frames.length = 0;
 
 }
 
-jQuery(document).ready(function() {
+$('#recording-frame').load(function() {
 
-    jQuery(window).on('mousemove',function(event) {
-        addData (event);
+    // catching mousemove events
+
+    $('#recording-frame').contents().find('body').on('mousemove',function(event) {
+        addMousemoveFrame (event);
     });
-
-    jQuery('#overlay').one('click', handleClick);
-
-    /*jQuery('#recording-frame').on('click', function(event){
-        console.log('kliknieto na ramke');
-        //event.stopPropagation();
-    });*/
 
     // to only add new data every 100 ms
 
@@ -78,24 +73,8 @@ jQuery(document).ready(function() {
         enableHandler = true;
     }, 1000 / fps);
 
+    // send data every couple of seconds
+
     setInterval(sendBatchedData, 2000);
 
 });
-
-function handleClick(event) {
-
-    // DEBUG
-    console.log(event.target);
-    console.log(event.currentTarget);
-
-    var overlay = jQuery('#overlay');
-    var e = new jQuery.Event("click");
-
-    e.pageX = event.pageX;
-    e.pageY = event.pageY;
-
-    overlay.addClass('pointer-events-none');
-    overlay.trigger(e);
-    console.log('clicked');
-
-}

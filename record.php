@@ -45,11 +45,7 @@ try {
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-
-        <!-- pisses me off that I can't suppress this watning -->
-
-        <iframe id="recording-frame" src="<?php echo $result['url']; ?>" sandbox="allow-scripts"></iframe>
-<!--        <div id="overlay"></div>-->
+        <iframe id="recording-frame" src="<?php echo $result['url']; ?>"></iframe>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>

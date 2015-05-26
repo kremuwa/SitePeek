@@ -46,7 +46,7 @@ try {
         <![endif]-->
 
         <!-- pisses me off that I can't suppress this watning -->
-        <iframe id="playing-frame" src="<?php echo $result['url']; ?>"></iframe>
+        <iframe id="playing-frame" src="<?php echo $result['url']; ?>" sandbox="allow-scripts allow-same-origin"></iframe>
 
         <div id="pointer"></div>
 
