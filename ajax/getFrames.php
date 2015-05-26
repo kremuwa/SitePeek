@@ -21,7 +21,9 @@
             // found frame time - $msecToLookBeforeLastAvailableFrame
             // ASes provide security through obscurity, changing client-side names of properties
 
-            $sql = "SELECT frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY
+            $sql = "SELECT
+                      frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX,
+                      frameMouseY AS mouseY, frameScrollTop AS scrollTop
                     FROM frames
                     WHERE frameTimestamp > (
                       SELECT MAX(frameTimestamp)
@@ -31,7 +33,8 @@
 
         } else {
 
-            $sql = "SELECT frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY
+            $sql = "SELECT frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX,
+                    frameMouseY AS mouseY, frameScrollTop AS scrollTop
                     FROM frames
                     WHERE frameTimestamp > " . $_POST['lastTimestamp'];
 

@@ -106,9 +106,18 @@ html, body {
     background: blueviolet;
     height: 20px;
     width: 20px;
+    position: absolute;
 }
 
-#recording-frame {
+.clicktrace {
+    background: orange;
+    border-radius: 20px;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+}
+
+#recordingFrame {
     height: 100%;
     width: 100%;
     position: relative;

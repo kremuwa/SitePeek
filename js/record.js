@@ -1,32 +1,55 @@
 // global variables
 
-var enableHandler = false;
+var enableMousemoveLogging = false;
+var enableScrollLogging = false;
 var frames = [];
 var fps = 50; // more is nonsense
 
-function getCurrentTimestamp () {
-    if (!Date.now) {
-        Date.now = function() { return new Date().getTime(); }
-    }
-
-    return Date.now(); // the result is in ms
-}
-
 function addMousemoveFrame(event) {
 
-    if(enableHandler) {
-        $('#mousePosX').text(event.pageX);
-        $('#mousePosY').text(event.pageY);
+    if(enableMousemoveLogging) {
 
         // add new frame
 
         frames[frames.length] = {
-            timestamp: getCurrentTimestamp(),
+            type: 'mousemove',
+            timestamp: event.timeStamp,
             mouseX: event.pageX,
             mouseY: event.pageY
         };
 
-        enableHandler = false;
+        enableMousemoveLogging = false;
+    }
+
+}
+
+function addClickFrame(event) {
+
+	// add new frame
+
+	frames[frames.length] = {
+        type: 'click',
+		timestamp: event.timeStamp,
+		mouseX: event.pageX,
+		mouseY: event.pageY
+	};
+
+}
+
+function addScrollFrame(event, scrollTop) {
+
+    if(enableScrollLogging) {
+
+        // add new frame
+
+        frames[frames.length] = {
+            type: 'scroll',
+            timestamp: event.timeStamp,
+            scrollTop: scrollTop
+        };
+
+        enableScrollLogging = false;
+
     }
 
 }
@@ -59,19 +82,36 @@ function sendBatchedData() {
 
 }
 
-$('#recording-frame').load(function() {
+$('#recordingFrame').load(function() {
 
-    // catching mousemove events
+    // cache
 
-    $('#recording-frame').contents().find('body').on('mousemove',function(event) {
-        addMousemoveFrame (event);
-    });
+    var recordingFrame = $('#recordingFrame');
 
     // to only add new data every 100 ms
 
     setInterval(function() {
-        enableHandler = true;
+        enableMousemoveLogging = true;
+        enableScrollLogging = true;
     }, 1000 / fps);
+
+    // catching mousemove events
+
+    recordingFrame.contents().find('body').on('mousemove', function(event) {
+        addMousemoveFrame (event);
+    });
+	
+    // catching click events
+
+    recordingFrame.contents().find('body').on('click', function(event) {
+        addClickFrame (event);
+    });
+
+    // catching scroll events
+
+    recordingFrame.contents().on('scroll', function(event){
+        addScrollFrame (event, $(this).scrollTop());
+    });
 
     // send data every couple of seconds
 

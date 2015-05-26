@@ -1,7 +1,9 @@
 // global variables
 
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
-var playDelay = 10000;      // by how many miliseconds the playback will be delayed compared to the recording
+var playDelay = 3000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
+var pointer = $('#pointer');
+var scrollTop = 0;
 
 function getCurrentTimestamp () {
     if (!Date.now) {
@@ -65,25 +67,57 @@ function scheduleEvents( frames ) {
 
         var timeout = parseInt(value.timestamp) + playDelay - getCurrentTimestamp();
 
-        setTimeout(function() { moveMouse(value) }, (timeout > 0 ? timeout : 0));
+        setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
 
     });
 
 }
 
-function moveMouse( value ) {
+function executeEvent( value ) {
 
     // move the image of mouse
 
-    $('#pointer').offset({
-        left: value.mouseX,
-        top: value.mouseY
-    });
+    if(value.type == 'mousemove') {
+
+        $('#pointer').offset({
+            left: value.mouseX,
+            top: value.mouseY - scrollTop
+        });
+    }
+    else if(value.type == 'click') {
+
+        $('<div class="clicktrace"></div>')
+            .insertAfter(pointer)
+            .offset({
+                left: value.mouseX - 20,
+                top: value.mouseY - scrollTop - 20
+            })
+            .fadeOut(2000, 'easeOutQuint', function() {
+                $(this).remove();
+            });
+    }
+    else if(value.type == 'scroll') {
+
+        scrollTop = value.scrollTop;
+        $('#playing-frame').contents().find('body').scrollTop(scrollTop);
+
+        // TODO move #pointer during scroll in an appropriate way
+    }
+
 
 }
 
 $(document).ready(function(){
 
-    setTimeout(getData, 2000);
+    setTimeout(getData, 4000);
+
+    // additional easing effect for hiding clicktraces
+
+    $.extend($.easing,
+    {
+        easeOutQuint: function (x, t, b, c, d) {
+            return c*((t=t/d-1)*t*t*t*t + 1) + b;
+        }
+    });
 
 });
