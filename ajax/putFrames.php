@@ -2,7 +2,7 @@
 
     error_reporting(-1); // DEBUG
 
-    $frames = json_decode($_POST['frames']);
+    $events = json_decode($_POST['events']);
 
     try {
         $dbh = new PDO('mysql:host=localhost;dbname=peek_db', 'peek-user', 'B7FpQbpD6auDK2mr', array(
@@ -12,11 +12,11 @@
 
         $dbh->beginTransaction();
 
-        foreach($frames as $x) {
+        foreach($events as $x) {
 
             // DB columns have different names for "security by obscurity"
 
-            $stmt = $dbh->prepare("INSERT INTO frames (frameTimestamp, frameMouseX, frameMouseY) VALUES (?, ?, ?)");
+            $stmt = $dbh->prepare("INSERT INTO events (eventTimestamp, eventMouseX, eventMouseY) VALUES (?, ?, ?)");
             $stmt->bindParam(1, $x->timestamp);
             $stmt->bindParam(2, $x->mouseX);
             $stmt->bindParam(3, $x->mouseY);

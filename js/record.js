@@ -1,7 +1,7 @@
 // global variables
 
 var enableHandler = false;
-var frames = [];
+var events = [];
 var fps = 50; // more is nonsense
 
 function getCurrentTimestamp () {
@@ -15,12 +15,12 @@ function getCurrentTimestamp () {
 function addData(event) {
 
     if(enableHandler) {
-        $('#mousePosX').text(event.pageX);
-        $('#mousePosY').text(event.pageY);
+        jQuery('#mousePosX').text(event.pageX);
+        jQuery('#mousePosY').text(event.pageY);
 
-        // add new frame
+        // add new event
 
-        frames[frames.length] = {
+        events[events.length] = {
             timestamp: getCurrentTimestamp(),
             mouseX: event.pageX,
             mouseY: event.pageY
@@ -35,11 +35,11 @@ function addData(event) {
 
 function sendBatchedData() {
 
-    $.ajax({
+    jQuery.ajax({
 
-        url: "ajax/putFrames.php",
+        url: "../ajax/putFrames.php",
         data: {
-            frames: JSON.stringify(frames)
+            events: JSON.stringify(events)
         },
 
         type: "POST",
@@ -53,22 +53,21 @@ function sendBatchedData() {
         }
     });
 
-    // clear the frames buffer (hopefully after stringification)
+    // clear the events buffer (hopefully after stringification)
 
-    frames.length = 0;
+    events.length = 0;
 
 }
 
-$(document).ready(function() {
+jQuery(document).ready(function() {
 
-    $("#recording-frame").contents().find('body').on('mousemove',function(event) {
-        alert($("#recording-frame"));
+    jQuery(window).on('mousemove',function(event) {
         addData (event);
     });
 
-    $('#overlay').one('click', handleClick);
+    jQuery('#overlay').one('click', handleClick);
 
-    /*$('#recording-frame').on('click', function(event){
+    /*jQuery('#recording-frame').on('click', function(event){
         console.log('kliknieto na ramke');
         //event.stopPropagation();
     });*/
@@ -89,8 +88,8 @@ function handleClick(event) {
     console.log(event.target);
     console.log(event.currentTarget);
 
-    var overlay = $('#overlay');
-    var e = new $.Event("click");
+    var overlay = jQuery('#overlay');
+    var e = new jQuery.Event("click");
 
     e.pageX = event.pageX;
     e.pageY = event.pageY;

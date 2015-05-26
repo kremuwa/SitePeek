@@ -4,8 +4,8 @@
 
     error_reporting(-1);
 
-    $msecToLookBeforeLastAvailableFrame = 4000; // how long before the time of last available frame should we start
-    $msecToLookBackForData = 10000; // how many msecs to look back from current time for frames
+    $msecToLookBeforeLastAvailableEvent = 4000; // how long before the time of last available event should we start
+    $msecToLookBackForData = 10000; // how many msecs to look back from current time for events
 
     try {
         $dbh = new PDO('mysql:host=localhost;dbname=peek_db', 'peek-user', 'B7FpQbpD6auDK2mr', array(
@@ -17,23 +17,23 @@
 
             // (I hope that in case of null in the subquery, the query will return nothing)
             // in subquery we look for the latest data, unless it's older than
-            // $msecToLookBackForData and then we choose all frames that are more recent than the
-            // found frame time - $msecToLookBeforeLastAvailableFrame
+            // $msecToLookBackForData and then we choose all events that are more recent than the
+            // found event time - $msecToLookBeforeLastAvailableEvent
             // ASes provide security through obscurity, changing client-side names of properties
 
-            $sql = "SELECT frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY
-                    FROM frames
-                    WHERE frameTimestamp > (
-                      SELECT MAX(frameTimestamp)
-                      FROM frames
-                      WHERE frameTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
-                    ) - $msecToLookBeforeLastAvailableFrame";
+            $sql = "SELECT eventTimestamp AS timestamp, eventMouseX AS mouseX, eventMouseY AS mouseY
+                    FROM events
+                    WHERE eventTimestamp > (
+                      SELECT MAX(eventTimestamp)
+                      FROM events
+                      WHERE eventTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
+                    ) - $msecToLookBeforeLastAvailableEvent";
 
         } else {
 
-            $sql = "SELECT frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY
-                    FROM frames
-                    WHERE frameTimestamp > " . $_POST['lastTimestamp'];
+            $sql = "SELECT eventTimestamp AS timestamp, eventMouseX AS mouseX, eventMouseY AS mouseY
+                    FROM events
+                    WHERE eventTimestamp > " . $_POST['lastTimestamp'];
 
         }
 
@@ -48,12 +48,12 @@
         // return JSON to Javascript
         echo json_encode($result);
 
-        // removing obsolete frames
+        // removing obsolete events
 
         if($_POST['lastTimestamp'] != 0) {
 
-            $sql = "DELETE FROM frames
-                    WHERE frameTimestamp <= " . $_POST['lastTimestamp'];
+            $sql = "DELETE FROM events
+                    WHERE eventTimestamp <= " . $_POST['lastTimestamp'];
 
             $stmt = $dbh->prepare($sql);
             $stmt->execute();

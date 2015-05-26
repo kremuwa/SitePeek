@@ -25,19 +25,19 @@ function getData() {
 
         success: function( json ) {
 
-            var frames = JSON.parse(json);
+            var events = JSON.parse(json);
 
-            // if some frames were delivered...
+            // if some events were delivered...
 
-            if(frames.length != 0) {
+            if(events.length != 0) {
 
                 // save the timestamp of most recent frame received from the server
 
-                lastTimestamp = frames[frames.length - 1].timestamp;
+                lastTimestamp = events[events.length - 1].timestamp;
 
-                scheduleEvents(frames);
+                scheduleEvents(events);
 
-                frames.length = 0;
+                events.length = 0;
 
             }
 
@@ -57,9 +57,9 @@ function getData() {
 
 }
 
-function scheduleEvents( frames ) {
+function scheduleEvents( events ) {
 
-    $.each(frames, function (index, value) {
+    $.each(events, function (index, value) {
 
         // parseInt because in PHP the value from database was parsed as a string
 
