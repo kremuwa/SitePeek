@@ -23,7 +23,7 @@
 
             $sql = "SELECT
                       frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX,
-                      frameMouseY AS mouseY, frameScrollTop AS scrollTop
+                      frameMouseY AS mouseY, frameTarget AS target, frameScrollTop AS scrollTop, frameHref AS href
                     FROM frames
                     WHERE frameTimestamp > (
                       SELECT MAX(frameTimestamp)
@@ -34,7 +34,7 @@
         } else {
 
             $sql = "SELECT frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX,
-                    frameMouseY AS mouseY, frameScrollTop AS scrollTop
+                    frameMouseY AS mouseY, frameTarget AS target, frameScrollTop AS scrollTop, frameHref AS href
                     FROM frames
                     WHERE frameTimestamp > " . $_POST['lastTimestamp'];
 

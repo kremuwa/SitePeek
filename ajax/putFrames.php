@@ -16,13 +16,21 @@
 
             // DB columns have different names for "security by obscurity"
 
-            $stmt = $dbh->prepare("INSERT INTO frames (frameType, frameTimestamp, frameMouseX, frameMouseY, frameScrollTop) VALUES (?, ?, ?, ?, ?)");
+            $sql =
+            "INSERT INTO frames
+            (frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget, frameScrollTop, frameHref)
+             VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+
+            $stmt = $dbh->prepare($sql);
 
             $stmt->bindValue(1, $x->type);
             $stmt->bindValue(2, $x->timestamp);
             $stmt->bindValue(3, (isset($x->mouseX) ? $x->mouseX : NULL));
             $stmt->bindValue(4, (isset($x->mouseY) ? $x->mouseY : NULL));
-            $stmt->bindValue(5, (isset($x->scrollTop) ? $x->scrollTop : NULL));
+            $stmt->bindValue(5, (isset($x->target) ? $x->target : NULL));
+            $stmt->bindValue(6, (isset($x->scrollTop) ? $x->scrollTop : NULL));
+            $stmt->bindValue(7, (isset($x->href) ? $x->href : NULL));
 
             $stmt->execute();
 

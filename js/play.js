@@ -79,31 +79,52 @@ function executeEvent( value ) {
 
     if(value.type == 'mousemove') {
 
-        $('#pointer').offset({
+        pointer.offset({
             left: value.mouseX,
             top: value.mouseY - scrollTop
         });
     }
-    else if(value.type == 'click') {
+    else {
 
-        $('<div class="clicktrace"></div>')
-            .insertAfter(pointer)
-            .offset({
-                left: value.mouseX - 20,
-                top: value.mouseY - scrollTop - 20
-            })
-            .fadeOut(2000, 'easeOutQuint', function() {
-                $(this).remove();
-            });
+        var playingframe = $('#playing-frame');
+
+        if(value.type == 'click') {
+
+            $('<div class="clicktrace"></div>')
+                .insertAfter(pointer)
+                .offset({
+                    left: value.mouseX - 20,
+                    top: value.mouseY - scrollTop - 20
+                })
+                .fadeOut(2000, 'easeOutQuint', function() {
+                    $(this).remove();
+                });
+
+            playingframe.contents().find(value.target).trigger('click');
+        }
+        else if(value.type == 'focusin') {
+
+            playingframe.contents().find(value.target).trigger('focus');
+
+        }
+        else if(value.type == 'focusout') {
+
+            playingframe.contents().find(value.target).trigger('blur');
+
+        }
+        else if(value.type == 'scroll') {
+
+            scrollTop = value.scrollTop;
+
+            playingframe.contents().find('body').scrollTop(scrollTop);
+
+        }
+        else if(value.type == 'load') {
+
+            playingframe[0].contentWindow.location.href = value.href;
+
+        }
     }
-    else if(value.type == 'scroll') {
-
-        scrollTop = value.scrollTop;
-        $('#playing-frame').contents().find('body').scrollTop(scrollTop);
-
-        // TODO move #pointer during scroll in an appropriate way
-    }
-
 
 }
 
@@ -111,7 +132,7 @@ $(document).ready(function(){
 
     setTimeout(getData, 4000);
 
-    // additional easing effect for hiding clicktraces
+    // custom easing effect for hiding clicktraces
 
     $.extend($.easing,
     {
