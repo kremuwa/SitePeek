@@ -37,7 +37,7 @@ try {
         <!-- Place favicon.ico in the root directory -->
 
         <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/playground.css">
+        <link rel="stylesheet" href="css/record.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
     <body>

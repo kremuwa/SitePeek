@@ -22,8 +22,9 @@
             // ASes provide security through obscurity, changing client-side names of properties
 
             $sql = "SELECT
-                      frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX,
-                      frameMouseY AS mouseY, frameTarget AS target, frameScrollTop AS scrollTop, frameHref AS href
+                      frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                       frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
+                       frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
                     WHERE frameTimestamp > (
                       SELECT MAX(frameTimestamp)
@@ -33,8 +34,10 @@
 
         } else {
 
-            $sql = "SELECT frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX,
-                    frameMouseY AS mouseY, frameTarget AS target, frameScrollTop AS scrollTop, frameHref AS href
+            $sql = "SELECT
+                      frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                       frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
+                       frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
                     WHERE frameTimestamp > " . $_POST['lastTimestamp'];
 

@@ -99,7 +99,12 @@ textarea {
 
 html, body {
     height: 100%;
-    overflow: hidden;
+}
+
+html {    
+}
+
+body {
 }
 
 #pointer {
@@ -119,31 +124,10 @@ html, body {
     z-index: 10000;
 }
 
-#recordingFrame {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    z-index: 0;
-}
-
 #playing-frame {
-    height: 100%;
+    border: 10px outset #0096ff;
     pointer-events: none;
-    width: 100%;
-}
-
-.pointer-events-none {
-    pointer-events: none;
-}
-
-#overlay {
-    background-color: rgba(255,0,255,0.5);
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 1;
+    margin: 20px 10px 10px 10px;
 }
 
 

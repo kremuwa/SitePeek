@@ -18,8 +18,9 @@
 
             $sql =
             "INSERT INTO frames
-            (frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget, frameScrollTop, frameHref)
-             VALUES (?, ?, ?, ?, ?, ?, ?)";
+            (frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
+             frameText, frameCaret, frameScrollTop, frameWidth, frameHeight, frameHref)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
             $stmt = $dbh->prepare($sql);
@@ -29,8 +30,12 @@
             $stmt->bindValue(3, (isset($x->mouseX) ? $x->mouseX : NULL));
             $stmt->bindValue(4, (isset($x->mouseY) ? $x->mouseY : NULL));
             $stmt->bindValue(5, (isset($x->target) ? $x->target : NULL));
-            $stmt->bindValue(6, (isset($x->scrollTop) ? $x->scrollTop : NULL));
-            $stmt->bindValue(7, (isset($x->href) ? $x->href : NULL));
+            $stmt->bindValue(6, (isset($x->text) ? $x->text : NULL));
+            $stmt->bindValue(7, (isset($x->caret) ? $x->caret : NULL));
+            $stmt->bindValue(8, (isset($x->scrollTop) ? $x->scrollTop : NULL));
+            $stmt->bindValue(9, (isset($x->width) ? $x->width : NULL));
+            $stmt->bindValue(10, (isset($x->height) ? $x->height : NULL));
+            $stmt->bindValue(11, (isset($x->href) ? $x->href : NULL));
 
             $stmt->execute();
 

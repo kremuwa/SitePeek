@@ -1,10 +1,45 @@
 // global variables
 
-var enableMousemoveLogging = false;
-var enableScrollLogging = false;
+var enableMousemoveLogging = true;
+var enableScrollLogging = true;
+var enableResizeLogging = true;
 var frames = [];
 var fps = 50; // more is nonsense
 
+function getCaretPosition(el) {
+    var start = 0, normalizedValue, range,
+        textInputRange, len, endRange;
+
+    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
+        start = el.selectionStart;
+    } else {
+        range = document.selection.createRange();
+
+        if (range && range.parentElement() == el) {
+            len = el.value.length;
+            normalizedValue = el.value.replace(/\r\n/g, "\n");
+
+            // Create a working TextRange that lives only in the input
+            textInputRange = el.createTextRange();
+            textInputRange.moveToBookmark(range.getBookmark());
+
+            // Check if the start and end of the selection are at the very end
+            // of the input, since moveStart/moveEnd doesn't return what we want
+            // in those cases
+            endRange = el.createTextRange();
+            endRange.collapse(false);
+
+            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+                start = len;
+            } else {
+                start = -textInputRange.moveStart("character", -len);
+                start += normalizedValue.slice(0, start).split("\n").length - 1;
+            }
+        }
+    }
+
+    return start;
+}
 
 function cssPath(el) {
     var path = [];
@@ -73,9 +108,25 @@ function addFocusoutFrame(event) {
 
     frames[frames.length] = {
         type: 'focusout',
-		timestamp: event.timeStamp,
+        timestamp: event.timeStamp,
         target: cssPath(event.target)
-	};
+    };
+
+}
+
+function addTextFrame(event) {
+
+    frames[frames.length] = {
+        type: 'text',
+        timestamp: event.timeStamp,
+        target: cssPath(event.target),
+        text: $(event.target).val(),
+        caret: getCaretPosition(event.target)
+    };
+
+    // to let this funciton be set as a callback again
+
+    $(event.target).removeProp('toBeFramed');
 
 }
 
@@ -93,6 +144,24 @@ function addScrollFrame(event, scrollTop) {
 
         enableScrollLogging = false;
 
+    }
+
+}
+
+function addResizeFrame(event, width, height) {
+
+    if(enableResizeLogging){
+
+        // add new frame
+
+        frames[frames.length] = {
+            type: 'resize',
+            timestamp: event.timeStamp,
+            width: width,
+            height: height
+        };
+
+        enableResizeLogging = false;
     }
 
 }
@@ -146,7 +215,7 @@ $('#recordingFrame').load(function(event) {
         addMousemoveFrame(event);
     });
 
-    // to only add new data every 100 ms
+    // to only add new data once in a while
 
     setInterval(function() {
         enableMousemoveLogging = true;
@@ -170,9 +239,24 @@ $('#recordingFrame').load(function(event) {
         addFocusoutFrame(event);
     });
 
-    // catching key events
+    // catching text events (propertychange is for IE <9)
 
-    // TODO: catch key events and send them using sendkeys library
+    $(this).contents().on('input propertychange', function(event) {
+
+
+        // if no active timeout is set for this element yet...
+
+        if($(event.target).prop('toBeFramed') == undefined) {
+
+            console.log(event.target);
+
+            $(event.target).prop('toBeFramed', true);
+
+            //... let's set one
+
+            setTimeout(function() { addTextFrame(event) }, 1000);
+        }
+    });
 
     // catching scroll events
 
@@ -180,15 +264,38 @@ $('#recordingFrame').load(function(event) {
         addScrollFrame(event, $(this).scrollTop());
     });
 
-    // to only add new data twice a second
+    // to only add new data once in a while
 
     setInterval(function() {
         enableScrollLogging = true;
     }, 1000 / fps);
 
+    // catching resize events (NOTE: we're using PARENT window here, not iframe contentWindow
+    // but probably with no apparent reason ;)
+
+    $(window).on('resize', function(event) {
+
+        var recordingFrame = $('#recordingFrame');
+
+        addResizeFrame(event, recordingFrame.width(), recordingFrame.height());
+    });
+
+    // to only add new data once in a while
+
+    setInterval(function() {
+        enableResizeLogging = true;
+    }, 1000 / fps);
+
     // catching load events (we are in load callback!)
 
     addLoadFrame(event, this.contentWindow.location.href);
+
+    // (in order to have the correct size after loading a new page - in practice,
+    // needed only for the first page, I guess)
+
+    var recordingFrame = $('#recordingFrame');
+
+    addResizeFrame(event, recordingFrame.width(), recordingFrame.height());
 
     // send data every couple of seconds
 

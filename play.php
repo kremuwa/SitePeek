@@ -37,7 +37,7 @@ try {
         <!-- Place favicon.ico in the root directory -->
 
         <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/playground.css">
+        <link rel="stylesheet" href="css/play.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
     <body>
@@ -46,7 +46,7 @@ try {
         <![endif]-->
 
         <!-- pisses me off that I can't suppress this watning -->
-        <iframe id="playing-frame" src="<?php echo $result['url']; ?>"></iframe>
+        <iframe id="playing-frame"></iframe>
 
         <div id="pointer"></div>
 
