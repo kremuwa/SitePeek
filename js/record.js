@@ -5,37 +5,45 @@ var enableScrollLogging = true;
 var enableResizeLogging = true;
 var frames = [];
 var fps = 50; // more is nonsense
+var firstTime = true;
 
 function getCaretPosition(el) {
     var start = 0, normalizedValue, range,
         textInputRange, len, endRange;
+    
+    try {
 
-    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
-        start = el.selectionStart;
-    } else {
-        range = document.selection.createRange();
+        if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
+            start = el.selectionStart;
+        } else {
+            range = document.selection.createRange();
 
-        if (range && range.parentElement() == el) {
-            len = el.value.length;
-            normalizedValue = el.value.replace(/\r\n/g, "\n");
+            if (range && range.parentElement() == el) {
+                len = el.value.length;
+                normalizedValue = el.value.replace(/\r\n/g, "\n");
 
-            // Create a working TextRange that lives only in the input
-            textInputRange = el.createTextRange();
-            textInputRange.moveToBookmark(range.getBookmark());
+                // Create a working TextRange that lives only in the input
+                textInputRange = el.createTextRange();
+                textInputRange.moveToBookmark(range.getBookmark());
 
-            // Check if the start and end of the selection are at the very end
-            // of the input, since moveStart/moveEnd doesn't return what we want
-            // in those cases
-            endRange = el.createTextRange();
-            endRange.collapse(false);
+                // Check if the start and end of the selection are at the very end
+                // of the input, since moveStart/moveEnd doesn't return what we want
+                // in those cases
+                endRange = el.createTextRange();
+                endRange.collapse(false);
 
-            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
-                start = len;
-            } else {
-                start = -textInputRange.moveStart("character", -len);
-                start += normalizedValue.slice(0, start).split("\n").length - 1;
+                if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+                    start = len;
+                } else {
+                    start = -textInputRange.moveStart("character", -len);
+                    start += normalizedValue.slice(0, start).split("\n").length - 1;
+                }
             }
         }
+
+    } catch(e) {
+        // selection invalid for this element, return 0
+        start = 0;
     }
 
     return start;
@@ -55,7 +63,7 @@ function cssPath(el) {
                 if (sib.nodeName.toLowerCase() == selector)
                     nth++;
             }
-            if (nth != 1)
+            if (el.previousElementSibling != null || el.nextElementSibling != null)
                 selector += ":nth-of-type("+nth+")";
         }
         path.unshift(selector);
@@ -186,7 +194,8 @@ function sendBatchedData() {
 
         url: "ajax/putFrames.php",
         data: {
-            frames: JSON.stringify(frames)
+            frames: JSON.stringify(frames),
+            playgroundId: playgroundId
         },
 
         type: "POST",
@@ -208,6 +217,14 @@ function sendBatchedData() {
 
 $('#recordingFrame').load(function(event) {
 
+    if(firstTime)
+    {
+        firstTime = false;
+
+        // send data every couple of seconds
+
+        setInterval(sendBatchedData, 2000);
+    }
 
     // catching mousemove events
 
@@ -248,8 +265,6 @@ $('#recordingFrame').load(function(event) {
 
         if($(event.target).prop('toBeFramed') == undefined) {
 
-            console.log(event.target);
-
             $(event.target).prop('toBeFramed', true);
 
             //... let's set one
@@ -270,10 +285,9 @@ $('#recordingFrame').load(function(event) {
         enableScrollLogging = true;
     }, 1000 / fps);
 
-    // catching resize events (NOTE: we're using PARENT window here, not iframe contentWindow
-    // but probably with no apparent reason ;)
+    // catching resize events
 
-    $(window).on('resize', function(event) {
+    $(this.contentWindow).on('resize', function(event) {
 
         var recordingFrame = $('#recordingFrame');
 
@@ -296,9 +310,5 @@ $('#recordingFrame').load(function(event) {
     var recordingFrame = $('#recordingFrame');
 
     addResizeFrame(event, recordingFrame.width(), recordingFrame.height());
-
-    // send data every couple of seconds
-
-    setInterval(sendBatchedData, 2000);
 
 });

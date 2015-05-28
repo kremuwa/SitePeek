@@ -39,6 +39,7 @@ try {
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/record.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        <script>var playgroundId = <?php echo $_GET['id']; ?>;</script>
     </head>
     <body>
         <!--[if lt IE 8]>

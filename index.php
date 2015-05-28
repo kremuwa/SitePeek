@@ -29,7 +29,7 @@
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING /* DEBUG */
             ));
 
-            $sql = "INSERT INTO playgrounds (playgroundID, url)
+            $sql = "INSERT INTO playgrounds (playgroundId, url)
                     VALUES (?, ?)";
 
             $stmt = $dbh->prepare($sql);

@@ -202,8 +202,6 @@ $(document).ready(function(){
 
     $(window).on('scroll', function(){
 
-        console.log('scrolling');
-
         //fix pointer position
 
         var playingFrame = $('#playing-frame');
