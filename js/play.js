@@ -1,7 +1,7 @@
 // global variables
 
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
-var playDelay = 3000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
+var playDelay = 10000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
 var pointer = $('#pointer');
 var scrollTop = 0;
 var currentMouseX = 0;
