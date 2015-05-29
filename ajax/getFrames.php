@@ -29,8 +29,11 @@
                     WHERE frameTimestamp > (
                       SELECT MAX(frameTimestamp)
                       FROM frames
-                      WHERE frameTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
+                      WHERE playgroundId = ? AND frameTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
                     ) - $msecToLookBeforeLastAvailableFrame";
+
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute(array($_POST['playgroundId']));
 
         } else {
 
@@ -39,12 +42,12 @@
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
-                    WHERE frameTimestamp > " . $_POST['lastTimestamp'];
+                    WHERE playgroundId = ? AND frameTimestamp > ?";
+
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute(array($_POST['playgroundId'], $_POST['lastTimestamp']));
 
         }
-
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute();
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

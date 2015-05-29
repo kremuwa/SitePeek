@@ -54,7 +54,8 @@ function getData() {
 
         url: "ajax/getFrames.php",
         data: {
-            lastTimestamp: lastTimestamp
+            lastTimestamp: lastTimestamp,
+            playgroundId: playgroundId
         },
         dataType: "text",
 
