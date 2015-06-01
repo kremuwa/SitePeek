@@ -1,9 +1,17 @@
+<?php
+
+// TODO zooming - simulate document ready in iframe (hint in Chrome bookmark)
+// TODO view centering
+// TODO Your own comments are visible when You are peeking
+
+?>
+
 <!doctype html>
 <html class="no-js <?php echo (isset($_GET['id']) ? 'record' : 'play'); ?>" lang="">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Right now I'm changing the title of the document.</title>
+    <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 

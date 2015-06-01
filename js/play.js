@@ -116,74 +116,107 @@ function executeEvent( value ) {
     if(value.type == 'mousemove') {
 
         // move the image of mouse - parseFloat because some properties are text (from DB)
-        // + 10 because of iframe's border
+        // +30 becausse we have to take border into account
 
         currentMouseX = parseFloat(value.mouseX);
         currentMouseY = parseFloat(value.mouseY);
 
         pointer.offset({
-            left: currentMouseX + playingFrame.offset().left + 10,
-            top: currentMouseY + playingFrame.offset().top - scrollTop + 10
+            left: currentMouseX + playingFrame.offset().left + 30,
+            top: currentMouseY + playingFrame.offset().top - scrollTop + 30
         });
     }
-    else {
+    else if(value.type == 'click') {
 
-        if(value.type == 'click') {
+        // +10 (not +30) because we want the click circle to be centered
 
-            // -10 because we want the click circle to be centered
-
-            $('<div class="clicktrace"></div>')
-                .insertAfter(pointer)
-                .offset({
-                    left: parseFloat(value.mouseX) + playingFrame.offset().left - 10,
-                    top: parseFloat(value.mouseY) + playingFrame.offset().top - scrollTop - 10
-                })
-                .fadeOut(2000, 'easeOutQuint', function() {
-                    $(this).remove();
-                });
-
-            playingFrame.contents().find(value.target).trigger('click');
-        }
-        else if(value.type == 'focusin') {
-
-            playingFrame.contents().find(value.target).trigger('focus');
-
-        }
-        else if(value.type == 'focusout') {
-
-            playingFrame.contents().find(value.target).trigger('blur');
-
-        }
-        else if(value.type == 'text') {
-
-            var target = playingFrame.contents().find(value.target);
-
-            target.val(value.text);
-            setCaretPosition(target[0], value.caret);
-
-        }
-        else if(value.type == 'scroll') {
-
-            // TODO handle horizontal scrolling, too
-
-            scrollTop = value.scrollTop;
-
-            playingFrame.contents().find('body').scrollTop(scrollTop);
-
-        }
-        else if(value.type == 'resize') {
-
-            playingFrame.css({
-                'width': value.width,
-                'height': value.height
+        $('<div class="clicktrace"></div>')
+            .insertAfter(pointer)
+            .offset({
+                left: parseFloat(value.mouseX) + playingFrame.offset().left + 10,
+                top: parseFloat(value.mouseY) + playingFrame.offset().top - scrollTop + 10
             })
+            .fadeOut(2000, 'easeOutQuint', function() {
+                $(this).remove();
+            });
 
+        playingFrame.contents().find(value.target).trigger('click');
+    }
+    else if(value.type == 'focusin') {
+
+        playingFrame.contents().find(value.target).trigger('focus');
+
+    }
+    else if(value.type == 'focusout') {
+
+        playingFrame.contents().find(value.target).trigger('blur');
+
+    }
+    else if(value.type == 'text') {
+
+        var target = playingFrame.contents().find(value.target);
+
+        target.val(value.text);
+        setCaretPosition(target[0], value.caret);
+
+    }
+    else if(value.type == 'scroll') {
+
+        // TODO handle horizontal scrolling, too
+
+        scrollTop = value.scrollTop;
+
+        playingFrame.contents().find('body').scrollTop(scrollTop);
+
+    }
+    else if(value.type == 'resize') {
+
+        console.log(value);
+
+        // to make all the screen visible
+
+        zoom = Math.min($(window).width() / value.width, $(window).height() / value.height);
+        console.log(Math.min($(window).width() / value.width));
+        console.log(Math.min($(window).height() / value.height));
+        console.log(zoom);
+
+        // c'mon even unzooming has its limits
+
+        if(zoom < 0.1)
+            zoom = 0.1;
+
+        // we keep the recorder window size, for media-queries to work correctly
+
+        playingFrame.css({
+            'width': value.width,
+            'height': value.height
+        });
+
+        // only zoom if we don't have enough space
+
+        if(zoom < 1) {
+            playingFrame.contents().find('html').css('transform', 'scale(' + zoom + ')');
+            playingFrame.contents().find('html').css('transform-origin', '0 0');
         }
-        else if(value.type == 'load') {
 
-            playingFrame[0].contentWindow.location.href = value.href;
+    }
+    else if(value.type == 'load') {
 
-        }
+        // needed, because when loading for the first time,
+        // we don't have any size information yet. We do it during
+        // every load though, just in case.
+
+        playingFrame.contents().one('load', function(){
+
+            executeEvent({
+                type: 'resize',
+                width: value.width,
+                height: value.height
+            });
+        });
+
+        playingFrame[0].contentWindow.location.href = value.href;
+
     }
 
 }

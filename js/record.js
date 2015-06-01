@@ -174,13 +174,15 @@ function addResizeFrame(event, width, height) {
 
 }
 
-function addLoadFrame(event, href) {
+function addLoadFrame(event, width, height, href) {
 
         // add new frame
 
         frames[frames.length] = {
             type: 'load',
             timestamp: event.timeStamp,
+            width: width,
+            height: height,
             href: href
         };
 
@@ -301,14 +303,10 @@ $('#recordingFrame').load(function(event) {
     }, 1000 / fps);
 
     // catching load events (we are in load callback!)
-
-    addLoadFrame(event, this.contentWindow.location.href);
-
-    // (in order to have the correct size after loading a new page - in practice,
-    // needed only for the first page, I guess)
+    // we add iframe size data, too, mainly for first load event
 
     var recordingFrame = $('#recordingFrame');
 
-    addResizeFrame(event, recordingFrame.width(), recordingFrame.height());
+    addLoadFrame(event, recordingFrame.width(), recordingFrame.height(), this.contentWindow.location.href);
 
 });

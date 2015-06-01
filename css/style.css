@@ -123,6 +123,7 @@ html.record, body.recordZ {
 }
 
 #recordingFrame {
+    border: none;
     height: 100%;
     width: 100%;
     position: relative;
@@ -130,7 +131,7 @@ html.record, body.recordZ {
 }
 
 #playing-frame {
-    border: 10px outset #0096ff;
+    border: 30px outset #999;
     pointer-events: none;
     margin: 20px 10px 10px 10px;
 }
