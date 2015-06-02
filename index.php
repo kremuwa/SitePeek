@@ -1,6 +1,6 @@
 <?php
 
-// TODO zooming - simulate document ready in iframe (hint in Chrome bookmark)
+// TODO zooming - fix transform origin problem while zooming (maybe 0,0 focal point?) and lock when zooming out excessively
 // TODO view centering
 // TODO Your own comments are visible when You are peeking
 
@@ -60,6 +60,7 @@
     ?>
 
     <script src="js/play.js"></script>
+    <script src="js/vendor/jquery.panzoom.min.js"></script>
 
     <?php endif; ?>
 

@@ -56,6 +56,9 @@
         </label>
     </div>
 
-    <iframe id="playing-frame"></iframe>
+    <div id="wrapper">
+        <iframe id="playing-frame"></iframe>
+        <div id="panzoom-layer"></div>
+    </div>
 
     <div id="pointer"></div>

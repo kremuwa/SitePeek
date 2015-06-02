@@ -1,7 +1,7 @@
 // global variables
 
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
-var playDelay = 10000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
+var playDelay = 3000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
 var pointer = $('#pointer');
 var scrollTop = 0;
 var currentMouseX = 0;
@@ -171,42 +171,48 @@ function executeEvent( value ) {
     }
     else if(value.type == 'resize') {
 
-        console.log(value);
-
-        // to make all the screen visible
+        // to make all the screen visible at once
 
         zoom = Math.min($(window).width() / value.width, $(window).height() / value.height);
-        console.log(Math.min($(window).width() / value.width));
-        console.log(Math.min($(window).height() / value.height));
-        console.log(zoom);
 
-        // c'mon even unzooming has its limits
+        // c'mon, even unzooming has its limits
 
         if(zoom < 0.1)
             zoom = 0.1;
 
-        // we keep the recorder window size, for media-queries to work correctly
+        var panzoomLayer = $('#panzoom-layer');
 
-        playingFrame.css({
+        // resize playing frame and its layer
+
+        playingFrame.add(panzoomLayer).css({
             'width': value.width,
             'height': value.height
         });
 
+        // fix panzoom layer position
+
+        panzoomLayer.offset(playingFrame.offset());
+
         // only zoom if we don't have enough space
 
         if(zoom < 1) {
-            playingFrame.contents().find('html').css('transform', 'scale(' + zoom + ')');
-            playingFrame.contents().find('html').css('transform-origin', '0 0');
+            panzoomLayer.panzoom('zoom', zoom);
         }
 
     }
     else if(value.type == 'load') {
 
-        // needed, because when loading for the first time,
-        // we don't have any size information yet. We do it during
-        // every load though, just in case.
+        // the event handling below is needed, because the loaded
+        // newly loaded website has to be resized too, in order to
+        // fit in viewer's browser width.
+        // the event below is triggered from within the
+        // document.ready() handler of iframe content
+        // as iframe object doesn't have
+        // it (it only supports load() event handler)
 
-        playingFrame.contents().one('load', function(){
+        playingFrame.one('iframeready', function(){
+
+            console.log('iframeready');
 
             executeEvent({
                 type: 'resize',
@@ -245,6 +251,24 @@ $(document).ready(function(){
             top: currentMouseY + playingFrame.offset().top - scrollTop + 10
         });
 
+    });
+
+    $panzoom = $('#panzoom-layer').panzoom({
+        $set: $('#playing-frame, #panzoom-layer'),
+        contain: 'invert',
+        minScale: 0.1,
+        maxScale: 1
+    });
+
+    $('#wrapper').on('mousewheel.focal', function( e ) {
+        e.preventDefault();
+        var delta = e.delta || e.originalEvent.wheelDelta;
+        var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+        $panzoom.panzoom('zoom', zoomOut, {
+            increment: 0.1,
+            animate: true,
+            focal: e
+        });
     });
 
 });
