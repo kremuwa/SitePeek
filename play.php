@@ -60,5 +60,3 @@
         <iframe id="playing-frame"></iframe>
         <div id="panzoom-layer"></div>
     </div>
-
-    <div id="pointer"></div>

@@ -1,6 +1,6 @@
 <?php
 
-// TODO zooming - fix transform origin problem while zooming (maybe 0,0 focal point?) and lock when zooming out excessively
+// TODO zooming - problems with new pageloads
 // TODO view centering
 // TODO Your own comments are visible when You are peeking
 

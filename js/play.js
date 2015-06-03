@@ -2,7 +2,6 @@
 
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
 var playDelay = 3000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
-var pointer = $('#pointer');
 var scrollTop = 0;
 var currentMouseX = 0;
 var currentMouseY = 0;
@@ -112,6 +111,7 @@ function scheduleEvents( frames ) {
 function executeEvent( value ) {
 
     var playingFrame = $('#playing-frame');
+    var pointer = playingFrame.contents().find('#pointer');
 
     if(value.type == 'mousemove') {
 
@@ -122,8 +122,8 @@ function executeEvent( value ) {
         currentMouseY = parseFloat(value.mouseY);
 
         pointer.offset({
-            left: currentMouseX + playingFrame.offset().left + 30,
-            top: currentMouseY + playingFrame.offset().top - scrollTop + 30
+            left: currentMouseX,
+            top: currentMouseY
         });
     }
     else if(value.type == 'click') {
@@ -133,8 +133,8 @@ function executeEvent( value ) {
         $('<div class="clicktrace"></div>')
             .insertAfter(pointer)
             .offset({
-                left: parseFloat(value.mouseX) + playingFrame.offset().left + 10,
-                top: parseFloat(value.mouseY) + playingFrame.offset().top - scrollTop + 10
+                left: parseFloat(value.mouseX)+ 10,
+                top: parseFloat(value.mouseY) + 10
             })
             .fadeOut(2000, 'easeOutQuint', function() {
                 $(this).remove();
@@ -171,9 +171,11 @@ function executeEvent( value ) {
     }
     else if(value.type == 'resize') {
 
+        var $wrapper = $('#wrapper');
+
         // to make all the screen visible at once
 
-        zoom = Math.min($(window).width() / value.width, $(window).height() / value.height);
+        zoom = Math.min($(window).width() / value.width, ($(window).height() - $wrapper.position().top) / value.height);
 
         // c'mon, even unzooming has its limits
 
@@ -195,36 +197,40 @@ function executeEvent( value ) {
 
         // only zoom if we don't have enough space
 
+        console.log(zoom);
+
         if(zoom < 1) {
-            panzoomLayer.panzoom('zoom', zoom);
+
+            $wrapper.css('height', $(window).height() - $wrapper.position().top);
+
+            panzoomLayer.panzoom('zoom', zoom, {
+                focal: {clientX: 0, clientY: 0}
+            });
+
+            panzoomLayer.panzoom('option', {
+                minScale: zoom
+            });
         }
 
     }
     else if(value.type == 'load') {
 
-        // the event handling below is needed, because the loaded
-        // newly loaded website has to be resized too, in order to
-        // fit in viewer's browser width.
-        // the event below is triggered from within the
-        // document.ready() handler of iframe content
-        // as iframe object doesn't have
-        // it (it only supports load() event handler)
-
-        playingFrame.one('iframeready', function(){
-
-            console.log('iframeready');
-
-            executeEvent({
-                type: 'resize',
-                width: value.width,
-                height: value.height
-            });
-        });
-
         playingFrame[0].contentWindow.location.href = value.href;
 
-    }
+        // newly loaded website has to be resized too, in order to
+        // fit in viewer's browser width.
+        // Probably needed only for first page load, but just in case
+        // we do it every time
 
+        // smart way to reuse my code :)
+
+        executeEvent({
+            type: 'resize',
+            width: value.width,
+            height: value.height
+        });
+
+    }
 }
 
 $(document).ready(function(){
@@ -240,23 +246,22 @@ $(document).ready(function(){
         }
     });
 
-    $(window).on('scroll', function(){
+    $('#playing-frame').on('load', function(){
 
-        //fix pointer position
-
-        var playingFrame = $('#playing-frame');
-
-        pointer.offset({
-            left: currentMouseX + playingFrame.offset().left + 10,
-            top: currentMouseY + playingFrame.offset().top - scrollTop + 10
-        });
-
+        $('<div id="pointer"></div>')
+            .css({
+                'background': 'transparent url(\'../img/cursor.png\') left top no-repeat',
+                'height': '20px',
+                'width': '20px',
+                'position': 'absolute',
+                'z-index:': '10001'
+            })
+            .appendTo($('#playing-frame').contents().find('body'))
     });
 
     $panzoom = $('#panzoom-layer').panzoom({
         $set: $('#playing-frame, #panzoom-layer'),
         contain: 'invert',
-        minScale: 0.1,
         maxScale: 1
     });
 
