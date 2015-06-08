@@ -1,10 +1,8 @@
 // global variables
 
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
-var playDelay = 3000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
+var playDelay = 4000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
-var currentMouseX = 0;
-var currentMouseY = 0;
 
 function setCaretPosition(el, caretPos) {
 
@@ -110,32 +108,40 @@ function scheduleEvents( frames ) {
 
 function executeEvent( value ) {
 
+    // caching
+
     var playingFrame = $('#playing-frame');
     var pointer = playingFrame.contents().find('#pointer');
+    var panzoomLayer = $('#panzoom-layer');
 
     if(value.type == 'mousemove') {
 
         // move the image of mouse - parseFloat because some properties are text (from DB)
-        // +30 becausse we have to take border into account
-
-        currentMouseX = parseFloat(value.mouseX);
-        currentMouseY = parseFloat(value.mouseY);
 
         pointer.offset({
-            left: currentMouseX,
-            top: currentMouseY
+            left: parseFloat(value.mouseX),
+            top: parseFloat(value.mouseY) - 3
         });
+        
     }
     else if(value.type == 'click') {
 
         // +10 (not +30) because we want the click circle to be centered
 
         $('<div class="clicktrace"></div>')
-            .insertAfter(pointer)
-            .offset({
-                left: parseFloat(value.mouseX)+ 10,
-                top: parseFloat(value.mouseY) + 10
+            .css({
+                'background': 'cyan',
+                'border-radius': '20px',
+                'height': '40px',
+                'width': '40px',
+                'position': 'absolute',
+                'z-index': '10000'
             })
+            .offset({
+                left: parseFloat(value.mouseX) - 20,
+                top: parseFloat(value.mouseY) - 20
+            })
+            .appendTo(playingFrame.contents().find('body'))
             .fadeOut(2000, 'easeOutQuint', function() {
                 $(this).remove();
             });
@@ -177,39 +183,35 @@ function executeEvent( value ) {
 
         zoom = Math.min($(window).width() / value.width, ($(window).height() - $wrapper.position().top) / value.height);
 
-        // c'mon, even unzooming has its limits
+        console.log(zoom);
 
-        if(zoom < 0.1)
-            zoom = 0.1;
+        // resize playing frame and it's layer
 
-        var panzoomLayer = $('#panzoom-layer');
-
-        // resize playing frame and its layer
-
-        playingFrame.add(panzoomLayer).css({
-            'width': value.width,
-            'height': value.height
-        });
+        playingFrame.add(panzoomLayer).
+            css({
+                'width': value.width,
+                'height': value.height
+            });
 
         // fix panzoom layer position
 
-        panzoomLayer.offset(playingFrame.offset());
+        //panzoomLayer.offset(playingFrame.offset());
 
         // only zoom if we don't have enough space
-
-        console.log(zoom);
 
         if(zoom < 1) {
 
             $wrapper.css('height', $(window).height() - $wrapper.position().top);
 
-            panzoomLayer.panzoom('zoom', zoom, {
-                focal: {clientX: 0, clientY: 0}
-            });
+            panzoomLayer
+                .panzoom('option', {
+                    minScale: zoom
+                })
+                .panzoom('resetDimensions')
+                .panzoom('zoom', zoom, {
+                    focal: {clientX: 0, clientY: 0}
+                });
 
-            panzoomLayer.panzoom('option', {
-                minScale: zoom
-            });
         }
 
     }
@@ -254,9 +256,10 @@ $(document).ready(function(){
                 'height': '20px',
                 'width': '20px',
                 'position': 'absolute',
-                'z-index:': '10001'
+                'z-index': '10001'
             })
             .appendTo($('#playing-frame').contents().find('body'))
+
     });
 
     $panzoom = $('#panzoom-layer').panzoom({

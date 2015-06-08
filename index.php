@@ -1,8 +1,9 @@
 <?php
 
 // TODO zooming - problems with new pageloads
-// TODO view centering
+// TODO center view to mouse position
 // TODO Your own comments are visible when You are peeking
+// TODO adjust iframe size on *player* resize
 
 ?>
 
