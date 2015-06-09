@@ -1,9 +1,9 @@
 <?php
 
-// TODO zooming - problems with new pageloads
-// TODO center view to mouse position
+// TODO user interface (possibly use jQuery UI dialogs for communicates), one of them is already in markup
 // TODO Your own comments are visible when You are peeking
 // TODO adjust iframe size on *player* resize
+// TODO focus events?
 
 ?>
 
@@ -19,7 +19,8 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
 
-    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/vendor/normalize.css">
+    <link rel="stylesheet" href="css/vendor/jquery-ui/jquery-ui.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 
@@ -46,6 +47,7 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+    <script src="js/vendor/jquery-ui.min.js"></script>
     <script src="js/plugins.js"></script>
 
     <?php

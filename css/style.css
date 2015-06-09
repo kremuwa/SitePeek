@@ -102,10 +102,47 @@ html, body {
     overflow: hidden;
 }
 
+/* preparation */
+
+#preparation-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#generate {
+    background: #0096ff;
+    color: #fff;
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    text-decoration: none;
+}
+
+#copybox {
+    display: none;
+}
+
+/* playing */
+
+#wrapper {
+    display: none;
+    margin: 0;
+}
+
+#playing-frame {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    border: none;
+}
+
 #panzoom-layer {
     position: absolute;
     z-index: 10002;
 }
+
+/* recording */
 
 #recordingFrame {
     border: none;
@@ -115,16 +152,6 @@ html, body {
     z-index: 0;
 }
 
-#wrapper {
-    margin: 0;
-}
-
-#playing-frame {
-    border: 1px solid red;
-    position: absolute !important;
-    left: 0;
-    top: 0;
-}
 
 /* ==========================================================================
    Helper classes

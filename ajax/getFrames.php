@@ -2,7 +2,7 @@
 
     // main code
 
-    error_reporting(-1);
+    error_reporting(-1); //DEBUG
 
     $msecToLookBeforeLastAvailableFrame = 4000; // how long before the time of last available frame should we start
     $msecToLookBackForData = 10000; // how many msecs to look back from current time for frames

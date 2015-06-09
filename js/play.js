@@ -1,10 +1,43 @@
 // global variables
 
+var playgroundId = null;
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
 var playDelay = 4000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
 var currentMouseX = 0;
 var currentMouseY = 0;
+var zoom = 1;
+var firstTime = true;
+var pointerDown = false;
+
+function addPlayground() {
+
+    console.log('wywolano');
+    $.ajax({
+
+        url: "ajax/addPlayground.php",
+        data: {
+            url: $('#preparation-frame')[0].contentWindow.location.href
+        },
+        dataType: "text",
+
+        type: "POST",
+
+        success: function( json ) {
+
+            playgroundId = json;
+
+        },
+        // DEBUG
+        error: function( xhr, status, errorThrown ) {
+            console.log( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        }
+    });
+
+}
 
 function setCaretPosition(el, caretPos) {
 
@@ -62,7 +95,9 @@ function centerViewOnCursor() {
     matrix[4] = panX;
     matrix[5] = panY;
 
-    panzoomLayer.panzoom('setMatrix', matrix);
+    panzoomLayer.panzoom('setMatrix', matrix, {
+        animate: true
+    });
 }
 
 function getData() {
@@ -147,12 +182,15 @@ function executeEvent( value ) {
             top: parseFloat(currentMouseY)
         });
 
-        centerViewOnCursor();
-        
+        // if we're not panning at the moment...
+
+        if(!pointerDown)
+            centerViewOnCursor();
+
     }
     else if(value.type == 'click') {
 
-        // +10 (not +30) because we want the click circle to be centered
+        // -15 because we want the click circle to be centered
 
         $('<div class="clicktrace"></div>')
             .css({
@@ -176,12 +214,12 @@ function executeEvent( value ) {
     }
     else if(value.type == 'focusin') {
 
-        playingFrame.contents().find(value.target).trigger('focus');
+        //playingFrame.contents().find(value.target).trigger('focus');
 
     }
     else if(value.type == 'focusout') {
 
-        playingFrame.contents().find(value.target).trigger('blur');
+        //playingFrame.contents().find(value.target).trigger('blur');
 
     }
     else if(value.type == 'text') {
@@ -203,13 +241,9 @@ function executeEvent( value ) {
     }
     else if(value.type == 'resize') {
 
-        var $wrapper = wrapper;
-
         // to make all the screen visible at once
 
-        zoom = Math.min($(window).width() / value.width, ($(window).height() - $wrapper.position().top) / value.height);
-
-        console.log(zoom);
+        zoom = Math.min($(window).width() / value.width, ($(window).height() - wrapper.position().top) / value.height);
 
         // resize playing frame and it's layer
 
@@ -227,7 +261,7 @@ function executeEvent( value ) {
 
         if(zoom < 1) {
 
-            $wrapper.css('height', $(window).height() - $wrapper.position().top);
+            wrapper.css('height', $(window).height() - wrapper.position().top);
 
             panzoomLayer
                 .panzoom('option', {
@@ -242,7 +276,7 @@ function executeEvent( value ) {
 
     }
     else if(value.type == 'load') {
-
+        
         playingFrame[0].contentWindow.location.href = value.href;
 
         // newly loaded website has to be resized too, in order to
@@ -253,17 +287,37 @@ function executeEvent( value ) {
         // smart way to reuse my code :)
 
         scrollTop = 0;
+            
+        if(firstTime) {
 
-        executeEvent({
-            type: 'resize',
-            width: value.width,
-            height: value.height
-        });
+            executeEvent({
+                type: 'resize',
+                width: value.width,
+                height: value.height
+            });
+
+            firstTime = false;
+
+        }
 
     }
 }
 
 $(document).ready(function(){
+
+    //var preparationFrame = $('#preparation-frame');
+
+    // ==== preparation part ====
+
+    $('#generate').on('click', function(){
+
+        addPlayground();
+
+    });
+
+    // ==== playing part ====
+
+    var playingFrame = $('#playing-frame');
 
     setTimeout(getData, 4000);
 
@@ -276,7 +330,7 @@ $(document).ready(function(){
         }
     });
 
-    $('#playing-frame').on('load', function(){
+    playingFrame.on('load', function(){
 
         $('<div id="pointer"></div>')
             .css({
@@ -286,16 +340,30 @@ $(document).ready(function(){
                 'position': 'absolute',
                 'z-index': '10001'
             })
-            .appendTo($('#playing-frame').contents().find('body'))
+            .offset({
+                left: parseFloat(currentMouseX),
+                top: parseFloat(currentMouseY)
+            })
+            .appendTo($('#playing-frame').contents().find('body'));
+
+        playingFrame.contents().find('a').on('click', function(e){
+
+            // so that triggering click event in "click" frame handling on link
+            // doesn't navigate (as we navigate already navigate on load frames)
+
+            if($(this).attr('rel') != 'shadowbox') // (in shadowboxed links we want to let default action)
+                e.preventDefault();
+
+        });
 
     });
 
     var panzoom = $('#panzoom-layer').panzoom({
         $set: $('#playing-frame, #panzoom-layer'),
-        disablePan: true,
         contain: 'invert',
         maxScale: 1,
-        onZoom: centerViewOnCursor
+        onZoom: centerViewOnCursor,
+        easing: 'linear'
     });
 
     $('#wrapper').on('mousewheel.focal', function( e ) {
@@ -308,5 +376,15 @@ $(document).ready(function(){
             focal: e
         });
     });
+
+    panzoom.on({
+        'panzoomstart': function() {
+            pointerDown = true;
+        },
+        'panzoomend': function() {
+            pointerDown = false;
+            centerViewOnCursor();
+        }
+    })
 
 });
