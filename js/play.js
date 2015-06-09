@@ -3,6 +3,8 @@
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
 var playDelay = 4000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
+var currentMouseX = 0;
+var currentMouseY = 0;
 
 function setCaretPosition(el, caretPos) {
 
@@ -43,6 +45,24 @@ function getCurrentTimestamp () {
     }
 
     return Date.now(); // the result is in ms
+}
+
+function centerViewOnCursor() {
+
+    var panzoomLayer = $('#panzoom-layer');
+    var wrapper = $('#wrapper');
+
+    var matrix = panzoomLayer.panzoom('getMatrix');
+
+    var panX = parseFloat(wrapper.css('width')) / 2 - currentMouseX;
+    var panY = parseFloat(wrapper.css('height')) / 2 - (currentMouseY - scrollTop);
+
+    // x and y translations respectively
+
+    matrix[4] = panX;
+    matrix[5] = panY;
+
+    panzoomLayer.panzoom('setMatrix', matrix);
 }
 
 function getData() {
@@ -113,15 +133,21 @@ function executeEvent( value ) {
     var playingFrame = $('#playing-frame');
     var pointer = playingFrame.contents().find('#pointer');
     var panzoomLayer = $('#panzoom-layer');
+    var wrapper = $('#wrapper');
 
     if(value.type == 'mousemove') {
 
         // move the image of mouse - parseFloat because some properties are text (from DB)
 
+        currentMouseX = value.mouseX;
+        currentMouseY = value.mouseY;
+
         pointer.offset({
-            left: parseFloat(value.mouseX),
-            top: parseFloat(value.mouseY) - 3
+            left: parseFloat(currentMouseX),
+            top: parseFloat(currentMouseY)
         });
+
+        centerViewOnCursor();
         
     }
     else if(value.type == 'click') {
@@ -131,15 +157,15 @@ function executeEvent( value ) {
         $('<div class="clicktrace"></div>')
             .css({
                 'background': 'cyan',
-                'border-radius': '20px',
-                'height': '40px',
-                'width': '40px',
+                'border-radius': '15px',
+                'height': '30px',
+                'width': '30px',
                 'position': 'absolute',
                 'z-index': '10000'
             })
             .offset({
-                left: parseFloat(value.mouseX) - 20,
-                top: parseFloat(value.mouseY) - 20
+                left: parseFloat(currentMouseX) - 15,
+                top: parseFloat(currentMouseY) - 15
             })
             .appendTo(playingFrame.contents().find('body'))
             .fadeOut(2000, 'easeOutQuint', function() {
@@ -177,7 +203,7 @@ function executeEvent( value ) {
     }
     else if(value.type == 'resize') {
 
-        var $wrapper = $('#wrapper');
+        var $wrapper = wrapper;
 
         // to make all the screen visible at once
 
@@ -226,6 +252,8 @@ function executeEvent( value ) {
 
         // smart way to reuse my code :)
 
+        scrollTop = 0;
+
         executeEvent({
             type: 'resize',
             width: value.width,
@@ -262,19 +290,21 @@ $(document).ready(function(){
 
     });
 
-    $panzoom = $('#panzoom-layer').panzoom({
+    var panzoom = $('#panzoom-layer').panzoom({
         $set: $('#playing-frame, #panzoom-layer'),
+        disablePan: true,
         contain: 'invert',
-        maxScale: 1
+        maxScale: 1,
+        onZoom: centerViewOnCursor
     });
 
     $('#wrapper').on('mousewheel.focal', function( e ) {
         e.preventDefault();
         var delta = e.delta || e.originalEvent.wheelDelta;
         var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-        $panzoom.panzoom('zoom', zoomOut, {
-            increment: 0.1,
-            animate: true,
+        panzoom.panzoom('zoom', zoomOut, {
+            increment: 0.05,
+            animate: false,
             focal: e
         });
     });
