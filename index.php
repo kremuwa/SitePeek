@@ -1,6 +1,7 @@
 <?php
 
 // TODO user interface (possibly use jQuery UI dialogs for communicates), one of them is already in markup
+// TODO clicking on the slider main content doesn't navigate
 // TODO Your own comments are visible when You are peeking
 // TODO adjust iframe size on *player* resize
 // TODO focus events?

@@ -2,42 +2,15 @@
 
 var playgroundId = null;
 var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
-var playDelay = 4000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
+var playDelay = 10000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
 var currentMouseX = 0;
 var currentMouseY = 0;
 var zoom = 1;
 var firstTime = true;
+var userAppeared = false;
 var pointerDown = false;
-
-function addPlayground() {
-
-    console.log('wywolano');
-    $.ajax({
-
-        url: "ajax/addPlayground.php",
-        data: {
-            url: $('#preparation-frame')[0].contentWindow.location.href
-        },
-        dataType: "text",
-
-        type: "POST",
-
-        success: function( json ) {
-
-            playgroundId = json;
-
-        },
-        // DEBUG
-        error: function( xhr, status, errorThrown ) {
-            console.log( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
-        }
-    });
-
-}
+var getDataTimeout = null;
 
 function setCaretPosition(el, caretPos) {
 
@@ -131,7 +104,7 @@ function getData() {
 
             }
 
-            setTimeout(getData, 2000);
+            getDataTimeout = setTimeout(getData, 2000);
 
         },
         // DEBUG
@@ -141,7 +114,7 @@ function getData() {
             console.log( "Status: " + status );
             console.dir( xhr );
 
-            setTimeout(getData, 2000);
+            getDataTimeout = setTimeout(getData, 2000);
         }
     });
 
@@ -153,11 +126,55 @@ function scheduleEvents( frames ) {
 
         // parseInt because in PHP the value from database was parsed as a string
 
-        var timeout = parseInt(value.timestamp) + playDelay - getCurrentTimestamp();
+        var timeout = playDelay - (getCurrentTimestamp() - parseInt(value.timestamp));
 
-        setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
+        getDataTimeout = setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
 
+        // load event means user presence, so detect it and count down
+
+        if(!userAppeared && (value.type == 'load'))
+            beginCountdown(timeout);
     });
+
+}
+
+/**
+ *
+ * timeout - the time that is left for interesting things to start happening
+ * on the screen. It's the same timeout that is set for the first load event
+ *  to be played in the player
+ *
+ */
+
+function beginCountdown(timeout) {
+
+    // code of the countdown, i is initialized to 1000 (and time is i - 1000)
+    // in order to count one second less (to leave some time for fading effect
+    // of the player)
+
+    for(var i = 1000; i < timeout; i += 1000) {
+        setTimeout(function(i){
+            return function(){
+                $('#counter').text(Math.floor((timeout - i) / 1000));
+            }
+        }(i), i - 1000)
+    }
+
+    // when the countdown ends...
+
+    setTimeout(function() {
+        $('#stage5').fadeOut(400, function() {
+            $('#stage6').fadeIn(400);
+        });
+    }, timeout - 1000);
+
+    // show the countdown
+
+    $('#stage4').fadeOut(400, function() {
+        $('#stage5').fadeIn(400);
+    });
+
+    userAppeared = true;
 
 }
 
@@ -257,22 +274,26 @@ function executeEvent( value ) {
 
         //panzoomLayer.offset(playingFrame.offset());
 
+
         // only zoom if we don't have enough space
 
-        if(zoom < 1) {
-
-            wrapper.css('height', $(window).height() - wrapper.position().top);
-
-            panzoomLayer
-                .panzoom('option', {
-                    minScale: zoom
-                })
-                .panzoom('resetDimensions')
-                .panzoom('zoom', zoom, {
-                    focal: {clientX: 0, clientY: 0}
-                });
-
+        if(zoom > 1){
+            zoom = 1;
+            $('#zoominfo').fadeOut(400);
         }
+        else
+            $('#zoominfo').fadeIn(400);
+
+        wrapper.css('height', $(window).height() - wrapper.position().top);
+
+        panzoomLayer
+            .panzoom('option', {
+                minScale: zoom
+            })
+            .panzoom('resetDimensions')
+            .panzoom('zoom', zoom, {
+                focal: {clientX: 0, clientY: 0}
+            });
 
     }
     else if(value.type == 'load') {
@@ -307,19 +328,112 @@ $(document).ready(function(){
 
     //var preparationFrame = $('#preparation-frame');
 
-    // ==== preparation part ====
+    // ==== stages 1-5 (preparation) ====
 
-    $('#generate').on('click', function(){
+    $('#start').on('click', function() {
 
-        addPlayground();
+        $('#stage1').fadeOut(400, function() {
+            $('#stage2').fadeIn(400, function() {
+                $('#dialog1').dialog('open');
+            });
+        });
+
+        return false;
 
     });
 
-    // ==== playing part ====
+    $( "#dialog1" ).dialog({
+        autoOpen: false,
+        modal: true,
+        show: {
+            effect: 'fade',
+            duration: 400
+        },
+        hide: {
+            effect: 'fade',
+            duration: 400
+        },
+        buttons: {
+            'Ok, got it!': function() {
+                $(this).dialog('close');
+            }
+        },
+        width: Math.min($(window).width() * 0.8, 500)
+    });
+
+    $('#generate').on('click', function(){
+
+        $('#stage2').fadeOut(400, function() {
+            $('#stage3').fadeIn(400, function() {
+
+                $.ajax({
+
+                    url: "ajax/addPlayground.php",
+                    data: {
+                        url: $('#preparation-frame')[0].contentWindow.location.href
+                    },
+                    dataType: "text",
+
+                    type: "POST",
+
+                    success: function( json ) {
+
+                        playgroundId = json;
+
+                        $('#copybox').find('input')
+                            .val(window.location.href + '?id=' + playgroundId);
+
+                        $('#stage3').fadeOut(100, function() {
+                            $('#stage4').fadeIn(100, function() {
+                                $('#copybox').find('input')
+                                    .trigger('focus')
+                                    .select()
+                            });
+                        });
+
+                        // start fetching data
+
+                        setTimeout(getData, 4000);
+
+                    },
+                    // DEBUG
+                    error: function( xhr, status, errorThrown ) {
+                        console.log( "Sorry, there was a problem!" );
+                        console.log( "Error: " + errorThrown );
+                        console.log( "Status: " + status );
+                        console.dir( xhr );
+                    }
+                });
+
+            });
+        });
+
+        // to prevent default event action and its propagation
+
+        return false;
+    });
+
+    $('#again').on('click', function(){
+
+        // going to the stage2 and initializing some things
+
+        $('#stage6').fadeOut(400, function() {
+            $('#stage2').fadeIn(400, function() {
+
+                clearTimeout(getDataTimeout);
+                $('#dialog1').dialog('open');
+                userAppeared = false;
+                playingFrame[0].contentWindow.location.href = "about:blank";
+
+            });
+        });
+
+        return false;
+    });
+
+    // ==== stage 4 (playing) ====
 
     var playingFrame = $('#playing-frame');
-
-    setTimeout(getData, 4000);
 
     // custom easing effect for hiding clicktraces
 
@@ -385,6 +499,6 @@ $(document).ready(function(){
             pointerDown = false;
             centerViewOnCursor();
         }
-    })
+    });
 
 });
