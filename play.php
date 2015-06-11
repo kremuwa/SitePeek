@@ -37,7 +37,7 @@
     <div id="stage4">
         Copy this link and send it to Your friend (CTRL+C on desktop, touch & hold on mobile):
 
-        <div id="copybox">
+        <div id="copybox1">
             <label>Link:
                 <input type="text" />
             </label>
@@ -52,11 +52,26 @@
 
     <div id="stage6">
         <div id="menu">
-            <a id="again" href=".">Generate another link</a>
+            <a class="again" href=".">Generate another link</a>
             <span id="zoominfo">You can pan and zoom using mouse or your fingers</span>
         </div>
         <div id="wrapper">
             <iframe id="playing-frame"></iframe>
             <div id="panzoom-layer"></div>
         </div>
+    </div>
+
+    <div id="stage7">
+        The user has left the site. As we told You before, he was notified about Your joke.
+        We hope You'll survive until tomorrow :).
+
+        You can now send the link to another person:
+
+        <div id="copybox2">
+            <label>Link:
+                <input type="text" />
+            </label>
+        </div>
+
+        ... or generate a new link by <a class="again" href=".">clicking here</a>.
     </div>

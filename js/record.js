@@ -6,6 +6,9 @@ var enableResizeLogging = true;
 var frames = [];
 var fps = 50; // more is nonsense
 var firstTime = true;
+var allowUnload = false;
+var notified = false;
+var sendBatchedDataInterval = null;
 
 function getCaretPosition(el) {
     var start = 0, normalizedValue, range,
@@ -158,6 +161,8 @@ function addScrollFrame(event, scrollTop) {
 
 function addResizeFrame(event, width, height) {
 
+    // the if is to limit the frequency of frames generation
+
     if(enableResizeLogging){
 
         // add new frame
@@ -176,21 +181,34 @@ function addResizeFrame(event, width, height) {
 
 function addLoadFrame(event, width, height, href) {
 
-        // add new frame
+    // add new frame
 
-        frames[frames.length] = {
-            type: 'load',
-            timestamp: event.timeStamp,
-            width: width,
-            height: height,
-            href: href
-        };
+    frames[frames.length] = {
+        type: 'load',
+        timestamp: event.timeStamp,
+        width: width,
+        height: height,
+        href: href
+    };
+
+}
+
+function addUnloadFrame(event) {
+
+    frames[frames.length] = {
+        type: 'unload',
+        timestamp: event.timeStamp
+    };
 
 }
 
 /* performed every 5 seconds; sends data from an array to the server */
 
-function sendBatchedData() {
+function sendBatchedData(async) {
+
+    // async is true by default
+
+    async = (typeof async !== 'undefined' ? async : true);
 
     $.ajax({
 
@@ -199,6 +217,7 @@ function sendBatchedData() {
             frames: JSON.stringify(frames),
             playgroundId: playgroundId
         },
+        async: async,
 
         type: "POST",
 
@@ -217,7 +236,7 @@ function sendBatchedData() {
 
 }
 
-$('#recordingFrame').load(function(event) {
+$('#recording-frame').load(function(event) {
 
     if(firstTime)
     {
@@ -225,7 +244,7 @@ $('#recordingFrame').load(function(event) {
 
         // send data every couple of seconds
 
-        setInterval(sendBatchedData, 2000);
+        sendBatchedDataInterval = setInterval(sendBatchedData, 2000);
     }
 
     // catching mousemove events
@@ -291,7 +310,7 @@ $('#recordingFrame').load(function(event) {
 
     $(this.contentWindow).on('resize', function(event) {
 
-        var recordingFrame = $('#recordingFrame');
+        var recordingFrame = $('#recording-frame');
 
         addResizeFrame(event, recordingFrame.width(), recordingFrame.height());
     });
@@ -305,8 +324,51 @@ $('#recordingFrame').load(function(event) {
     // catching load events (we are in load callback!)
     // we add iframe size data, too, mainly for first load event
 
-    var recordingFrame = $('#recordingFrame');
+    var recordingFrame = $('#recording-frame');
 
     addLoadFrame(event, recordingFrame.width(), recordingFrame.height(), this.contentWindow.location.href);
+
+});
+
+// not sure why not use jQuery here, but I was told by internet not to
+
+window.addEventListener('beforeunload', function(event) {
+
+    // this boolean is set when the link to create Your own game is clicked
+
+    if(allowUnload)
+        return null;
+
+    // perform only the first time the user is seeing unload communicate
+
+    if(!notified) {
+
+        // stop sending data periodically, send it (in a synchronous way!) for the last time
+
+        clearInterval(sendBatchedDataInterval);
+
+        addUnloadFrame(event);
+
+        sendBatchedData(false);
+
+        notified = true;
+    }
+
+    $('#recording-frame').hide();
+    $('#notification').show();
+
+    var confirmationMessage = "Surprise :D! Your friend played a joke on You! He sent You a " +
+        "very special link, and saw everything You were doing since You clicked on it. " +
+        "If You would also like to make fun of spying on somebody, go to SitePeek.com or just stay " +
+        "on this page and click the link below :)";
+
+    (event || window.event).returnValue = confirmationMessage;     // Gecko and Trident
+    return confirmationMessage;
+
+});
+
+$('#createYourOwn').on('click', function(){
+
+    allowUnload = true;
 
 });

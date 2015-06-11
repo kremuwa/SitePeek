@@ -102,7 +102,7 @@ html, body {
     overflow: hidden;
 }
 
-#stage2, #stage3, #stage4, #stage5, #stage6 {
+#stage2, #stage3, #stage4, #stage5, #stage6, #stage7 {
     display: none;
     height: 100%;
 }
@@ -154,12 +154,27 @@ html, body {
 
 /* recording */
 
-#recordingFrame {
+#recording-frame {
     border: none;
     height: 100%;
     width: 100%;
     position: relative;
     z-index: 0;
+}
+
+#notification {
+    background: #0091cd;
+    color: #fff;
+    display: none;
+    font-size: 1.5em;
+    height: 100%;
+    overflow: hidden;
+    padding: 1em;
+    width: auto;
+}
+
+#notification p {
+    margin-bottom: 3em;
 }
 
 

@@ -128,7 +128,7 @@ function scheduleEvents( frames ) {
 
         var timeout = playDelay - (getCurrentTimestamp() - parseInt(value.timestamp));
 
-        getDataTimeout = setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
+        setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
 
         // load event means user presence, so detect it and count down
 
@@ -168,11 +168,19 @@ function beginCountdown(timeout) {
         });
     }, timeout - 1000);
 
-    // show the countdown
+    // show the countdown - it can happen during stage4 and 7, so we hide that stages
 
-    $('#stage4').fadeOut(400, function() {
-        $('#stage5').fadeIn(400);
-    });
+    $('#stage4, #stage7')
+        .fadeOut(400)
+        .promise().done(function(){
+            $('#stage5').fadeIn(400);
+        });
+
+    // I know it should be as a fadeOut callback, but I'm not sure of its behaviour
+    // when there are two items faded
+
+  //  setTimeout(function() {
+   // }, 450);
 
     userAppeared = true;
 
@@ -322,6 +330,26 @@ function executeEvent( value ) {
         }
 
     }
+    else if(value.type == 'unload') {
+
+        // show the information that the user is gone
+
+        $('#stage6').fadeOut(400, function() {
+            $('#stage7').fadeIn(400, function() {
+
+                // allow new user to come and clear the frame
+
+                userAppeared = false;
+                playingFrame[0].contentWindow.location.href = "about:blank";
+
+                $('#copybox2').find('input')
+                    .trigger('focus')
+                    .select()
+
+            });
+        });
+
+    }
 }
 
 $(document).ready(function(){
@@ -380,12 +408,14 @@ $(document).ready(function(){
 
                         playgroundId = json;
 
-                        $('#copybox').find('input')
+                        // fill in both the inputs at once
+
+                        $('#copybox1').add('#copybox2').find('input')
                             .val(window.location.href + '?id=' + playgroundId);
 
                         $('#stage3').fadeOut(100, function() {
                             $('#stage4').fadeIn(100, function() {
-                                $('#copybox').find('input')
+                                $('#copybox1').find('input')
                                     .trigger('focus')
                                     .select()
                             });
@@ -393,7 +423,7 @@ $(document).ready(function(){
 
                         // start fetching data
 
-                        setTimeout(getData, 4000);
+                        getDataTimeout = setTimeout(getData, 4000);
 
                     },
                     // DEBUG
@@ -413,20 +443,24 @@ $(document).ready(function(){
         return false;
     });
 
-    $('#again').on('click', function(){
+    $('.again').on('click', function(){
 
         // going to the stage2 and initializing some things
 
-        $('#stage6').fadeOut(400, function() {
-            $('#stage2').fadeIn(400, function() {
+        $('#stage6, #stage7')
+            .fadeOut(400)
+            .promise().done(function() {
 
-                clearTimeout(getDataTimeout);
-                $('#dialog1').dialog('open');
-                userAppeared = false;
-                playingFrame[0].contentWindow.location.href = "about:blank";
+                $('#stage2').fadeIn(400, function() {
+
+                    clearTimeout(getDataTimeout);
+                    $('#dialog1').dialog('open');
+                    userAppeared = false;
+                    playingFrame[0].contentWindow.location.href = "about:blank";
+
+                });
 
             });
-        });
 
         return false;
     });
@@ -445,6 +479,11 @@ $(document).ready(function(){
     });
 
     playingFrame.on('load', function(){
+
+        // don't execute the function it if we just cleared the frame
+
+        if(playingFrame[0].contentWindow.location.href == 'about:blank')
+            return;
 
         $('<div id="pointer"></div>')
             .css({

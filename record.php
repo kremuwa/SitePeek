@@ -26,4 +26,14 @@ try {
 
         <script>var playgroundId = '<?php echo $_GET['id']; ?>';</script>
 
-        <iframe id="recordingFrame" src="<?php echo $result['url']; ?>"></iframe>
+        <iframe id="recording-frame" src="<?php echo $result['url']; ?>"></iframe>
+
+        <div id="notification">
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to SitePeek.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here</a> :)
+            </p>
+
+        </div>
