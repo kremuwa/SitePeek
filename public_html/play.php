@@ -52,7 +52,7 @@
 
     <div id="stage6">
         <div id="menu">
-            <a class="again" href=".">Generate another link</a>
+            <a class="again" href="../">Generate another link</a>
             <span id="zoominfo">You can pan and zoom using mouse or your fingers</span>
         </div>
         <div id="wrapper">
@@ -73,5 +73,5 @@
             </label>
         </div>
 
-        ... or generate a new link by <a class="again" href=".">clicking here</a>.
+        ... or generate a new link by <a class="again" href="../">clicking here</a>.
     </div>
