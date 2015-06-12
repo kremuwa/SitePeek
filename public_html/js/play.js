@@ -134,6 +134,18 @@ function scheduleEvents( frames ) {
 
         if(!userAppeared && (value.type == 'load'))
             beginCountdown(timeout);
+
+        // unload event means we can catch new load events
+
+        if(value.type == 'unload') {
+
+            // allow new user to come
+
+            alert('unload');
+
+            userAppeared = false;
+
+        }
     });
 
 }
@@ -175,6 +187,10 @@ function beginCountdown(timeout) {
         .promise().done(function(){
             $('#stage5').fadeIn(400);
         });
+
+    // clear the iframe
+
+    $('#playing-frame')[0].contentWindow.location.href = "about:blank";
 
     // I know it should be as a fadeOut callback, but I'm not sure of its behaviour
     // when there are two items faded
@@ -332,15 +348,16 @@ function executeEvent( value ) {
     }
     else if(value.type == 'unload') {
 
+        // if a new user appeared before we managed to
+        // replay this frame, we won't do it at all
+
+        if(userAppeared)
+            return false;
+
         // show the information that the user is gone
 
         $('#stage6').fadeOut(400, function() {
             $('#stage7').fadeIn(400, function() {
-
-                // allow new user to come and clear the frame
-
-                userAppeared = false;
-                playingFrame[0].contentWindow.location.href = "about:blank";
 
                 $('#copybox2').find('input')
                     .trigger('focus')
@@ -350,6 +367,25 @@ function executeEvent( value ) {
         });
 
     }
+    else if(value.type == 'secondvisitor') {
+
+        console.log('bla');
+
+        // show the information that a second user came
+        // while the first one was being recorded
+
+        $('#message-box').fadeIn(400, function(){
+
+            setTimeout(function(){
+
+                $('#message-box').fadeOut(400);
+
+            }, 8000)
+
+        });
+
+    }
+
 }
 
 $(document).ready(function(){

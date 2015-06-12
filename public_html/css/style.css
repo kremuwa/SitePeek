@@ -105,9 +105,10 @@ html, body {
 #stage2, #stage3, #stage4, #stage5, #stage6, #stage7 {
     display: none;
     height: 100%;
+    position: relative;
 }
 
-/* stages 1-3 */
+/* stages 1-5 */
 
 #preparation-frame {
     width: 100%;
@@ -134,7 +135,7 @@ html, body {
     background: rgb(255, 0, 179);
 }
 
-/* stage4 - playing */
+/* stage6 - playing */
 
 #wrapper {
     margin: 0;
@@ -150,6 +151,22 @@ html, body {
 #panzoom-layer {
     position: absolute;
     z-index: 10002;
+}
+
+#message-box {
+    background: #008098;
+    border: 1px solid #176f59;
+    color: #fff;
+    border-radius: 20px;
+    padding: 1em;
+    font-size: 1em;
+    max-width: 500px;
+    position: absolute;
+    top: 40px;
+    width: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
 }
 
 /* recording */

@@ -22,23 +22,23 @@
             // ASes provide security through obscurity, changing client-side names of properties
 
             $sql = "SELECT
-                      frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                      playgroundId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
-                    WHERE frameTimestamp > (
+                    WHERE playgroundId = ? AND frameTimestamp > (
                       SELECT MAX(frameTimestamp)
                       FROM frames
                       WHERE playgroundId = ? AND frameTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
                     ) - $msecToLookBeforeLastAvailableFrame";
 
             $stmt = $dbh->prepare($sql);
-            $stmt->execute(array($_POST['playgroundId']));
+            $stmt->execute(array($_POST['playgroundId'], $_POST['playgroundId']));
 
         } else {
 
             $sql = "SELECT
-                      frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                      playgroundId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames

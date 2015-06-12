@@ -236,6 +236,31 @@ function sendBatchedData(async) {
 
 }
 
+function unlockPlayground() {
+
+    $.ajax({
+
+        url: "ajax/unlockPlayground.php",
+        data: {
+            playgroundId: playgroundId
+        },
+
+        // becuase performing this call in beforeunload handler
+        async: false,
+
+        type: "POST",
+
+        // DEBUG
+        error: function( xhr, status, errorThrown ) {
+            console.log( "Sorry, there was a problem!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+            console.dir( xhr );
+        }
+    });
+
+}
+
 $('#recording-frame').load(function(event) {
 
     if(firstTime)
@@ -350,6 +375,8 @@ window.addEventListener('beforeunload', function(event) {
         addUnloadFrame(event);
 
         sendBatchedData(false);
+
+        unlockPlayground();
 
         notified = true;
     }
