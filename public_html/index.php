@@ -1,6 +1,6 @@
 <?php
 
-// TODO user interface (possibly use jQuery UI dialogs for communicates), one of them is already in markup
+// TODO interface styling
 // TODO clicking on the slider main content doesn't navigate
 // TODO Your own comments are visible when You are peeking
 // TODO adjust iframe size on *player* resize
@@ -65,6 +65,16 @@
 
     <script src="js/play.js"></script>
     <script src="js/vendor/jquery.panzoom.min.js"></script>
+    <!--suppress CommaExpressionJS -->
+    <script type="text/javascript">if(typeof wabtn4fg==="undefined")
+        {wabtn4fg=1;
+        h=document.head||
+        document.getElementsByTagName("head")[0],
+            s=document.createElement("script");
+        s.type="text/javascript";
+        s.src="js/vendor/whatsapp-button.js";
+        h.appendChild(s);}
+    </script>
 
     <?php endif; ?>
 

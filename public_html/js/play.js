@@ -443,11 +443,13 @@ $(document).ready(function(){
                     success: function( json ) {
 
                         playgroundId = json;
+                        url = window.location.href + '?id=' + playgroundId;
 
                         // fill in both the inputs at once
 
                         $('#copybox1').add('#copybox2').find('input')
-                            .val(window.location.href + '?id=' + playgroundId);
+                            .val(url);
+                        $('.whatsapp').attr('data-href', url);
 
                         $('#stage3').fadeOut(100, function() {
                             $('#stage4').fadeIn(100, function() {

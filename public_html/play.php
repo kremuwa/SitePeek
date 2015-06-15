@@ -43,6 +43,10 @@
             </label>
         </div>
 
+        You can also use the buttons below:
+
+        <a href="whatsapp://send" data-text="Take a look:" data-href="" class="wa_btn wa_btn_l" style="display:none">Send using WhatsApp</a>
+
         You can use the link multiple times, but watch only one person at a time.
     </div>
 
