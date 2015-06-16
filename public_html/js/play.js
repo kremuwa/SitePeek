@@ -11,6 +11,7 @@ var firstTime = true;
 var userAppeared = false;
 var pointerDown = false;
 var getDataTimeout = null;
+var preview = true;
 
 function setCaretPosition(el, caretPos) {
 
@@ -104,7 +105,8 @@ function getData() {
 
             }
 
-            getDataTimeout = setTimeout(getData, 2000);
+            if(!preview)
+                getDataTimeout = setTimeout(getData, 2000);
 
         },
         // DEBUG
@@ -124,15 +126,21 @@ function scheduleEvents( frames ) {
 
     $.each(frames, function (index, value) {
 
-        // parseInt because in PHP the value from database was parsed as a string
+        // parseInt because in PHP the value from database was sent as a string
 
-        var timeout = playDelay - (getCurrentTimestamp() - parseInt(value.timestamp));
+        var timeout = 0;
+
+        if(!preview)
+            timeout = playDelay - (getCurrentTimestamp() - parseInt(value.timestamp));
+        else
+            timeout = value.timestamp - 1434475249768;
 
         setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
 
         // load event means user presence, so detect it and count down
+        // (unless we are in preview)
 
-        if(!userAppeared && (value.type == 'load'))
+        if(!preview && !userAppeared && (value.type == 'load'))
             beginCountdown(timeout);
 
         // unload event means we can catch new load events
@@ -206,7 +214,13 @@ function executeEvent( value ) {
 
     // caching
 
-    var playingFrame = $('#playing-frame');
+    var playingFrame = null;
+
+    if(!preview)
+        playingFrame = $('#playing-frame');
+    else
+        playingFrame = $('#preview-frame');
+
     var pointer = playingFrame.contents().find('#pointer');
     var panzoomLayer = $('#panzoom-layer');
     var wrapper = $('#wrapper');
@@ -298,7 +312,6 @@ function executeEvent( value ) {
 
         //panzoomLayer.offset(playingFrame.offset());
 
-
         // only zoom if we don't have enough space
 
         if(zoom > 1){
@@ -386,15 +399,35 @@ function executeEvent( value ) {
 
     }
 
+    // loop the preview if last event was played
+
+    if(preview && value.timestamp == '1434475360327') {
+        getData();
+    }
+
 }
 
 $(document).ready(function(){
 
-    //var preparationFrame = $('#preparation-frame');
+    // get all the data for preview-frame in one batch
+
+    playgroundId = 'preview-frame';
+    getData();
 
     // ==== stages 1-5 (preparation) ====
 
     $('#start').on('click', function() {
+
+        // hacky way to stop showing things on preview-frame
+
+        var id = window.setTimeout(function() {}, 0);
+
+        while (id--) {
+            window.clearTimeout(id); // will do nothing if no timeout with id is present
+        }
+
+        playgroundId = null;
+        preview = false;
 
         $('#stage1').fadeOut(400, function() {
             $('#stage2').fadeIn(400, function() {
@@ -516,11 +549,11 @@ $(document).ready(function(){
         }
     });
 
-    playingFrame.on('load', function(){
+    playingFrame.add('#preview-frame').on('load', function(){
 
         // don't execute the function it if we just cleared the frame
 
-        if(playingFrame[0].contentWindow.location.href == 'about:blank')
+        if($(this)[0].contentWindow.location.href == 'about:blank')
             return;
 
         $('<div id="pointer"></div>')
@@ -535,12 +568,12 @@ $(document).ready(function(){
                 left: parseFloat(currentMouseX),
                 top: parseFloat(currentMouseY)
             })
-            .appendTo($('#playing-frame').contents().find('body'));
+            .appendTo($(this).contents().find('body'));
 
-        playingFrame.contents().find('a').on('click', function(e){
+        $(this).contents().find('a').on('click', function(e){
 
             // so that triggering click event in "click" frame handling on link
-            // doesn't navigate (as we navigate already navigate on load frames)
+            // doesn't navigate (as we already navigate on load frames)
 
             if($(this).attr('rel') != 'shadowbox') // (in shadowboxed links we want to let default action)
                 e.preventDefault();

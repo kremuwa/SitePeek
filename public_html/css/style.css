@@ -110,6 +110,19 @@ html, body {
 
 /* stages 1-5 */
 
+#preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;            
+    transform: translateX(-50%) translateY(-50%) scale(1.0);
+    z-index: -1;
+    opacity: 0.5;
+}
+
 #preparation-frame {
     width: 100%;
     height: 100%;

@@ -2,6 +2,7 @@
 
 // TODO interface styling
 // TODO clicking on the slider main content doesn't navigate
+// TODO privacy policy
 // TODO Your own comments are visible when You are peeking
 // TODO adjust iframe size on *player* resize
 // TODO focus events?

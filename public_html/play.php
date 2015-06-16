@@ -8,12 +8,17 @@
 
 ?>
 
-
-
     <div id="stage1">
-        Hello. Here You will make Your peeking machine.
+        <h1>Your pals claim they only read important things? Let's see the truth!</h1>
+
+        <p>TheNetSpy.com lets You make some fun of Your friends, by showing You what exactly
+        they are doing on a specially prepared wacky news website. You will see if Your friend
+        chooeses</p>
 
         <a id="start" href="#">Start</a>
+
+        <iframe id="preview-frame"></iframe>
+
     </div>
 
     <div id="stage2">

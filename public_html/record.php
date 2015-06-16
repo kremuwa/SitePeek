@@ -16,6 +16,12 @@ try {
 
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // if there was no data with such id in the database, redirect to main site
+
+    //TODO uncomment:
+    //if($result == NULL)
+    //    header('Location: .');
+
     // if someone is already recording in this playground, redirect
     // him to the homepage and notify the owner of playground of that fact
 
@@ -69,7 +75,7 @@ try {
 
         <script>var playgroundId = '<?php echo $_GET['id']; ?>';</script>
 
-        <iframe id="recording-frame" src="<?php echo $result['url']; ?>"></iframe>
+        <iframe id="recording-frame" src="<?php echo 'wp'//$result['url']; ?>"></iframe>
 
         <div id="notification">
             <p>

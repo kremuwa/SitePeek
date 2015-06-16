@@ -13,7 +13,21 @@
             PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING /* DEBUG */
         ));
 
-        if($_POST['lastTimestamp'] == 0) {
+        // if we're asking for data from preview-frame
+
+        if($_POST['playgroundId'] == 'preview-frame') {
+
+            $sql = "SELECT
+                      playgroundId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                       frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
+                       frameWidth AS width, frameHeight AS height, frameHref AS href
+                    FROM frames
+                    WHERE playgroundId = ?";
+
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute(array($_POST['playgroundId']));
+
+        } else if ($_POST['lastTimestamp'] == 0) {
 
             // (I hope that in case of null in the subquery, the query will return nothing)
             // in subquery we look for the latest data, unless it's older than
@@ -57,9 +71,9 @@
         // return JSON to Javascript
         echo json_encode($result);
 
-        // removing obsolete frames
+        // removing obsolete frames (except when retrieved frames for preview-frame)
 
-        if($_POST['lastTimestamp'] != 0) {
+        if($_POST['playgroundId'] != 'preview-frame' && $_POST['lastTimestamp'] != 0) {
 
             $sql = "DELETE FROM frames
                     WHERE frameTimestamp <= " . $_POST['lastTimestamp'];
