@@ -17,7 +17,10 @@
 
         <a id="start" href="#">Start</a>
 
-        <iframe id="preview-frame"></iframe>
+        <div id="preview-wrapper">
+            <iframe id="preview-frame"></iframe>
+            <div id="preview-panzoom-layer"></div>
+        </div>
 
     </div>
 

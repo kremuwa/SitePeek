@@ -56,8 +56,8 @@ function getCurrentTimestamp () {
 
 function centerViewOnCursor() {
 
-    var panzoomLayer = $('#panzoom-layer');
-    var wrapper = $('#wrapper');
+    var panzoomLayer = (preview ? $('#preview-panzoom-layer') : $('#panzoom-layer'));
+    var wrapper = (preview ? $('#preview-wrapper') : $('#wrapper'));
 
     var matrix = panzoomLayer.panzoom('getMatrix');
 
@@ -70,7 +70,7 @@ function centerViewOnCursor() {
     matrix[5] = panY;
 
     panzoomLayer.panzoom('setMatrix', matrix, {
-        animate: true
+        animate: false
     });
 }
 
@@ -133,7 +133,7 @@ function scheduleEvents( frames ) {
         if(!preview)
             timeout = playDelay - (getCurrentTimestamp() - parseInt(value.timestamp));
         else
-            timeout = value.timestamp - 1434475249768;
+            timeout = value.timestamp - 1434564693775;
 
         setTimeout(function() { executeEvent(value) }, (timeout > 0 ? timeout : 0));
 
@@ -148,8 +148,6 @@ function scheduleEvents( frames ) {
         if(value.type == 'unload') {
 
             // allow new user to come
-
-            alert('unload');
 
             userAppeared = false;
 
@@ -214,16 +212,11 @@ function executeEvent( value ) {
 
     // caching
 
-    var playingFrame = null;
-
-    if(!preview)
-        playingFrame = $('#playing-frame');
-    else
-        playingFrame = $('#preview-frame');
+    var playingFrame = (preview ? $('#preview-frame') : $('#playing-frame'));
 
     var pointer = playingFrame.contents().find('#pointer');
-    var panzoomLayer = $('#panzoom-layer');
-    var wrapper = $('#wrapper');
+    var panzoomLayer = (preview ? $('#preview-panzoom-layer') : $('#panzoom-layer'));
+    var wrapper = (preview ? $('#preview-wrapper') : $('#wrapper'));
 
     if(value.type == 'mousemove') {
 
@@ -296,11 +289,7 @@ function executeEvent( value ) {
     }
     else if(value.type == 'resize') {
 
-        // to make all the screen visible at once
-
-        zoom = Math.min($(window).width() / value.width, ($(window).height() - wrapper.position().top) / value.height);
-
-        // resize playing frame and it's layer
+        // resize playing frame and its layer
 
         playingFrame.add(panzoomLayer).
             css({
@@ -308,29 +297,43 @@ function executeEvent( value ) {
                 'height': value.height
             });
 
-        // fix panzoom layer position
+        if(!preview) {
 
-        //panzoomLayer.offset(playingFrame.offset());
 
-        // only zoom if we don't have enough space
+            // to make all the screen visible at once
 
-        if(zoom > 1){
-            zoom = 1;
-            $('#zoominfo').fadeOut(400);
+            zoom = Math.min($(window).width() / value.width, ($(window).height() - wrapper.position().top) / value.height);
+
+            // only zoom if we don't have enough space
+
+            if (zoom > 1) {
+                zoom = 1;
+                $('#zoominfo').fadeOut(400);
+            }
+            else
+                $('#zoominfo').fadeIn(400);
+
+            wrapper.css('height', $(window).height() - wrapper.position().top);
+
+            panzoomLayer
+                .panzoom('option', {
+                    minScale: zoom
+                })
+                .panzoom('resetDimensions')
+                .panzoom('zoom', zoom, {
+                    focal: {clientX: 0, clientY: 0}
+                });
+
+        } else {
+
+            // to contain source in the browser
+
+            zoom = Math.max($(window).width() / value.width, ($(window).height()) / value.height);
+
+            panzoomLayer
+                .panzoom('resetDimensions');
+
         }
-        else
-            $('#zoominfo').fadeIn(400);
-
-        wrapper.css('height', $(window).height() - wrapper.position().top);
-
-        panzoomLayer
-            .panzoom('option', {
-                minScale: zoom
-            })
-            .panzoom('resetDimensions')
-            .panzoom('zoom', zoom, {
-                focal: {clientX: 0, clientY: 0}
-            });
 
     }
     else if(value.type == 'load') {
@@ -401,7 +404,7 @@ function executeEvent( value ) {
 
     // loop the preview if last event was played
 
-    if(preview && value.timestamp == '1434475360327') {
+    if(preview && value.timestamp == '1434564778421') {
         getData();
     }
 
@@ -409,18 +412,29 @@ function executeEvent( value ) {
 
 $(document).ready(function(){
 
+    // ==== stages 1-5 (preparation) ====
+
     // get all the data for preview-frame in one batch
 
     playgroundId = 'preview-frame';
     getData();
 
-    // ==== stages 1-5 (preparation) ====
+    // set preview-frame to be contained in browser window
+
+    $('#preview-panzoom-layer').panzoom({
+        $set: $('#preview-frame, #preview-panzoom-layer'),
+        contain: 'invert',
+        disablePan: true,
+        easing: 'linear'
+    });
 
     $('#start').on('click', function() {
 
         // hacky way to stop showing things on preview-frame
 
         var id = window.setTimeout(function() {}, 0);
+
+        // we're not showing preview frame anymore
 
         while (id--) {
             window.clearTimeout(id); // will do nothing if no timeout with id is present
@@ -610,5 +624,16 @@ $(document).ready(function(){
             centerViewOnCursor();
         }
     });
+
+});
+
+$(window).on('resize', function(){
+
+    var panzoomLayer = (preview ? $('#preview-panzoom-layer') : $('#panzoom-layer'));
+
+    if(!preview)
+        $('#wrapper').css('height', $(window).height() - $('#wrapper').position().top);
+
+    panzoomLayer.panzoom('resetDimensions');
 
 });

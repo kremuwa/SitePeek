@@ -18,9 +18,9 @@ try {
 
     // if there was no data with such id in the database, redirect to main site
 
-    //TODO uncomment:
-    //if($result == NULL)
-    //    header('Location: .');
+
+    if($result == NULL)
+        header('Location: .');
 
     // if someone is already recording in this playground, redirect
     // him to the homepage and notify the owner of playground of that fact

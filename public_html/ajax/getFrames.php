@@ -18,7 +18,7 @@
         if($_POST['playgroundId'] == 'preview-frame') {
 
             $sql = "SELECT
-                      playgroundId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                       frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
@@ -36,7 +36,7 @@
             // ASes provide security through obscurity, changing client-side names of properties
 
             $sql = "SELECT
-                      playgroundId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                       frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
@@ -76,10 +76,10 @@
         if($_POST['playgroundId'] != 'preview-frame' && $_POST['lastTimestamp'] != 0) {
 
             $sql = "DELETE FROM frames
-                    WHERE frameTimestamp <= " . $_POST['lastTimestamp'];
+                    WHERE playgroundId = ? AND frameTimestamp <= ?";
 
             $stmt = $dbh->prepare($sql);
-            $stmt->execute();
+            $stmt->execute(array($_POST['playgroundId'], $_POST['lastTimestamp']));
 
         }
 
