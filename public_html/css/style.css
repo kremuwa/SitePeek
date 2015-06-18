@@ -95,6 +95,10 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+a {
+    color: #000;
+}
+
 /* so that the only scrollbars are those from the website */
 
 html, body {
@@ -110,6 +114,55 @@ html, body {
 
 /* stages 1-5 */
 
+#stage1 {
+    height: 100%;
+    margin: 0;
+    top: 0;
+    width: 100%;
+    position: absolute;
+    overflow-y: auto;
+}
+
+.info {
+    background: rgba(3,166,134,0.75); /* last-resort fallback */
+    background: -moz-linear-gradient(top,  rgba(3,166,134,0.75) 70%, rgba(173,255,0,0.4) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(70%,rgba(3,166,134,0.75)), color-stop(100%,rgba(173,255,0,0.4))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bf03a686', endColorstr='#66adff00',GradientType=0 ); /* IE6-9 */
+    border-radius: 1em;
+    color: #FAFF40;
+    text-shadow: 0 0 20px #000;
+    margin: 1.5em auto 0;
+    max-width: 800px;
+    width: 70%;
+    font-size: 0.9em;
+    padding: 1em 2em 1.5em;
+    border: 4px solid rgb(246, 248, 154);
+}
+
+.info h1 {
+    color: rgba(255, 243, 131, 1);
+    text-shadow: 1px 1px 0 #000;
+}
+
+#start {
+    display: inline-block;
+    font-size: 1.5em;
+    background: #B984C6;
+    padding: 0.5em 1em;
+    border-radius: 1em;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 #000;
+    color: rgb(230, 255, 11);
+}
+
+#start:hover {
+    background: #F93A90;
+}
+
 #preview-wrapper {
     position: absolute;
     left: 0;
@@ -117,14 +170,22 @@ html, body {
     z-index: -1;
     width: 100%;
     height: 100%;
+    pointer-events: none;
+    background: white;
 }
 
 #preview-frame {
+    position: absolute !important;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     border: none;
     pointer-events: none;
+    opacity: 1;
 }
+
+/* stage 2 */
 
 #preparation-frame {
     width: 100%;
@@ -136,22 +197,154 @@ html, body {
     font-size: 0.8em;
 }
 
-#generate {
-    background: rgba(255, 0, 179, 0.7);
-    color: #fff;
+#generateWrapper {
     position: absolute;
-    top: 0.5em;
-    right: 2em;
-    text-decoration: none;
-    padding: 1.5em;
-    border: 1px solid #fff;
+    bottom: 2em;
+    right: 3em;
+    text-align: center;
+    background-color: rgb(3,166,134);
+    border-radius: 1em;
+    padding: 0.5em;
+    color: #FAFF40;
 }
 
+#generate {
+     background: #B984C6;
+     border: 2px solid #adff00;
+     border-radius: 1em;
+     color: #FAFF40;
+     padding: 1.5em 2em;
+     text-decoration: none;
+     display: block;
+     margin-top: 0.2em;
+ }
+
 #generate:hover {
-    background: rgb(255, 0, 179);
+    background: #F93A90;
+    opacity: 1;
+}
+
+/* stage 3-4 */
+
+#stage3, #stage4 {
+    background-color: rgb(3,166,134);
+    color: #FAFF40;
+    height: 100%;
+    overflow-y: auto;
+    text-align: center;
+    width: 100%;
+}
+
+#generating {
+    font-size: 2em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 90%;
+}
+
+#stage4 #linkbox {
+    font-size: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    max-width: 900px;
+    width: 90%;
+}
+
+#stage4 #linkbox iframe {
+    width: 204px;
+    height: 37px;
+}
+
+.fb-send-btn {
+    background: #0084ff url('../img/messenger-logo.png') left center no-repeat;
+    display: block;
+    margin: 0 auto;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5em 0 0.4em 2em;
+    background-size: contain;
+    width: 10.65em;
+}
+
+.fb-share-btn {
+    background: #3b5999 url('../img/fb-logo.png') left center no-repeat;
+    display: block;
+    margin: 0 auto;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5em 0 0.4em 2em;
+    background-size: contain;
+    width: 10.65em;
+}
+
+#copybox1 input, #copybox2 input {
+    background: transparent;
+    border: 2px solid #FAFF40;
+    border-radius: 1em;
+    color: #adff00;
+    font-size: 0.8em;
+    margin: 0.5em;
+    padding: 0.5em;
+    width: 80%;
+}
+
+.loading {
+    width: 2em;
+    margin-right: 0.2em;
+}
+
+/* stage5 - countdown */
+
+#stage5 {
+    background-color: rgb(3,166,134);
+    color: #FAFF40;
+    height: 100%;
+    overflow-y: auto;
+    text-align: center;
+    width: 100%;
+}
+
+#counter {
+    font-size: 4em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 /* stage6 - playing */
+
+#stage6 {
+    background-color: rgb(0, 51, 41);
+    color: #FAFF40;
+}
+
+.again {
+    display: inline-block;
+    font-size: 1em;
+    background: #B984C6;
+    padding: 0.5em 1em;
+    border-radius: 1em;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 #000;
+    color: #FAFF40;
+}
+
+.again:hover {
+    background: #F93A90;
+}
+
+#menu {
+    border-bottom: 3px solid rgb(0, 117, 94);
+    padding: 0.3em 0.5em;
+    background-color: rgb(3,166,134);
+    font-size: 0.8em;
+    text-align: left;
+}
 
 #wrapper {
     margin: 0;
@@ -185,6 +378,30 @@ html, body {
     display: none;
 }
 
+/* stage7 - user left */
+
+#stage7 {
+    background-color: rgb(3,166,134);
+    color: #FAFF40;
+    height: 100%;
+    overflow-y: auto;
+    text-align: center;
+    width: 100%;
+}
+
+#stage7content {
+    font-size: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 90%;
+}
+
+#copybox2 {
+    margin: 0.5em 0;
+}
+
 /* recording */
 
 #recording-frame {
@@ -196,8 +413,8 @@ html, body {
 }
 
 #notification {
-    background: #0091cd;
-    color: #fff;
+    background: rgb(3,166,134);
+    color: #FAFF40;
     display: none;
     font-size: 1.5em;
     height: 100%;
@@ -210,6 +427,20 @@ html, body {
     margin-bottom: 3em;
 }
 
+#createYourOwn {
+    display: inline-block;
+    font-size: 1em;
+    background: #B984C6;
+    padding: 0.2em 1em;
+    border-radius: 1em;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 #000;
+    color: #FAFF40;
+}
+
+#createYourOwn:hover {
+    background: #F93A90;
+}
 
 /* ==========================================================================
    Helper classes
@@ -291,8 +522,53 @@ html, body {
    Modify as content requires.
    ========================================================================== */
 
-@media only screen and (min-width: 35em) {
-    /* Style adjustments for viewports that meet the condition */
+@media only screen and (min-width: 50em) {
+
+    #generateWrapper {
+        font-size: 1.5em;
+    }
+
+    #generating {
+        font-size: 4em;
+    }
+
+    #counter {
+        font-size: 6em;
+    }
+
+    #stage4 #linkbox, #stage7content {
+        font-size: 1.3em;
+    }
+
+    .info {
+        font-size: 1.1em;
+        margin-top: 2.5em;
+    }
+}
+
+@media only screen and (min-width: 80em) {
+
+    #generateWrapper {
+        font-size: 2em;
+    }
+
+    #generating {
+        font-size: 6.5em;
+    }
+
+    #counter {
+        font-size: 10em;
+    }
+
+    #stage4 #linkbox, #stage7content {
+        font-size: 2.0em;
+    }
+
+    .info {
+        font-size: 1.3em;
+        margin-top: 3.5em;
+    }
+
 }
 
 @media print,

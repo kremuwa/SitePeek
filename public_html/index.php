@@ -1,5 +1,6 @@
 <?php
 
+// TODO fix playing, which You broke when making preview
 // TODO interface styling
 // TODO clicking on the slider main content doesn't navigate
 // TODO privacy policy
@@ -28,9 +29,30 @@
 
 </head>
 <body>
-<!--[if lt IE 8]>
-<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-<![endif]-->
+
+    <!-- facebook SDK -->
+
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '723088037803571',
+                xfbml      : true,
+                version    : 'v2.3'
+            });
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+    <!--[if lt IE 8]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
 
     <?php
     // if we are recording

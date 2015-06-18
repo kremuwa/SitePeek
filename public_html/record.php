@@ -78,11 +78,75 @@ try {
         <iframe id="recording-frame" src="<?php echo 'wp'//$result['url']; ?>"></iframe>
 
         <div id="notification">
+
             <p>
                 Surprise :D! Your friend played a joke on You! He sent You a
                 very special link, and saw everything You were doing since You clicked on it.
                 If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
-                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here</a> :)
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
+            </p>
+
+            <p>
+                Surprise :D! Your friend played a joke on You! He sent You a
+                very special link, and saw everything You were doing since You clicked on it.
+                If You would also like to make fun of spying on somebody, go to TheNetSpy.com or just stay
+                on this page and <!-- DEBUG --><a id="createYourOwn" href=".">click here :)</a>
             </p>
 
         </div>
