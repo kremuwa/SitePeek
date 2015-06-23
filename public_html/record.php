@@ -18,52 +18,57 @@ try {
 
     // if there was no data with such id in the database, redirect to main site
 
-
     if($result == NULL)
         header('Location: .');
 
-    // if someone is already recording in this playground, redirect
-    // him to the homepage and notify the owner of playground of that fact
+	// if we are not facebook crawler
 
-    if($result['recording']) {
+	if(!stristr($_SERVER['HTTP_USER_AGENT'], 'FacebookExternalHit'))
+	{
 
-        $sql =
-            "INSERT INTO frames
-            (playgroundId, frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
-             frameText, frameCaret, frameScrollTop, frameWidth, frameHeight, frameHref)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		// if someone is already recording in this playground, redirect
+		// him to the homepage and notify the owner of playground of that fact
 
-        $stmt = $dbh->prepare($sql);
+		if($result['recording']) {
 
-        $stmt->bindValue(1, $_GET['id']);
-        $stmt->bindValue(2, 'secondvisitor');
-        $stmt->bindValue(3, floor(microtime(true) * 1000));
-        $stmt->bindValue(4, NULL);
-        $stmt->bindValue(5, NULL);
-        $stmt->bindValue(6, NULL);
-        $stmt->bindValue(7, NULL);
-        $stmt->bindValue(8, NULL);
-        $stmt->bindValue(9, NULL);
-        $stmt->bindValue(10, NULL);
-        $stmt->bindValue(11, NULL);
-        $stmt->bindValue(12, NULL);
+			$sql =
+				"INSERT INTO frames
+				(playgroundId, frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
+				 frameText, frameCaret, frameScrollTop, frameWidth, frameHeight, frameHref)
+				 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        $res = $stmt->execute();
+			$stmt = $dbh->prepare($sql);
 
-        header('Location: .');
+			$stmt->bindValue(1, $_GET['id']);
+			$stmt->bindValue(2, 'secondvisitor');
+			$stmt->bindValue(3, floor(microtime(true) * 1000));
+			$stmt->bindValue(4, NULL);
+			$stmt->bindValue(5, NULL);
+			$stmt->bindValue(6, NULL);
+			$stmt->bindValue(7, NULL);
+			$stmt->bindValue(8, NULL);
+			$stmt->bindValue(9, NULL);
+			$stmt->bindValue(10, NULL);
+			$stmt->bindValue(11, NULL);
+			$stmt->bindValue(12, NULL);
 
-        exit;
-    }
-    else { // in an opposite case, lock the playground
-        $sql =
-            "UPDATE playgrounds
-            SET recording = '1'
-            WHERE playgroundId = ?";
+			$res = $stmt->execute();
 
-        $stmt = $dbh->prepare($sql);
+			header('Location: .');
 
-        $stmt->execute(array($_GET['id']));
-    }
+			exit;
+		}
+		else { // in an opposite case, lock the playground
+			$sql =
+				"UPDATE playgrounds
+				SET recording = '1'
+				WHERE playgroundId = ?";
+
+			$stmt = $dbh->prepare($sql);
+
+			$stmt->execute(array($_GET['id']));
+		}
+	}
 
 } catch (PDOException $e) {
     print "Error: " . $e->getMessage() . '<br />'; // DEBUG
@@ -75,7 +80,7 @@ try {
 
         <script>var playgroundId = '<?php echo $_GET['id']; ?>';</script>
 
-        <iframe id="recording-frame" src="<?php echo 'wp'//$result['url']; ?>"></iframe>
+        <iframe id="recording-frame" src="<?php echo $result['url']; ?>"></iframe>
 
         <div id="notification">
 

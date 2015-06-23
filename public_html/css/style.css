@@ -259,6 +259,17 @@ html, body {
     height: 37px;
 }
 
+.whatsapp-send-btn {
+    background: #5cbe4a url('../img/whatsapp-logo.png') left center no-repeat;
+    display: block;
+    margin: 0 auto;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5em 0 0.4em 2em;
+    background-size: contain;
+    width: 10.65em;
+}
+
 .fb-send-btn {
     background: #0084ff url('../img/messenger-logo.png') left center no-repeat;
     display: block;

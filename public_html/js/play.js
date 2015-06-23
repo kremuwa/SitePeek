@@ -116,14 +116,14 @@ function getData() {
                 getDataTimeout = setTimeout(getData, 2000);
 
         },
-        // DEBUG
-        error: function( xhr, status, errorThrown ) {
+        error: function( /* PRODUCTION xhr, status, errorThrown */ ) {
+            /* PRODUCTION
             console.log( "Sorry, there was a problem!" );
             console.log( "Error: " + errorThrown );
             console.log( "Status: " + status );
             console.dir( xhr );
 
-            getDataTimeout = setTimeout(getData, 2000);
+            getDataTimeout = setTimeout(getData, 2000);*/
         }
     });
 
@@ -378,9 +378,14 @@ function executeEvent( value ) {
         $('#stage6').fadeOut(400, function() {
             $('#stage7').fadeIn(400, function() {
 
-                $('#copybox2').find('input')
-                    .trigger('focus')
-                    .select()
+				// select only if we're not on mobile
+
+				if(!mobilecheck())
+				{
+					$('#copybox2').find('input')
+						.trigger('focus')
+						.select()
+				}
 
             });
         });
@@ -388,7 +393,6 @@ function executeEvent( value ) {
     }
     else if(value.type == 'secondvisitor') {
 
-        console.log('bla');
 
         // show the information that a second user came
         // while the first one was being recorded
@@ -514,13 +518,16 @@ $(document).ready(function(){
                     success: function( json ) {
 
                         playgroundId = json;
-                        url = window.location.href + '?id=' + playgroundId;
+
+                        // PRODUCTION url = window.location.href + '?id=' + playgroundId;
+
+						url = 'http://celebrities24.tk/?id=' + playgroundId;
 
                         // fill in both the inputs at once
 
                         $('#copybox1').add('#copybox2').find('input')
                             .val(url);
-                        $('.whatsapp').attr('data-href', url);
+                        $('.whatsapp-send-btn').attr('href', 'whatsapp://send?text=' + encodeURIComponent(url));
 
                         link = url;
 
@@ -656,6 +663,8 @@ $(document).ready(function(){
 
     if(!mobilecheck()) {
         $('.fb-send-btn').show();
+    } else {
+        $('.whatsapp-send-btn').show();
     }
 
 });

