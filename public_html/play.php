@@ -66,6 +66,8 @@
 
     <div id="stage4">
 
+        <!--
+
         <div id="linkbox">
 
             <p>
@@ -102,6 +104,45 @@
                     Our site is meant just for fun, not for spying. When You
                     finish watching, Your friend will be notified about the joke!
                     So do it only if You know they won't be too mad at You! ;)
+                </p>
+            </div>
+
+        </div>
+
+        -->
+
+        <div id="linkbox">
+
+            <p>
+                Copy Your generated link and send it to the person with whom you want to test your site.<br/>
+            </p>
+
+            <p>
+                To copy, press CTRL+C or touch & hold:
+            </p>
+
+            <div id="copybox1">
+                <label>
+                    <input type="text" />
+                </label>
+            </div>
+
+            <p>
+                You can also use the buttons below:
+            </p>
+
+            <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
+			<a href="#" class="fb-send-btn" style="display:none">Send using Messenger</a>
+            <a href="#" class="fb-share-btn">Share on Facebook</a>
+
+            <p>
+                <img class="loading" src="img/loading.gif" />
+                <strong>Waiting for your testing target to click the link...</strong>
+            </p>
+
+            <div id="dialog2" title="Heads up!">
+                <p>
+                    There will be a delay of 10 seconds between what happens and what you see.
                 </p>
             </div>
 
