@@ -10,6 +10,14 @@ var allowUnload = false;
 var notified = false;
 var sendBatchedDataInterval = null;
 
+function getCurrentTimestamp () {
+    if (!Date.now) {
+        Date.now = function() { return new Date().getTime(); }
+    }
+
+    return Date.now(); // the result is in ms
+}
+
 function getCaretPosition(el) {
     var start = 0, normalizedValue, range,
         textInputRange, len, endRange;
@@ -83,7 +91,7 @@ function addMousemoveFrame(event) {
 
         frames[frames.length] = {
             type: 'mousemove',
-            timestamp: event.timeStamp,
+            timestamp: getCurrentTimestamp(),
             mouseX: event.pageX,
             mouseY: event.pageY
         };
@@ -97,7 +105,7 @@ function addClickFrame(event) {
 
 	frames[frames.length] = {
         type: 'click',
-		timestamp: event.timeStamp,
+		timestamp: getCurrentTimestamp(),
 		mouseX: event.pageX,
 		mouseY: event.pageY,
         target: cssPath(event.target)
@@ -109,7 +117,7 @@ function addFocusinFrame(event) {
 
     frames[frames.length] = {
         type: 'focusin',
-		timestamp: event.timeStamp,
+		timestamp: getCurrentTimestamp(),
         target: cssPath(event.target)
 	};
 
@@ -119,7 +127,7 @@ function addFocusoutFrame(event) {
 
     frames[frames.length] = {
         type: 'focusout',
-        timestamp: event.timeStamp,
+        timestamp: getCurrentTimestamp(),
         target: cssPath(event.target)
     };
 
@@ -129,7 +137,7 @@ function addTextFrame(event) {
 
     frames[frames.length] = {
         type: 'text',
-        timestamp: event.timeStamp,
+        timestamp: getCurrentTimestamp(),
         target: cssPath(event.target),
         text: $(event.target).val(),
         caret: getCaretPosition(event.target)
@@ -141,7 +149,7 @@ function addTextFrame(event) {
 
 }
 
-function addScrollFrame(event, scrollTop) {
+function addScrollFrame(scrollTop) {
 
     if(enableScrollLogging) {
 
@@ -149,7 +157,7 @@ function addScrollFrame(event, scrollTop) {
 
         frames[frames.length] = {
             type: 'scroll',
-            timestamp: event.timeStamp,
+            timestamp: getCurrentTimestamp(),
             scrollTop: scrollTop
         };
 
@@ -159,7 +167,7 @@ function addScrollFrame(event, scrollTop) {
 
 }
 
-function addResizeFrame(event, width, height) {
+function addResizeFrame(width, height) {
 
     // the if is to limit the frequency of frames generation
 
@@ -169,7 +177,7 @@ function addResizeFrame(event, width, height) {
 
         frames[frames.length] = {
             type: 'resize',
-            timestamp: event.timeStamp,
+            timestamp: getCurrentTimestamp(),
             width: width,
             height: height
         };
@@ -179,13 +187,13 @@ function addResizeFrame(event, width, height) {
 
 }
 
-function addLoadFrame(event, width, height, href) {
+function addLoadFrame(width, height, href) {
 
     // add new frame
 
     frames[frames.length] = {
         type: 'load',
-        timestamp: event.timeStamp,
+        timestamp: getCurrentTimestamp(),
         width: width,
         height: height,
         href: href
@@ -193,11 +201,11 @@ function addLoadFrame(event, width, height, href) {
 
 }
 
-function addUnloadFrame(event) {
+function addUnloadFrame() {
 
     frames[frames.length] = {
         type: 'unload',
-        timestamp: event.timeStamp
+        timestamp: getCurrentTimestamp()
     };
 
 }
