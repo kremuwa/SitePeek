@@ -269,7 +269,7 @@ function unlockPlayground() {
 
 }
 
-$('#recording-frame').load(function(event) {
+$('#recording-frame').load(function() {
 
     if(firstTime)
     {
@@ -329,8 +329,8 @@ $('#recording-frame').load(function(event) {
 
     // catching scroll events
 
-    $(this).contents().on('scroll', function(event) {
-        addScrollFrame(event, $(this).scrollTop());
+    $(this).contents().on('scroll', function() {
+        addScrollFrame($(this).scrollTop());
     });
 
     // to only add new data once in a while
@@ -341,11 +341,11 @@ $('#recording-frame').load(function(event) {
 
     // catching resize events
 
-    $(this.contentWindow).on('resize', function(event) {
+    $(this.contentWindow).on('resize', function() {
 
         var recordingFrame = $('#recording-frame');
 
-        addResizeFrame(event, recordingFrame.width(), recordingFrame.height());
+        addResizeFrame(recordingFrame.width(), recordingFrame.height());
     });
 
     // to only add new data once in a while
@@ -359,7 +359,7 @@ $('#recording-frame').load(function(event) {
 
     var recordingFrame = $('#recording-frame');
 
-    addLoadFrame(event, recordingFrame.width(), recordingFrame.height(), this.contentWindow.location.href);
+    addLoadFrame(recordingFrame.width(), recordingFrame.height(), this.contentWindow.location.href);
 
 });
 
@@ -380,7 +380,7 @@ window.addEventListener('beforeunload', function(event) {
 
         clearInterval(sendBatchedDataInterval);
 
-        addUnloadFrame(event);
+        addUnloadFrame();
 
         sendBatchedData(false);
 
