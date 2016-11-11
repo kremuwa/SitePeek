@@ -1,52 +1,38 @@
-<div id="stage1">
+<?php
 
-    <div class="info">
+include('functions.php');
 
-        <h1>
-            Watch Your pals with a hidden camera
-        </h1>
+// initial checks
 
-        <p>
-            TheNetSpy.com lets You make some fun of Your friends, by showing You what exactly
-            they are doing on a wacky news website - without them knowing!
-        </p>
+goHomeIfNotLoggedIn();
 
-        <p>
-            You can get the idea by looking on the background ;-)
-        </p>
+if(!isset($_GET['site']))
+    redirect('panel.php');
 
-        <p>
-            You will see which article they choose, what they focus on, which comment they agree with and
-            what they have to say.
-        </p>
+$getSiteDomain = $dbh->prepare("select domain from sites where id = ? && user_id = ?");
 
-        <a id="start" href="#">Let's go!</a>
+$getSiteDomain->execute([$_GET['site'], getLoggedInUserId()]);
 
-    </div>
+$siteDomainRow = $getSiteDomain->fetch();
 
-    <div id="preview-wrapper">
-        <iframe id="preview-frame"></iframe>
-        <div id="preview-panzoom-layer"></div>
-    </div>
+if($siteDomainRow === false) { // if the site doesn't belong to user
+    redirect('panel.php');
+}
 
-</div>
+$siteDomain = $siteDomainRow['domain'];
+
+?>
+
+<?php include('header.php'); ?>
 
 <div id="stage2">
-    <iframe id="preparation-frame" src="wp"></iframe>
+    <iframe id="preparation-frame" src="<?php _pr($siteDomain); ?>"></iframe>
     <div id="generateWrapper">
-        <div style="font-size: 0.8em">Choose a starting page.</div>
+        <div style="font-size: 0.8em">Navigate to the page from which <br />you want to start watching.</div>
         <div style="font-size: 1em"><strong>THEN</strong> click:</div>
         <a id="generate" href="#">
             Generate
         </a>
-    </div>
-    <div id="dialog1" title="Choose a starting page">
-        <p>Behind this dialog You can see a wacky news site that
-            You will use to watch Your friend's activity.</p>
-        <p>Your pal might
-            be a bit surprised though, if You just sent them
-            a link to the homepage of a funny site, right? So, we suggest that You choose some interesting article as a starting point.</p>
-        <p><b>Choose a starting page for Your friend, then click "Generate".</b></p>
     </div>
 </div>
 
@@ -87,14 +73,6 @@
             <strong>Waiting for Your friend to click the link...</strong>
         </p>
 
-        <div id="dialog2" title="Heads up!">
-            <p>
-                Our site is meant just for fun, not for spying. When You
-                finish watching, Your friend will be notified about the joke!
-                So do it only if You know they won't be too mad at You! ;)
-            </p>
-        </div>
-
     </div>
 
 </div>
@@ -109,7 +87,7 @@
         <span id="zoominfo">Pan and zoom using mouse or your fingers</span>
     </div>
     <div id="wrapper">
-        <iframe id="playing-frame"></iframe>
+        <iframe id="playing-frame" src="<?php _pr($siteDomain); ?>"></iframe>
         <div id="panzoom-layer"></div>
     </div>
     <div id="message-box"> <!-- can be generalized if needed -->
@@ -154,3 +132,26 @@
     </div>
 
 </div>
+
+<?php include ('postbody-scripts.php'); ?>
+
+<script>
+
+    var siteStartAddress = '<?php _pr($siteDomain); ?>';
+
+</script>
+
+<script src="js/watch.js"></script>
+<script src="js/vendor/jquery.panzoom.min.js"></script>
+<!--suppress CommaExpressionJS -->
+<script type="text/javascript">if(typeof wabtn4fg==="undefined")
+    {wabtn4fg=1;
+        h=document.head||
+            document.getElementsByTagName("head")[0],
+            s=document.createElement("script");
+        s.type="text/javascript";
+        s.src="js/vendor/whatsapp-button.js";
+        h.appendChild(s);}
+</script>
+
+<?php include('footer.php'); ?>

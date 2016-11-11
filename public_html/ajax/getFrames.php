@@ -1,5 +1,7 @@
 <?php
 
+    header('Access-Control-Allow-Origin: *');
+
     // main code
 
     error_reporting(-1); //DEBUG

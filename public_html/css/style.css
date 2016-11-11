@@ -107,9 +107,12 @@ html, body {
 }
 
 #stage2, #stage3, #stage4, #stage5, #stage6, #stage7 {
-    display: none;
     height: 100%;
     position: relative;
+}
+
+#stage3, #stage4, #stage5, #stage6, #stage7 {
+    display: none;
 }
 
 /* stages 1-5 */
@@ -362,7 +365,7 @@ html, body {
 }
 
 #playing-frame {
-    position: absolute !important;
+    /*position: absolute !important;*/
     left: 0;
     top: 0;
     border: none;
@@ -421,21 +424,6 @@ html, body {
     width: 100%;
     position: relative;
     z-index: 0;
-}
-
-#notification {
-    background: rgb(3,166,134);
-    color: #FAFF40;
-    display: none;
-    font-size: 1.5em;
-    height: 100%;
-    overflow: hidden;
-    padding: 1em;
-    width: auto;
-}
-
-#notification p {
-    margin-bottom: 3em;
 }
 
 #createYourOwn {

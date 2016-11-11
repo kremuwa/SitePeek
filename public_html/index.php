@@ -1,162 +1,106 @@
 <?php
 
-// TODO check your media queries with various resolutions (translations are making unable to even scroll when the height is not big enough)
-// TODO fix some errors on firefox
-// TODO some hoover animation for social buttons, and generally make them WORK
-// TODO productionate the project
-// TODO clicking on the slider main content doesn't navigate
-// TODO privacy policy
-// TODO communicate when users try to click on playing/preview frame (local, similarly to clicktrace)
-// TODO fix the error with frame translating up after clicking "Reply to comment"
-// TODO sometimes when clicking "Let's go" the whole site gets stuck
-// TODO Your own comments are visible when You are peeking
-// TODO focus events?
+    include('functions.php');
 
+    $messages = [];
+
+    try {
+
+        if(isset($_POST['register'])) {
+
+            if(!isset($_POST['username'], $_POST['password'], $_POST['repeated-password']) || isAnyEmpty($_POST['username'], $_POST['password'], $_POST['repeated-password'])) {
+                throw new Exception("Fill in all fields.");
+            }
+
+            if($_POST['password'] != $_POST['repeated-password']) {
+
+                throw new Exception("Passwords do not match.");
+            }
+
+            if(checkUserExists($_POST['username'])) {
+
+                throw new Exception("User with this username already exists.");
+            }
+
+            $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+            $insertSite = $dbh->prepare('INSERT INTO users VALUES(?, ?, ?)');
+            $insertSite->execute([null, $_POST['username'], $hashedPassword]);
+
+        } else if(isset($_POST['login'])) {
+
+            if(!isset($_POST['username'], $_POST['password'])) {
+                throw new Exception("Fill in all fields.");
+            }
+
+            if(!checkUserExists($_POST['username'])) {
+                throw new Exception("Username or password invalid.");
+            }
+
+            $getIdAndHashForUser
+                = $dbh->prepare('SELECT id, passwordHash FROM users WHERE username = ?');
+
+            $getIdAndHashForUser->execute([$_POST['username']]);
+
+            $userIdAndHash = $getIdAndHashForUser->fetch();
+
+            $userPasswordHash = $userIdAndHash['passwordHash'];
+            $userId = $userIdAndHash['id'];
+
+            if (!password_verify($_POST['password'], $userPasswordHash)) {
+                throw new Exception("Username or password invalid.");
+            }
+
+            // mark as logged in
+
+            $_SESSION['loggedIn'] = true;
+            $_SESSION['id'] = $userId;
+
+            redirect('panel.php');
+        }
+
+    } catch(Exception $exception) {
+
+        $messages[] = ['status' => 'error', 'msg' => $exception->getMessage()];
+    }
 ?>
 
-<!doctype html>
-<html class="no-js <?php echo (isset($_GET['id']) ? 'record' : 'play'); ?>" lang="">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <?php include('header.php'); ?>
 
-	<?php
-        // if we are recording
-        if(isset($_GET['id'])):
-    ?>
+    <?php printMessages($messages); ?>
 
-    <title>celebrities24.tk - hottest news round a clock</title>
-    <meta name="description" content="On celebrities24.tk you can find only the
-	hottest news about the subjects You care about. Full speed 24h!">
+    <h2>Register</h2>
 
-	<meta property="og:title" content="celebrities24.tk - hottest news round a clock" />
-	<meta property="og:description" content="On celebrities24.tk you can find only the hottest news about the subjects You care about. Full speed 24h!" />
-	<meta property="og:image" content="http://celebrities24.tk/img/fb-share-c24.png" />
-	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="celebrities24" />
-	<meta property="fb:admins" content="1769520946" />
+    <form method="post">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+        </div>
+        <div>
+            <label for="repeated-password">Repeat password</label>
+            <input type="password" name="repeated-password" id="repeated-password">
+        </div>
 
-    <?php
-        // if we are playing
-        else:
-    ?>
+        <input type="submit" name="register" value="Register">
+    </form>
 
-    <title>TheNetSpy.com - watch Your pals with a hidden camera</title>
-    <meta name="description" content="TheNetSpy.com lets You make some fun of Your friends, by showing You what exactly they are doing on a wacky news website - without them knowing!">
+    <h2>Log in</h2>
 
-	<meta property="og:title" content="TheNetSpy.com - watch Your pals with a hidden camera" />
-	<meta property="og:description" content="TheNetSpy.com lets You make some fun of Your friends, by showing You what exactly they are doing on a wacky news website - without them knowing!" />
-	<meta property="og:image" content="http://thenetspy.com/img/fb-share-tns.png" />
-	<meta property="og:url" content="http://thenetspy.com/" />
-	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="TheNetSpy" />
-	<meta property="fb:admins" content="1769520946" />
+    <form method="post">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+        </div>
 
-    <?php endif; ?>
+        <input type="submit" name="login" value="Log in">
+    </form>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
-
-    <link rel="stylesheet" href="css/vendor/normalize.css">
-    <link rel="stylesheet" href="css/vendor/jquery-ui/jquery-ui.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-
-</head>
-<body>
-
-    <!-- facebook SDK -->
-
-    <script>
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '723088037803571',
-                xfbml      : true,
-                version    : 'v2.3'
-            });
-        };
-
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
-
-    <!--[if lt IE 8]>
-    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
-
-    <?php
-    // if we are recording
-    if(isset($_GET['id'])) {
-
-        include('record.php');
-
-    }
-    else {
-
-        include('play.php');
-
-    }
-    ?>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
-    <script src="js/vendor/jquery-ui.min.js"></script>
-    <script src="js/plugins.js"></script>
-
-    <?php
-        // if we are recording and we are not facebook crawler
-
-        if(isset($_GET['id']) && !stristr($_SERVER['HTTP_USER_AGENT'], 'FacebookExternalHit')):
-    ?>
-
-    <script src="js/record.js"></script>
-
-    <?php
-        // if we are playing
-        else:
-    ?>
-
-    <script src="js/play.js"></script>
-    <script src="js/vendor/jquery.panzoom.min.js"></script>
-    <!--suppress CommaExpressionJS -->
-    <script type="text/javascript">if(typeof wabtn4fg==="undefined")
-        {wabtn4fg=1;
-        h=document.head||
-        document.getElementsByTagName("head")[0],
-            s=document.createElement("script");
-        s.type="text/javascript";
-        s.src="js/vendor/whatsapp-button.js";
-        h.appendChild(s);}
-    </script>
-
-    <?php endif; ?>
-
-    <!--suppress JSUnresolvedFunction, CommaExpressionJS -->
-    <script>
-	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	  ga('create', 'UA-64298390-1', 'auto');
-	  ga('send', 'pageview');
-
-	</script>
-
-	<script type="text/javascript">
-	   var _mfq = _mfq || [];
-	   (function() {
-		   var mf = document.createElement("script"); mf.type = "text/javascript"; mf.async = true;
-		   mf.src = "//cdn.mouseflow.com/projects/7731cfb1-4d10-44c3-9d63-c64b0ef30db2.js";
-		   document.getElementsByTagName("head")[0].appendChild(mf);
-	   })();
-	</script>
-</body>
-</html>
+<?php include('footer.php') ?>

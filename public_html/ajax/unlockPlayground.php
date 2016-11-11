@@ -6,6 +6,8 @@
  * Time: 14:02
  */
 
+header('Access-Control-Allow-Origin: *');
+
 error_reporting(-1); //DEBUG
 
 try {
