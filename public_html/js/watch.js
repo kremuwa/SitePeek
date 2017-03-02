@@ -144,16 +144,16 @@ $(document).ready(function () {
                             });
                         });
 
-                        // notify the site to start fetching data
+                        // notify the site to start fetching frames and execute related actions
 
-                        var msgStartFetching = {
-                            type: 'startFetching',
+                        var msgStartPlaying = {
+                            type: 'startPlaying',
                             playgroundId: playgroundId
                         };
 
                         sendMessageToOrigin(
                             playingFrame[0].contentWindow,
-                            msgStartFetching,
+                            msgStartPlaying,
                             extractOrigin(siteStartAddress)
                         );
                     }
@@ -287,8 +287,8 @@ $(window).on("message", function (event) {
 
     if(receivedMessage.type == 'currentUrl') {
 
-        // this message is sent when new page is loaded on watched page
-        // depending on current stage, various actions should be taken
+        // this message is sent when new page is loaded on watched page.
+        // Depending on current stage, various actions should be taken
 
         if(!userAppeared) {
 
@@ -296,12 +296,12 @@ $(window).on("message", function (event) {
 
         } else {
 
-            var msgStartFetching = {
-                type: 'startFetching',
+            var msgStartPlaying = {
+                type: 'startPlaying',
                 playgroundId: playgroundId
             };
 
-            sendMessageToOrigin(source, msgStartFetching, extractOrigin(siteStartAddress));
+            sendMessageToOrigin(source, msgStartPlaying, extractOrigin(siteStartAddress));
         }
 
     } else if(receivedMessage.type == 'beginCountdown') {

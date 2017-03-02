@@ -5,25 +5,23 @@ var enableScrollLogging = true;
 var enableResizeLogging = true;
 var frames = [];
 var fps = 50; // more is nonsense
-var notified = false;
-var sendBatchedDataInterval = null;
+var userIsLeaving = false;
 
 // recording and playing variables
 
 var playgroundId = null;
+var sitepeekAppDomain = 'http://sitepeek.dev';
 
 // playing variables
 
-var lastTimestamp = 0;      // using this variable we will ask PHP for more data after last timestamp
-var playDelay = 10000;      // DEBUG (change value to 10 k in production) by how many miliseconds the playback will be delayed compared to the recording
+var lastTimestamp = 0; // using this variable we will ask PHP for more data after last timestamp
+var playDelay = 1000;  // by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
 var currentMouseX = 0;
 var currentMouseY = 0;
-var zoom = 1;
 var noLoadEventsInPlaygroundYet = true;
 var userAppeared = false;
 var pointerDown = false;
-var getDataTimeout = null;
 var link = null;
 
 function getCurrentTimestamp() {
@@ -32,7 +30,6 @@ function getCurrentTimestamp() {
             return new Date().getTime();
         }
     }
-
     return Date.now(); // the result is in ms
 }
 
@@ -45,37 +42,28 @@ function mobilecheck() {
 }
 
 function sendMessageToOrigin(targetWindow, message, targetOrigin) {
-
     var messageJSON = JSON.stringify(message);
-
     targetWindow.postMessage(messageJSON, targetOrigin);
 }
 
 function getCaretPosition(el) {
-    var start = 0, normalizedValue, range,
-        textInputRange, len, endRange;
-    
+    var start = 0, normalizedValue, range, textInputRange, len, endRange;
     try {
-
         if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
             start = el.selectionStart;
         } else {
             range = document.selection.createRange();
-
             if (range && range.parentElement() == el) {
                 len = el.value.length;
                 normalizedValue = el.value.replace(/\r\n/g, "\n");
-
                 // Create a working TextRange that lives only in the input
                 textInputRange = el.createTextRange();
                 textInputRange.moveToBookmark(range.getBookmark());
-
                 // Check if the start and end of the selection are at the very end
                 // of the input, since moveStart/moveEnd doesn't return what we want
                 // in those cases
                 endRange = el.createTextRange();
                 endRange.collapse(false);
-
                 if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
                     start = len;
                 } else {
@@ -84,15 +72,16 @@ function getCaretPosition(el) {
                 }
             }
         }
-
-    } catch(e) {
+    } catch (e) {
         // selection invalid for this element, return 0
         start = 0;
     }
-
     return start;
 }
 
+/**
+ * Returns a precise CSS path for a given DOM element. Later the path can be used with jQuery to select only this one element.
+ */
 function cssPath(el) {
     var path = [];
     while (el.nodeType === Node.ELEMENT_NODE) {
@@ -108,7 +97,7 @@ function cssPath(el) {
                     nth++;
             }
             if (el.previousElementSibling != null || el.nextElementSibling != null)
-                selector += ":nth-of-type("+nth+")";
+                selector += ":nth-of-type(" + nth + ")";
         }
         path.unshift(selector);
         el = el.parentNode;
@@ -117,57 +106,45 @@ function cssPath(el) {
 }
 
 function addMousemoveFrame(event) {
-
-    if(enableMousemoveLogging) {
-
+    if (enableMousemoveLogging) {
         // add new frame
-
         frames[frames.length] = {
             type: 'mousemove',
             timestamp: getCurrentTimestamp(),
             mouseX: event.pageX,
             mouseY: event.pageY
         };
-
         enableMousemoveLogging = false;
     }
-
 }
 
 function addClickFrame(event) {
-
-	frames[frames.length] = {
+    frames[frames.length] = {
         type: 'click',
-		timestamp: getCurrentTimestamp(),
-		mouseX: event.pageX,
-		mouseY: event.pageY,
+        timestamp: getCurrentTimestamp(),
+        mouseX: event.pageX,
+        mouseY: event.pageY,
         target: cssPath(event.target)
-	};
-
+    };
 }
 
 function addFocusinFrame(event) {
-
     frames[frames.length] = {
         type: 'focusin',
-		timestamp: getCurrentTimestamp(),
+        timestamp: getCurrentTimestamp(),
         target: cssPath(event.target)
-	};
-
+    };
 }
 
 function addFocusoutFrame(event) {
-
     frames[frames.length] = {
         type: 'focusout',
         timestamp: getCurrentTimestamp(),
         target: cssPath(event.target)
     };
-
 }
 
 function addTextFrame(event) {
-
     frames[frames.length] = {
         type: 'text',
         timestamp: getCurrentTimestamp(),
@@ -175,55 +152,38 @@ function addTextFrame(event) {
         text: $(event.target).val(),
         caret: getCaretPosition(event.target)
     };
-
-    // to let this funciton be set as a callback again
-
+    // to let this function be set as a callback again
     $(event.target).removeProp('toBeFramed');
-
 }
 
 function addScrollFrame(scrollTop) {
-
-    if(enableScrollLogging) {
-
+    if (enableScrollLogging) {
         // add new frame
-
         frames[frames.length] = {
             type: 'scroll',
             timestamp: getCurrentTimestamp(),
             scrollTop: scrollTop
         };
-
         enableScrollLogging = false;
-
     }
-
 }
 
 function addResizeFrame(width, height) {
-
     // the if is to limit the frequency of frames generation
-
-    if(enableResizeLogging){
-
+    if (enableResizeLogging) {
         // add new frame
-
         frames[frames.length] = {
             type: 'resize',
             timestamp: getCurrentTimestamp(),
             width: width,
             height: height
         };
-
         enableResizeLogging = false;
     }
-
 }
 
 function addLoadFrame(width, height, href) {
-
     // add new frame
-
     frames[frames.length] = {
         type: 'load',
         timestamp: getCurrentTimestamp(),
@@ -231,219 +191,157 @@ function addLoadFrame(width, height, href) {
         height: height,
         href: href
     };
-
 }
 
 function addUnloadFrame() {
-
     frames[frames.length] = {
         type: 'unload',
         timestamp: getCurrentTimestamp()
     };
-
 }
 
-/* performed every 5 seconds; sends data from an array to the server */
-
-function sendBatchedData(async) {
-    
-    if(playgroundId == null) {
+function putBatchedData(async) {
+    if (playgroundId == null) {
         return;
     }
-
-    // async is true by default
-
-    async = (typeof async !== 'undefined' ? async : true);
-
+    async = (typeof async !== 'undefined' ? async : true); // true by default
     $.ajax({
-
-        url: "http://sitepeek.dev/ajax/putFrames.php",
+        url: sitepeekAppDomain + "/ajax/putFrames.php",
         data: {
             frames: JSON.stringify(frames),
             playgroundId: playgroundId
         },
         async: async,
-
         type: "POST",
-
+        success: function() {
+            if (!userIsLeaving) {
+                putBatchedData();
+            }
+        },
         // DEBUG
-        error: function( xhr, status, errorThrown ) {
-            console.log( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
+        error: function (xhr, status, errorThrown) {
+            console.log("Sorry, there was a problem!");
+            console.log("Error: " + errorThrown);
+            console.log("Status: " + status);
+            console.dir(xhr);
         }
     });
-
-    // clear the frames buffer (hopefully after stringification)
-
+    // clear the frames buffer
     frames.length = 0;
-
 }
 
 function unlockPlayground() {
-
-    if(playgroundId == null) {
+    if (playgroundId == null) {
         return;
     }
-
     $.ajax({
-
-        url: "http://sitepeek.dev/ajax/unlockPlayground.php",
+        url: sitepeekAppDomain + "/ajax/unlockPlayground.php",
         data: {
             playgroundId: playgroundId
         },
-
-        // becuase performing this call in beforeunload handler
-        async: false,
-
+        async: false, // becuase performing this call in beforeunload handler
         type: "POST",
-
         // DEBUG
-        error: function( xhr, status, errorThrown ) {
-            console.log( "Sorry, there was a problem!" );
-            console.log( "Error: " + errorThrown );
-            console.log( "Status: " + status );
-            console.dir( xhr );
+        error: function (xhr, status, errorThrown) {
+            console.log("Sorry, there was a problem!");
+            console.log("Error: " + errorThrown);
+            console.log("Status: " + status);
+            console.dir(xhr);
         }
     });
-
 }
 
-function startRecording() {
-
-    sendBatchedDataInterval = setInterval(sendBatchedData, 2000);
-
-    // not sure why not use jQuery here, but I was told by internet not to
-
-    window.addEventListener('beforeunload', function() {
-
-        // perform only the first time the user is seeing unload communicate
-
-        if(!notified) {
-
-            // stop sending data periodically, send it (in a synchronous way!) for the last time
-
-            clearInterval(sendBatchedDataInterval);
-
-            addUnloadFrame();
-
-            sendBatchedData(false);
-
-            unlockPlayground();
-
-            notified = true;
-        }
-
+function notifyWatcherIfDidnt() {
+    // perform only the first time the user is seeing unload communicate
+    if (!userIsLeaving) {
+        userIsLeaving = true;
+        addUnloadFrame();
+        putBatchedData(false); // send data (in a synchronous way!) for the last time
+        unlockPlayground();
         // TODO remove if all the functions above work without the lines below
         var confirmationMessage = "Are you sure you want to leave?";
-
         (event || window.event).returnValue = confirmationMessage;     // Gecko and Trident
         return confirmationMessage;
-    });
+    }
 }
 
+function startPutting() {
+    putBatchedData();
+    // not sure why not use jQuery here, but I was told by internet not to
+    window.addEventListener('beforeunload', notifyWatcherIfDidnt);
+}
 
-$(window).on('load', function() {
+// CATCHING DOM EVENTS
 
+$(window).on('load', function () {
     var $body = $('body');
-
     // catching mousemove events
-
-    $body.on('mousemove', function(event) {
+    $body.on('mousemove', function (event) {
         addMousemoveFrame(event);
     });
-
     // to only add new data once in a while
-
-    setInterval(function() {
+    setInterval(function () {
         enableMousemoveLogging = true;
     }, 1000 / fps);
-
     // catching click events
-
-    $body.on('click', function(event) {
+    $body.on('click', function (event) {
         addClickFrame(event);
     });
-
     // catching focusin events
-
-    $(document).on('focusin', function(event) {
+    $(document).on('focusin', function (event) {
         addFocusinFrame(event);
     });
-
     // catching focusout events
-
-    $(document).on('focusout', function(event) {
+    $(document).on('focusout', function (event) {
         addFocusoutFrame(event);
     });
-
     // catching text events (propertychange is for IE <9)
-
-    $(document).on('input propertychange', function(event) {
-
+    $(document).on('input propertychange', function (event) {
         // if no active timeout is set for this element yet...
-
-        if($(event.target).prop('toBeFramed') == undefined) {
-
+        if ($(event.target).prop('toBeFramed') == undefined) {
             $(event.target).prop('toBeFramed', true);
-
             //... let's set one
-
-            setTimeout(function() { addTextFrame(event) }, 1000);
+            setTimeout(function () {
+                addTextFrame(event)
+            }, 1000);
         }
     });
-
     // catching scroll events
-
-    $(window).on('scroll', function() {
+    $(window).on('scroll', function () {
         addScrollFrame($(window).scrollTop());
     });
-
-    // to only add new data once in a while
-
-    setInterval(function() {
+    // to only add new scrolling frames once in a while
+    setInterval(function () {
         enableScrollLogging = true;
     }, 1000 / fps);
-
     // catching resize events
-
-    $(window).on('resize', function() {
+    $(window).on('resize', function () {
         addResizeFrame($(window).width(), $(window).height());
     });
-
-    // to only add new data once in a while
-
-    setInterval(function() {
+    // to only add new resize frames once in a while
+    setInterval(function () {
         enableResizeLogging = true;
     }, 1000 / fps);
-
     // catching load events (we are in load callback!)
     // we add window size data, too, mainly for first load event
-
     addLoadFrame($(window).width(), $(window).height(), location.href);
 });
 
-/* PLAYING */
-
+/* ============= PLAYING ============= */
 
 function setCaretPosition(el, caretPos) {
-
     //noinspection SillyAssignmentJS
     el.value = el.value;
     // ^ this is used to not only get "focus", but
     // to make sure we don't have it everything -selected-
-    // (it causes an issue in chrome, and having it doesn't hurt any other browser)
-
+    // (it is an issue in chrome, and having the above doesn't hurt any other browser)
     if (el !== null) {
-
         if (el.createTextRange) {
             var range = el.createTextRange();
             range.move('character', caretPos);
             range.select();
             return true;
         }
-
         else {
             // (el.selectionStart === 0 added for Firefox bug)
             if (el.selectionStart || el.selectionStart === 0) {
@@ -451,7 +349,6 @@ function setCaretPosition(el, caretPos) {
                 el.setSelectionRange(caretPos, caretPos);
                 return true;
             }
-
             else { // fail city, fortunately this never happens (as far as I've tested) :)
                 el.focus();
                 return false;
@@ -460,116 +357,79 @@ function setCaretPosition(el, caretPos) {
     }
 }
 
-function getData() {
+function startPlaying() {
+    getNewFramesAndScheduleTheirActions();
+}
 
+function getNewFramesAndScheduleTheirActions() {
     $.ajax({
-
-        url: "http://sitepeek.dev/ajax/getFrames.php",
+        url: sitepeekAppDomain + "/ajax/getFrames.php",
         data: {
             lastTimestamp: lastTimestamp,
             playgroundId: playgroundId
         },
         dataType: "text",
-
         type: "POST",
-
         success: function (json) {
-
             var frames = JSON.parse(json);
-
             // if some frames were delivered...
-
-            if (frames.length != 0) {
-
+            if (frames.length > 0) {
                 // save the timestamp of most recent frame received from the server
-
                 lastTimestamp = frames[frames.length - 1].timestamp;
-
-                scheduleEvents(frames);
-
+                scheduleFrameActions(frames);
                 frames.length = 0;
-
             }
-
-            getDataTimeout = setTimeout(getData, 2000);
+            getNewFramesAndScheduleTheirActions();
         }
     });
-
 }
 
-function scheduleEvents(frames) {
-
-    $.each(frames, function (index, value) {
-
+function scheduleFrameActions(frames) {
+    $.each(frames, function (index, frame) {
         // parseInt because in PHP the value from database was sent as a string
-
-        var timeout = playDelay - (getCurrentTimestamp() - parseInt(value.timestamp));
-
+        var timeout = playDelay - (getCurrentTimestamp() - parseInt(frame.timestamp));
         setTimeout(function () {
-            executeEvent(value)
+            executeFrameActions(frame)
         }, (timeout > 0 ? timeout : 0));
-
         // load event means user presence, so detect it and count down
-        // (unless we are in preview)
-
-        if (!userAppeared && (value.type == 'load')) {
-
+        if (!userAppeared && (frame.type == 'load')) {
+            userAppeared = true;
             var message = {
                 type: 'beginCountdown',
                 timeout: timeout
             };
-
-            sendMessageToOrigin(window.parent, message, "http://sitepeek.dev");
+            sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
         }
-
-        // unload event means we can catch new load events
-
-        if (value.type == 'unload') {
-
+        if (frame.type == 'unload') {
             // allow new user to come
-
             userAppeared = false;
-
         }
     });
-
 }
 
-function executeEvent(value) {
-
+function executeFrameActions(frame) {
     var pointer = $('#pointer');
     var wrapper = $('#wrapper');
-
-    if (value.type == 'mousemove') {
-
-        // move the image of mouse - parseFloat because some properties are text (from DB)
-
-        currentMouseX = value.mouseX;
-        currentMouseY = value.mouseY;
-
+    if (frame.type == 'mousemove') {
+        // move the image of mouse; we use parseFloat because some properties are text (from DB)
+        currentMouseX = frame.mouseX;
+        currentMouseY = frame.mouseY;
         pointer.offset({
             left: parseFloat(currentMouseX),
             top: parseFloat(currentMouseY)
         });
-
         // if we're not panning at the moment...
-
         if (!pointerDown) {
-
+            // notify the parent frame to center the view on cursor
             var message = {
                 type: 'centerViewOnCursor',
                 currentMouseX: currentMouseX,
                 currentMouseY: currentMouseY
             };
-
-            sendMessageToOrigin(window.parent, message, "http://sitepeek.dev");
+            sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
         }
-
     }
-    else if (value.type == 'click') {
-
-        // -15 because we want the click circle to be centered
-
+    else if (frame.type == 'click') {
         $('<div class="clicktrace"></div>')
             .css({
                 'background': 'cyan',
@@ -580,6 +440,7 @@ function executeEvent(value) {
                 'z-index': '10000'
             })
             .offset({
+                // -15 because we want the click circle to be centered
                 left: parseFloat(currentMouseX) - 15,
                 top: parseFloat(currentMouseY) - 15
             })
@@ -587,130 +448,87 @@ function executeEvent(value) {
             .fadeOut(2000, 'easeOutQuint', function () {
                 $(this).remove();
             });
-
-        $(value.target).trigger('click');
+        // run all handlers associated with DOM click event on the target element
+        $(frame.target).trigger('click');
     }
-    else if (value.type == 'focusin') {
-
-        //playingFrame.contents().find(value.target).trigger('focus');
-
+    else if (frame.type == 'focusin') {
+        // run all handlers associated with DOM focus event on the target element
+        $(frame.target).trigger('focus');
     }
-    else if (value.type == 'focusout') {
-
-        //playingFrame.contents().find(value.target).trigger('blur');
-
+    else if (frame.type == 'focusout') {
+        // run all handlers associated with DOM blur event on the target element
+        $(frame.target).trigger('blur');
     }
-    else if (value.type == 'text') {
-
-        var target = $(value.target);
-
-        target.val(value.text);
-        setCaretPosition(target[0], value.caret);
-
+    else if (frame.type == 'text') {
+        var target = $(frame.target);
+        target.val(frame.text);
+        setCaretPosition(target[0], frame.caret);
     }
-    else if (value.type == 'scroll') {
-
-        // TODO handle horizontal scrolling, too
-
-        scrollTop = value.scrollTop;
-
+    else if (frame.type == 'scroll') {
+        scrollTop = frame.scrollTop;
         $('body').scrollTop(scrollTop);
-
     }
-    else if (value.type == 'resize') {
-
+    else if (frame.type == 'resize') {
         var messageWindowResized = {
             type: 'windowResized',
-            width: value.width,
-            height: value.height
+            width: frame.width,
+            height: frame.height
         };
-
-        sendMessageToOrigin(window.parent, messageWindowResized, "http://sitepeek.dev");
+        sendMessageToOrigin(window.parent, messageWindowResized, sitepeekAppDomain);
     }
-    else if (value.type == 'load') {
-
-        window.location.href = value.href;
-
+    else if (frame.type == 'load') {
+        window.location.href = frame.href;
         // newly loaded website has to be resized too, in order to
         // fit in viewer's browser width.
         // needed only for first page load
-
-        // smart way to reuse my code :)
-
         scrollTop = 0;
-
         if (noLoadEventsInPlaygroundYet) {
-
-            executeEvent({
+            // smart way to reuse my code :)
+            executeFrameActions({
                 type: 'resize',
-                width: value.width,
-                height: value.height
+                width: frame.width,
+                height: frame.height
             });
-
             noLoadEventsInPlaygroundYet = false;
-
         }
-
     }
-    else if (value.type == 'unload') {
-
-        // if a new user appeared before we managed to
-        // replay this frame, we won't do it at all
-
+    else if (frame.type == 'unload') {
+        // if a new user appeared between scheduling and execution of this frame, we won't execute at all
         if (userAppeared)
             return false;
-
-        // show the information that the user is gone
-
+        // otherwise, show the information that the user is gone
         $('#stage6').fadeOut(400, function () {
             $('#stage7').fadeIn(400, function () {
-
-                // select only if we're not on mobile
-
+                // select field content only if we're not on mobile - TODO but why?
                 if (!mobilecheck()) {
                     $('#copybox2').find('input')
                         .trigger('focus')
-                        .select()
+                        .select();
                 }
-
             });
         });
-
     }
-    else if (value.type == 'secondvisitor') {
-
-
+    else if (frame.type == 'secondvisitor') {
         // show the information that a second user came
         // while the first one was being recorded
-
         $('#message-box').fadeIn(400, function () {
-
             setTimeout(function () {
-
                 $('#message-box').fadeOut(400);
-
             }, 8000)
-
         });
-
     }
 }
 
 //// end of functions
 
-$(document).on('ready', function() {
-
-    // notify the playground maker about current URL, so it knows what to save as a start page when clicking "generate"
-
+$(document).on('ready', function () {
+    // notify the playground maker about current URL, so it knows what to save as a start page when user clicks "generate"
     var message = {
         type: 'currentUrl',
         currentUrl: window.location.href
     };
-
-    sendMessageToOrigin(window.parent, message, "http://sitepeek.dev");
-
+    sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
     // custom easing effect for hiding clicktraces
-
     $.extend($.easing,
         {
             easeOutQuint: function (x, t, b, c, d) {
@@ -720,26 +538,17 @@ $(document).on('ready', function() {
 });
 
 $(window).on("message", function (event) {
-
     var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
-
-    if (origin !== 'http://sitepeek.dev')
+    if (origin !== sitepeekAppDomain) // if the message is not coming from a trusted source
         return;
-
     var data = event.data || event.originalEvent.data;
-
     var receivedMessage = JSON.parse(data);
-
     // checking for message type
-
-    if(receivedMessage.type == 'startPutting') {
-
+    if (receivedMessage.type == 'startPutting') {
         playgroundId = receivedMessage.playgroundId;
-        startRecording();
-
-    } else if(receivedMessage.type == 'startFetching') {
-
+        startPutting();
+    } else if (receivedMessage.type == 'startPlaying') {
         playgroundId = receivedMessage.playgroundId;
-        getDataTimeout = setTimeout(getData, 4000);
+        startPlaying();
     }
 });
