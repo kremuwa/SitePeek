@@ -7,11 +7,6 @@
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$/public_html" web="/" />
           </mappings>
-          <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/public_html/.editorconfig" />
-            <excludedPath local="true" path="$PROJECT_DIR$/public_html/.gitignore" />
-            <excludedPath local="true" path="$PROJECT_DIR$/public_html/.gitattributes" />
-          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
