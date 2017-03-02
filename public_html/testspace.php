@@ -9,8 +9,8 @@ try {
     ));
 
     $sql = "SELECT url, recording
-            FROM playgrounds
-            WHERE playgroundID = ?";
+            FROM testspaces
+            WHERE testspaceID = ?";
 
     $stmt = $dbh->prepare($sql);
 
@@ -28,14 +28,14 @@ try {
     if(!stristr($_SERVER['HTTP_USER_AGENT'], 'FacebookExternalHit'))
     {
 
-        // if someone is already recording in this playground, redirect
-        // him to the homepage and notify the owner of playground of that fact
+        // if someone is already recording in this testspace, redirect
+        // him to the homepage and notify the owner of testspace of that fact
 
         if($result['recording']) {
 
             $sql =
                 "INSERT INTO frames
-				(playgroundId, frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
+				(testspaceId, frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
 				 frameText, frameCaret, frameScrollTop, frameWidth, frameHeight, frameHref)
 				 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -60,11 +60,11 @@ try {
 
             exit;
         }
-        else { // in an opposite case, lock the playground
+        else { // in an opposite case, lock the testspace
             $sql =
-                "UPDATE playgrounds
+                "UPDATE testspaces
 				SET recording = '1'
-				WHERE playgroundId = ?";
+				WHERE testspaceId = ?";
 
             $stmt = $dbh->prepare($sql);
 
@@ -83,14 +83,14 @@ include('header.php');
 ?>
 
 <script>
-    var playgroundId = '<?php _pr($_GET['id']); ?>';
-    var playgroundUrl = '<?php _pr($result['url']); ?>'
+    var testspaceId = '<?php _pr($_GET['id']); ?>';
+    var testspaceUrl = '<?php _pr($result['url']); ?>'
 </script>
 
 <iframe id="recording-frame" src="<?php _pr($result['url']); ?>"></iframe>
 
 <?php include('postbody-scripts.php'); ?>
 
-<script src="js/playground.js"></script>
+<script src="js/testspace.js"></script>
 
 <?php include('footer.php'); ?>

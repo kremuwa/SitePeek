@@ -9,7 +9,7 @@ var userIsLeaving = false;
 
 // recording and playing variables
 
-var playgroundId = null;
+var testspaceId = null;
 var sitepeekAppDomain = 'http://sitepeek.dev';
 
 // playing variables
@@ -199,7 +199,7 @@ function addUnloadFrame() {
 }
 
 function putBatchedData(async) {
-    if (playgroundId == null) {
+    if (testspaceId == null) {
         return;
     }
     async = (typeof async !== 'undefined' ? async : true); // true by default
@@ -207,7 +207,7 @@ function putBatchedData(async) {
         url: sitepeekAppDomain + "/ajax/putFrames.php",
         data: {
             frames: JSON.stringify(frames),
-            playgroundId: playgroundId
+            testspaceId: testspaceId
         },
         async: async,
         type: "POST",
@@ -228,14 +228,14 @@ function putBatchedData(async) {
     frames.length = 0;
 }
 
-function unlockPlayground() {
-    if (playgroundId == null) {
+function unlockTestspace() {
+    if (testspaceId == null) {
         return;
     }
     $.ajax({
-        url: sitepeekAppDomain + "/ajax/unlockPlayground.php",
+        url: sitepeekAppDomain + "/ajax/unlockTestspace.php",
         data: {
-            playgroundId: playgroundId
+            testspaceId: testspaceId
         },
         async: false, // becuase performing this call in beforeunload handler
         type: "POST",
@@ -255,7 +255,7 @@ function notifyWatcherIfDidnt() {
         userIsLeaving = true;
         addUnloadFrame();
         putBatchedData(false); // send data (in a synchronous way!) for the last time
-        unlockPlayground();
+        unlockTestspace();
         // TODO remove if all the functions above work without the lines below
         var confirmationMessage = "Are you sure you want to leave?";
         (event || window.event).returnValue = confirmationMessage;     // Gecko and Trident
@@ -364,7 +364,7 @@ function getNewFramesAndScheduleTheirActions() {
         url: sitepeekAppDomain + "/ajax/getFrames.php",
         data: {
             lastTimestamp: lastTimestamp,
-            playgroundId: playgroundId
+            testspaceId: testspaceId
         },
         dataType: "text",
         type: "POST",
@@ -517,7 +517,7 @@ function executeFrameActions(frame) {
 //// end of functions
 
 $(document).on('ready', function () {
-    // notify the playground maker about current URL, so it knows what to save as a start page when user clicks "generate"
+    // notify the testspace maker about current URL, so it knows what to save as a start page when user clicks "generate"
     var message = {
         type: 'currentUrl',
         currentUrl: window.location.href
@@ -540,10 +540,10 @@ $(window).on("message", function (event) {
     var receivedMessage = JSON.parse(data);
     // checking for message type
     if (receivedMessage.type == 'startPutting') {
-        playgroundId = receivedMessage.playgroundId;
+        testspaceId = receivedMessage.testspaceId;
         startPutting();
     } else if (receivedMessage.type == 'startPlaying') {
-        playgroundId = receivedMessage.playgroundId;
+        testspaceId = receivedMessage.testspaceId;
         startPlaying();
     }
 });

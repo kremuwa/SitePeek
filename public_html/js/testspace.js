@@ -10,17 +10,17 @@ $(window).on("message", function (event) {
 
     var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
 
-    if (origin !== extractOrigin(playgroundUrl))
+    if (origin !== extractOrigin(testspaceUrl))
         return;
 
     var source = event.source || event.originalEvent.source;
 
     var message = {
         'type': 'startPutting',
-        'playgroundId': playgroundId
+        'testspaceId': testspaceId
     };
 
     var messageJSON = JSON.stringify(message);
 
-    source.postMessage(messageJSON, extractOrigin(playgroundUrl));
+    source.postMessage(messageJSON, extractOrigin(testspaceUrl));
 });

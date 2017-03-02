@@ -17,13 +17,13 @@ try {
     ));
 
     $sql =
-        "UPDATE playgrounds
+        "UPDATE testspaces
         SET recording = '0'
-        WHERE playgroundId = ?";
+        WHERE testspaceId = ?";
 
     $stmt = $dbh->prepare($sql);
 
-    $stmt->execute(array($_POST['playgroundId']));
+    $stmt->execute(array($_POST['testspaceId']));
 
 } catch (PDOException $e) {
     print "Error: " . $e->getMessage() . '<br />'; // DEBUG

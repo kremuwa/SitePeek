@@ -17,17 +17,17 @@
 
         // if we're asking for data from preview-frame
 
-        if($_POST['playgroundId'] == 'preview-frame') {
+        if($_POST['testspaceId'] == 'preview-frame') {
 
             $sql = "SELECT
                        frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
-                    WHERE playgroundId = ?";
+                    WHERE testspaceId = ?";
 
             $stmt = $dbh->prepare($sql);
-            $stmt->execute(array($_POST['playgroundId']));
+            $stmt->execute(array($_POST['testspaceId']));
 
         } else if ($_POST['lastTimestamp'] == 0) {
 
@@ -42,26 +42,26 @@
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
-                    WHERE playgroundId = ? AND frameTimestamp > (
+                    WHERE testspaceId = ? AND frameTimestamp > (
                       SELECT MAX(frameTimestamp)
                       FROM frames
-                      WHERE playgroundId = ? AND frameTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
+                      WHERE testspaceId = ? AND frameTimestamp > UNIX_TIMESTAMP(NOW()) * 1000 - $msecToLookBackForData
                     ) - $msecToLookBeforeLastAvailableFrame";
 
             $stmt = $dbh->prepare($sql);
-            $stmt->execute(array($_POST['playgroundId'], $_POST['playgroundId']));
+            $stmt->execute(array($_POST['testspaceId'], $_POST['testspaceId']));
 
         } else {
 
             $sql = "SELECT
-                      playgroundId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                      testspaceId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
                        frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
-                    WHERE playgroundId = ? AND frameTimestamp > ?";
+                    WHERE testspaceId = ? AND frameTimestamp > ?";
 
             $stmt = $dbh->prepare($sql);
-            $stmt->execute(array($_POST['playgroundId'], $_POST['lastTimestamp']));
+            $stmt->execute(array($_POST['testspaceId'], $_POST['lastTimestamp']));
 
         }
 
@@ -75,13 +75,13 @@
 
         // removing obsolete frames (except when retrieved frames for preview-frame)
 
-        if($_POST['playgroundId'] != 'preview-frame' && $_POST['lastTimestamp'] != 0) {
+        if($_POST['testspaceId'] != 'preview-frame' && $_POST['lastTimestamp'] != 0) {
 
             $sql = "DELETE FROM frames
-                    WHERE playgroundId = ? AND frameTimestamp <= ?";
+                    WHERE testspaceId = ? AND frameTimestamp <= ?";
 
             $stmt = $dbh->prepare($sql);
-            $stmt->execute(array($_POST['playgroundId'], $_POST['lastTimestamp']));
+            $stmt->execute(array($_POST['testspaceId'], $_POST['lastTimestamp']));
 
         }
 

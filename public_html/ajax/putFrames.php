@@ -5,7 +5,7 @@ header('Access-Control-Allow-Origin: *');
 error_reporting(-1); // DEBUG
 
 $frames = json_decode($_POST['frames']);
-$playgroundId = $_POST['playgroundId'];
+$testspaceId = $_POST['testspaceId'];
 
 try {
     $dbh = new PDO('mysql:host=localhost;dbname=peek_db', 'peek-user', 'B7FpQbpD6auDK2mr', array(
@@ -21,13 +21,13 @@ try {
 
         $sql =
             "INSERT INTO frames
-            (playgroundId, frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
+            (testspaceId, frameType, frameTimestamp, frameMouseX, frameMouseY, frameTarget,
              frameText, frameCaret, frameScrollTop, frameWidth, frameHeight, frameHref)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $dbh->prepare($sql);
 
-        $stmt->bindValue(1, $playgroundId);
+        $stmt->bindValue(1, $testspaceId);
         $stmt->bindValue(2, $x->type);
         $stmt->bindValue(3, $x->timestamp);
         $stmt->bindValue(4, (isset($x->mouseX) ? $x->mouseX : NULL));

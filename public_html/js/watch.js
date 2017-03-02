@@ -1,19 +1,18 @@
 // global variables
-
-var playgroundId = null;
-var scrollTop = 0;
+var testspaceId = null;
+var scrollTop = 0; // TODO remove after making sure it's not needed for panning0000000000
 var zoom = 1;
-var noLoadEventsInPlaygroundYet = true;
 var userAppeared = false;
 var pointerDown = false;
-var getDataTimeout = null;
 var link = null;
 var currentRemoteUrl = null;
-
 var playingFrame = $('#playing-frame');
 var panzoomLayer = $('#panzoom-layer');
 var wrapper = $('#wrapper');
 
+/**
+ * Checks if the user agent of current browser indicates that it is being run on a mobile device.
+ */
 function mobilecheck() {
     var check = false;
     (function (a) {
@@ -22,52 +21,44 @@ function mobilecheck() {
     return check;
 }
 
+/**
+ * For a given URL, returns a string consisting of protocol and domain.
+ * E.g. for 'https://facebook.com/username' returns 'https://facebook.com'
+ */
 function extractOrigin(url) {
-
     var protocolLastCharIdx = url.indexOf("://") + 3;
     var finishingSlashIdx = url.indexOf('/', protocolLastCharIdx + 1);
-
     return url.substr(0, finishingSlashIdx);
 }
 
 function sendMessageToOrigin(targetWindow, message, targetOrigin) {
-
     var messageJSON = JSON.stringify(message);
-
     targetWindow.postMessage(messageJSON, targetOrigin);
 }
 
 function centerViewOnCursor(currentMouseX, currentMouseY) {
-
     var matrix = panzoomLayer.panzoom('getMatrix');
-
     var panX = parseFloat(wrapper.css('width')) / 2 - currentMouseX;
     var panY = parseFloat(wrapper.css('height')) / 2 - (currentMouseY - scrollTop);
-
     // x and y translations respectively
-
     matrix[4] = panX;
     matrix[5] = panY;
-
     panzoomLayer.panzoom('setMatrix', matrix, {
         animate: true
     });
 }
 
 /**
+ * Begin the countdown before showing the actions of the watched user to the moderator
  *
- * timeout - the time that is left for interesting things to start happening
+ * @param timeout the time that is left for interesting things to start happening
  * on the screen. It's the same timeout that is set for the first load event
  *  to be played in the player
- *
  */
-
 function beginCountdown(timeout) {
-
     // code of the countdown, i is initialized to 1000 (and time is i - 1000)
     // in order to count one second less (to leave some time for fading effect
     // of the player)
-
     for (var i = 1000; i < timeout; i += 1000) {
         setTimeout(function (i) {
             return function () {
@@ -75,67 +66,48 @@ function beginCountdown(timeout) {
             }
         }(i), i - 1000)
     }
-
     // when the countdown ends...
-
     setTimeout(function () {
         $('#stage5').fadeOut(400, function () {
             $('#stage6').fadeIn(400);
         });
     }, timeout - 1000);
-
     // show the countdown after both stages are hidden
     // it can happen during stage4 and 7, so we hide that stages
-
     $('#stage4, #stage7')
         .fadeOut(400)
         .promise().done(function () {
         $('#stage5').fadeIn(400);
     });
-
     userAppeared = true;
-
-    noLoadEventsInPlaygroundYet = true;
+    noLoadEventsInTestspaceYet = true;
 }
 
 $(document).ready(function () {
-
     $('#generate').on('click', function () {
-
         $('#stage2').fadeOut(400, function () {
-
             $('#preparation-frame')[0].contentWindow.location.href = 'about:blank';
-
             $('#stage3').fadeIn(400, function () {
-
                 $.ajax({
-                    url: "ajax/addPlayground.php",
+                    url: "ajax/addTestspace.php",
                     data: {
                         url: currentRemoteUrl
                     },
                     dataType: "text",
-
                     type: "POST",
-
-                    success: function (addedPlaygroundId) {
-
-                        playgroundId = addedPlaygroundId;
-
+                    success: function (addedTestspaceId) {
+                        testspaceId = addedTestspaceId;
                         var url =
                             window.location.protocol
                             + "//"
                             + window.location.hostname
-                            + "/playground.php"
-                            + '?id=' + playgroundId;
-
+                            + "/testspace.php"
+                            + '?id=' + testspaceId;
                         // fill in both the inputs at once
-
                         $('#copybox1').add('#copybox2').find('input')
                             .val(url);
                         $('.whatsapp-send-btn').attr('href', 'whatsapp://send?text=' + encodeURIComponent(url));
-
                         link = url;
-
                         $('#stage3').fadeOut(400, function () {
                             $('#stage4').fadeIn(400, function () {
                                 $('#copybox1').find('input')
@@ -143,14 +115,11 @@ $(document).ready(function () {
                                     .select();
                             });
                         });
-
                         // notify the site to start fetching frames and execute related actions
-
                         var msgStartPlaying = {
                             type: 'startPlaying',
-                            playgroundId: playgroundId
+                            testspaceId: testspaceId
                         };
-
                         sendMessageToOrigin(
                             playingFrame[0].contentWindow,
                             msgStartPlaying,
@@ -158,38 +127,25 @@ $(document).ready(function () {
                         );
                     }
                 });
-
             });
         });
-
         // to prevent default event action and its propagation
-
         return false;
     });
-
     $('.again').on('click', function () {
-
         // going to the stage2 and initializing some things
-
         $('#stage6, #stage7')
             .fadeOut(400)
             .promise().done(function () {
-
             $('#stage2').fadeIn(400, function () {
-
-                clearTimeout(getDataTimeout);
                 $('#dialog1').dialog('open');
                 userAppeared = false;
                 playingFrame[0].contentWindow.location.href = "about:blank";
             });
-
         });
-
         return false;
     });
-
     // ==== stage 4 (playing) ====
-
     var panzoom = $('#panzoom-layer').panzoom({
         $set: $('#playing-frame, #panzoom-layer'),
         contain: 'invert',
@@ -197,7 +153,6 @@ $(document).ready(function () {
         onZoom: centerViewOnCursor,
         easing: 'linear'
     });
-
     wrapper.on('mousewheel.focal', function (e) {
         e.preventDefault();
         var delta = e.delta || e.originalEvent.wheelDelta;
@@ -208,7 +163,6 @@ $(document).ready(function () {
             focal: e
         });
     });
-
     panzoom.on({
         'panzoomstart': function () {
             pointerDown = true;
@@ -218,23 +172,17 @@ $(document).ready(function () {
             centerViewOnCursor();
         }
     });
-
     // send button doesn't work on mobiles
-
     if (!mobilecheck()) {
         $('.fb-send-btn').show();
     } else {
         $('.whatsapp-send-btn').show();
     }
-
 });
 
 $(window).on('resize', function () {
-
     // clever reusing - resize to the same size :)
-
     // TODO probably copy the code below to library and send it a message to execute it
-
     // var frame = $('#playing-frame');
     //
     // executeEvent({
@@ -242,104 +190,73 @@ $(window).on('resize', function () {
     //     width: parseFloat(frame.css('width')),
     //     height: parseFloat(frame.css('height'))
     // });
-
 });
 
 $('.fb-send-btn').on('click', function () {
-
     console.log(link);
-
     FB.ui({
         method: 'send',
         link: link
     });
-
     return false;
 });
 
 $('.fb-share-btn').on('click', function () {
-
     console.log(link);
-
     FB.ui({
         method: 'share',
         href: link
     }, function (response) {
     });
-
     return false;
 });
 
 $(window).on("message", function (event) {
-    
-    var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
 
+    var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
     if (origin !== extractOrigin(siteStartAddress))
         return;
-
     var data = event.data || event.originalEvent.data;
-
     var source = event.source || event.originalEvent.source;
-
     var receivedMessage = JSON.parse(data);
-
     // checking for message type
-
-    if(receivedMessage.type == 'currentUrl') {
-
-        // this message is sent when new page is loaded on watched page.
+    if (receivedMessage.type == 'currentUrl') {
+        // this message is sent when new page is loaded on watched site.
         // Depending on current stage, various actions should be taken
-
-        if(!userAppeared) {
-
+        if (!userAppeared) {
             currentRemoteUrl = receivedMessage.currentUrl;
-
         } else {
-
             var msgStartPlaying = {
                 type: 'startPlaying',
-                playgroundId: playgroundId
+                testspaceId: testspaceId
             };
-
             sendMessageToOrigin(source, msgStartPlaying, extractOrigin(siteStartAddress));
         }
-
-    } else if(receivedMessage.type == 'beginCountdown') {
-
+    } else if (receivedMessage.type == 'beginCountdown') {
         beginCountdown(receivedMessage.timeout);
-
-    } else if(receivedMessage.type == 'centerViewOnCursor') {
+    } else if (receivedMessage.type == 'centerViewOnCursor') {
         // if we're not panning at the moment...
         if (!pointerDown) {
             centerViewOnCursor(receivedMessage.currentMouseX, receivedMessage.currentMouseY);
         }
-    } else if(receivedMessage.type == 'windowResized') {
-
+    } else if (receivedMessage.type == 'windowResized') {
         var width = receivedMessage.width;
         var height = receivedMessage.height;
-
         // resize playing frame and its layer
-
         playingFrame.add(panzoomLayer).css({
             'width': width,
             'height': height
         });
-
         // to make all the screen visible at once
-
         zoom = Math.min($(window).width() / width, ($(window).height() - wrapper.position().top) / height);
-
         // only zoom if we don't have enough space
-
         if (zoom > 1) {
             zoom = 1;
             $('#zoominfo').fadeOut(400);
         }
         else
             $('#zoominfo').fadeIn(400);
-
         wrapper.css('height', $(window).height() - wrapper.position().top);
-
         panzoomLayer
             .panzoom('option', {
                 minScale: zoom
