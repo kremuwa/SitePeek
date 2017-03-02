@@ -14,15 +14,13 @@ var sitepeekAppDomain = 'http://sitepeek.dev';
 
 // playing variables
 
-var lastTimestamp = 0; // using this variable we will ask PHP for more data after last timestamp
+var lastTimestamp = 0; // using this variable we will ask PHP for more data registered only after its value
 var playDelay = 1000;  // by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
 var currentMouseX = 0;
 var currentMouseY = 0;
-var noLoadEventsInPlaygroundYet = true;
+var noLoadFramesExecutedYet = true;
 var userAppeared = false;
-var pointerDown = false;
-var link = null;
 
 function getCurrentTimestamp() {
     if (!Date.now) {
@@ -418,16 +416,13 @@ function executeFrameActions(frame) {
             left: parseFloat(currentMouseX),
             top: parseFloat(currentMouseY)
         });
-        // if we're not panning at the moment...
-        if (!pointerDown) {
-            // notify the parent frame to center the view on cursor
-            var message = {
-                type: 'centerViewOnCursor',
-                currentMouseX: currentMouseX,
-                currentMouseY: currentMouseY
-            };
-            sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
-        }
+        // notify the parent frame to center the view on cursor
+        var message = {
+            type: 'centerViewOnCursor',
+            currentMouseX: currentMouseX,
+            currentMouseY: currentMouseY
+        };
+        sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
     }
     else if (frame.type == 'click') {
         $('<div class="clicktrace"></div>')
@@ -477,19 +472,19 @@ function executeFrameActions(frame) {
         sendMessageToOrigin(window.parent, messageWindowResized, sitepeekAppDomain);
     }
     else if (frame.type == 'load') {
-        window.location.href = frame.href;
-        // newly loaded website has to be resized too, in order to
-        // fit in viewer's browser width.
-        // needed only for first page load
-        scrollTop = 0;
-        if (noLoadEventsInPlaygroundYet) {
+        window.location.href = frame.href; // main action
+        if (noLoadFramesExecutedYet) {
+            // newly loaded website has to be resized too, in order to
+            // fit in viewer's browser width.
+            // needed only for first page load
+            scrollTop = 0;
             // smart way to reuse my code :)
             executeFrameActions({
                 type: 'resize',
                 width: frame.width,
                 height: frame.height
             });
-            noLoadEventsInPlaygroundYet = false;
+            noLoadFramesExecutedYet = false;
         }
     }
     else if (frame.type == 'unload') {

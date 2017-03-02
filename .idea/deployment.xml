@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="DigitalOcean 20 GB" uploadOnCheckin="5ee0a67a-78d9-4224-a15a-49268ccfce6e">
+  <component name="PublishConfigData" serverName="DigitalOcean 20 GB">
     <serverData>
       <paths name="DigitalOcean 20 GB">
         <serverdata>
@@ -10,6 +10,5 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myUploadOnCheckinName" value="DigitalOcean 20 GB" />
   </component>
 </project>

@@ -309,9 +309,10 @@ $(window).on("message", function (event) {
         beginCountdown(receivedMessage.timeout);
 
     } else if(receivedMessage.type == 'centerViewOnCursor') {
-
-        centerViewOnCursor(receivedMessage.currentMouseX, receivedMessage.currentMouseY);
-
+        // if we're not panning at the moment...
+        if (!pointerDown) {
+            centerViewOnCursor(receivedMessage.currentMouseX, receivedMessage.currentMouseY);
+        }
     } else if(receivedMessage.type == 'windowResized') {
 
         var width = receivedMessage.width;
