@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kremuwa
- * Date: 2015-06-09
- * Time: 14:02
- */
 
 error_reporting(-1); //DEBUG
 

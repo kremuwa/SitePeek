@@ -31,6 +31,9 @@ function getCurrentTimestamp() {
     return Date.now(); // the result is in ms
 }
 
+/**
+ * Checks if the user agent of the current browser indicates that the script is being run on a mobile device.
+ */
 function mobilecheck() {
     var check = false;
     (function (a) {
@@ -473,24 +476,25 @@ function executeFrameActions(frame) {
     }
     else if (frame.type == 'load') {
         window.location.href = frame.href; // main action
-        if (noLoadFramesExecutedYet) {
-            // newly loaded website has to be resized too, in order to
-            // fit in viewer's browser width.
-            // needed only for first page load
-            scrollTop = 0;
-            // smart way to reuse my code :)
-            executeFrameActions({
-                type: 'resize',
-                width: frame.width,
-                height: frame.height
-            });
-            noLoadFramesExecutedYet = false;
-        }
+        // TODO make sure if it's necessary or not. If it is, make sure noLoadFramesExecutedYet is set to true when new user appears
+        // if (noLoadFramesExecutedYet) {
+        //     noLoadFramesExecutedYet = false;
+        //     // newly loaded website has to be resized too, in order to fit in viewer's browser width.
+        //     // needed only for first page load of each observed user
+        //     scrollTop = 0;
+        //     // smart way to reuse my code :)
+        //     executeFrameActions({
+        //         type: 'resize',
+        //         width: frame.width,
+        //         height: frame.height
+        //     });
+        // }
     }
     else if (frame.type == 'unload') {
         // if a new user appeared between scheduling and execution of this frame, we won't execute at all
-        if (userAppeared)
+        if (userAppeared) {
             return false;
+        }
         // otherwise, show the information that the user is gone
         $('#stage6').fadeOut(400, function () {
             $('#stage7').fadeIn(400, function () {
@@ -545,5 +549,7 @@ $(window).on("message", function (event) {
     } else if (receivedMessage.type == 'startPlaying') {
         testspaceId = receivedMessage.testspaceId;
         startPlaying();
+    } else if (receivedMessage.type == 'newUserCame') {
+        noLoadFramesExecutedYet = true;
     }
 });

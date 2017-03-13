@@ -1,17 +1,17 @@
 // global variables
 var testspaceId = null;
-var scrollTop = 0; // TODO remove after making sure it's not needed for panning0000000000
+var scrollTop = 0; // TODO remove after making sure it's not needed for panning
 var zoom = 1;
 var userAppeared = false;
 var pointerDown = false;
-var link = null;
+var testspaceUrl = null;
 var currentRemoteUrl = null;
 var playingFrame = $('#playing-frame');
 var panzoomLayer = $('#panzoom-layer');
 var wrapper = $('#wrapper');
 
 /**
- * Checks if the user agent of current browser indicates that it is being run on a mobile device.
+ * Checks if the user agent of the current browser indicates that the script is being run on a mobile device.
  */
 function mobilecheck() {
     var check = false;
@@ -51,9 +51,9 @@ function centerViewOnCursor(currentMouseX, currentMouseY) {
 /**
  * Begin the countdown before showing the actions of the watched user to the moderator
  *
- * @param timeout the time that is left for interesting things to start happening
- * on the screen. It's the same timeout that is set for the first load event
- *  to be played in the player
+ * @param timeout - the time that is left for interesting things to start happening
+ * on the screen. It's the same timeout that is set for the first load frame
+ * to be executed in the player
  */
 function beginCountdown(timeout) {
     // code of the countdown, i is initialized to 1000 (and time is i - 1000)
@@ -80,7 +80,6 @@ function beginCountdown(timeout) {
         $('#stage5').fadeIn(400);
     });
     userAppeared = true;
-    noLoadEventsInTestspaceYet = true;
 }
 
 $(document).ready(function () {
@@ -97,7 +96,7 @@ $(document).ready(function () {
                     type: "POST",
                     success: function (addedTestspaceId) {
                         testspaceId = addedTestspaceId;
-                        var url =
+                        testspaceUrl =
                             window.location.protocol
                             + "//"
                             + window.location.hostname
@@ -105,9 +104,8 @@ $(document).ready(function () {
                             + '?id=' + testspaceId;
                         // fill in both the inputs at once
                         $('#copybox1').add('#copybox2').find('input')
-                            .val(url);
-                        $('.whatsapp-send-btn').attr('href', 'whatsapp://send?text=' + encodeURIComponent(url));
-                        link = url;
+                            .val(testspaceUrl);
+                        $('.whatsapp-send-btn').attr('href', 'whatsapp://send?text=' + encodeURIComponent(testspaceUrl));
                         $('#stage3').fadeOut(400, function () {
                             $('#stage4').fadeIn(400, function () {
                                 $('#copybox1').find('input')
@@ -193,19 +191,19 @@ $(window).on('resize', function () {
 });
 
 $('.fb-send-btn').on('click', function () {
-    console.log(link);
+    console.log(testspaceUrl);
     FB.ui({
         method: 'send',
-        link: link
+        link: testspaceUrl
     });
     return false;
 });
 
 $('.fb-share-btn').on('click', function () {
-    console.log(link);
+    console.log(testspaceUrl);
     FB.ui({
         method: 'share',
-        href: link
+        href: testspaceUrl
     }, function (response) {
     });
     return false;

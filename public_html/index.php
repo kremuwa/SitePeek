@@ -4,6 +4,10 @@
 
     $messages = [];
 
+    if (isAnybodyLoggedIn()) {
+        redirect('panel.php');
+    }
+
     try {
 
         if(isset($_POST['register'])) {

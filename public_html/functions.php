@@ -83,3 +83,7 @@ function goHomeIfNotLoggedIn() {
         redirect("index.php");
     }
 }
+
+function isAnybodyLoggedIn() {
+    return isset($_SESSION['loggedIn']);
+}

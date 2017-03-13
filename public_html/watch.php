@@ -3,22 +3,16 @@
 include('functions.php');
 
 // initial checks
-
 goHomeIfNotLoggedIn();
-
-if(!isset($_GET['site']))
-    redirect('panel.php');
-
-$getSiteDomain = $dbh->prepare("select domain from sites where id = ? && user_id = ?");
-
-$getSiteDomain->execute([$_GET['site'], getLoggedInUserId()]);
-
-$siteDomainRow = $getSiteDomain->fetch();
-
-if($siteDomainRow === false) { // if the site doesn't belong to user
+if (!isset($_GET['site'])) {
     redirect('panel.php');
 }
-
+$getSiteDomain = $dbh->prepare("SELECT domain FROM sites WHERE id = ? AND user_id = ?");
+$getSiteDomain->execute([$_GET['site'], getLoggedInUserId()]);
+$siteDomainRow = $getSiteDomain->fetch();
+if ($siteDomainRow === false) { // if the site doesn't belong to user
+    redirect('panel.php');
+}
 $siteDomain = $siteDomainRow['domain'];
 
 ?>
@@ -28,7 +22,7 @@ $siteDomain = $siteDomainRow['domain'];
 <div id="stage2">
     <iframe id="preparation-frame" src="<?php _pr($siteDomain); ?>"></iframe>
     <div id="generateWrapper">
-        <div style="font-size: 0.8em">Navigate to the page from which <br />you want to start watching.</div>
+        <div style="font-size: 0.8em">Navigate to the page from which <br/>you want to start watching.</div>
         <div style="font-size: 1em"><strong>THEN</strong> click:</div>
         <a id="generate" href="#">
             Generate
@@ -56,7 +50,7 @@ $siteDomain = $siteDomainRow['domain'];
 
         <div id="copybox1">
             <label>
-                <input type="text" />
+                <input type="text"/>
             </label>
         </div>
 
@@ -69,7 +63,7 @@ $siteDomain = $siteDomainRow['domain'];
         <a href="#" class="fb-share-btn">Share on Facebook</a>
 
         <p>
-            <img class="loading" src="img/loading.gif" />
+            <img class="loading" src="img/loading.gif"/>
             <strong>Waiting for Your friend to click the link...</strong>
         </p>
 
@@ -112,11 +106,12 @@ $siteDomain = $siteDomainRow['domain'];
 
         <div id="copybox2">
             <label>
-                <input type="text" />
+                <input type="text"/>
             </label>
         </div>
 
-        <a href="whatsapp://send" data-text="Take a look:" data-href="" class="wa_btn wa_btn_l" style="display:none">Send using WhatsApp</a>
+        <a href="whatsapp://send" data-text="Take a look:" data-href="" class="wa_btn wa_btn_l" style="display:none">Send
+            using WhatsApp</a>
         <a href="#" class="fb-send-btn" style="display:none">Send with Messenger</a>
         <a href="#" class="fb-share-btn">Share on Facebook</a>
 
@@ -125,7 +120,7 @@ $siteDomain = $siteDomainRow['domain'];
         </p>
 
         <p>
-            <img class="loading" src="img/loading.gif" />
+            <img class="loading" src="img/loading.gif"/>
             <strong>Waiting for Your friend to click the link...</strong>
         </p>
 
@@ -133,7 +128,7 @@ $siteDomain = $siteDomainRow['domain'];
 
 </div>
 
-<?php include ('postbody-scripts.php'); ?>
+<?php include('postbody-scripts.php'); ?>
 
 <script>
 
@@ -144,14 +139,15 @@ $siteDomain = $siteDomainRow['domain'];
 <script src="js/watch.js"></script>
 <script src="js/vendor/jquery.panzoom.min.js"></script>
 <!--suppress CommaExpressionJS -->
-<script type="text/javascript">if(typeof wabtn4fg==="undefined")
-    {wabtn4fg=1;
-        h=document.head||
+<script type="text/javascript">if (typeof wabtn4fg === "undefined") {
+        wabtn4fg = 1;
+        h = document.head ||
             document.getElementsByTagName("head")[0],
-            s=document.createElement("script");
-        s.type="text/javascript";
-        s.src="js/vendor/whatsapp-button.js";
-        h.appendChild(s);}
+            s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = "js/vendor/whatsapp-button.js";
+        h.appendChild(s);
+    }
 </script>
 
 <?php include('footer.php'); ?>

@@ -73,4 +73,6 @@ $userSites = $getUserSites->fetchAll();
 
 </table>
 
+<a href="logout.php">Log out</a>
+
 <?php include('footer.php'); ?>

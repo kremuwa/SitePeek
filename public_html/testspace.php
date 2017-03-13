@@ -84,7 +84,7 @@ include('header.php');
 
 <script>
     var testspaceId = '<?php _pr($_GET['id']); ?>';
-    var testspaceUrl = '<?php _pr($result['url']); ?>'
+    var testspaceUrl = '<?php _pr($result['url']); ?>';
 </script>
 
 <iframe id="recording-frame" src="<?php _pr($result['url']); ?>"></iframe>
