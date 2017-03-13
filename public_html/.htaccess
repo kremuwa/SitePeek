@@ -1,6 +1,4 @@
 #RewriteBase /
 RewriteEngine on
+# I guess the line below exists so that Facebook's URL resolver doesn't trigger the start of test session
 RewriteCond %{HTTP_USER_AGENT} !FacebookExternalHit [NC]
-RewriteCond %{HTTP_HOST} ^celebrities24.tk [NC,OR]
-RewriteCond %{HTTP_HOST} ^www.celebrities24.tk [NC]
-RewriteRule ^(.*)$ http://thenetspy.com/$1 [L,R=301,NC]
