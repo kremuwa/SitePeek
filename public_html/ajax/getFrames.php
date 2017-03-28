@@ -26,7 +26,7 @@ try {
         $sql = "SELECT
                        frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
-                       frameWidth AS width, frameHeight AS height, frameHref AS href
+                       frameScrollLeft AS scrollLeft, frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
                     WHERE testspaceId = ? AND frameTimestamp > (
                       SELECT MAX(frameTimestamp)
@@ -40,9 +40,9 @@ try {
     } else {
 
         $sql = "SELECT
-                      testspaceId,/*DEUBG*/ frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
+                       frameType AS type, frameTimestamp AS timestamp, frameMouseX AS mouseX, frameMouseY AS mouseY,
                        frameTarget AS target, frameText AS text, frameCaret AS caret, frameScrollTop AS scrollTop,
-                       frameWidth AS width, frameHeight AS height, frameHref AS href
+                       frameScrollLeft AS scrollLeft, frameWidth AS width, frameHeight AS height, frameHref AS href
                     FROM frames
                     WHERE testspaceId = ? AND frameTimestamp > ?";
 

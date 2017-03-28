@@ -81,13 +81,13 @@ $siteDomain = $siteDomainRow['domain'];
         <span id="zoominfo">Pan and zoom using mouse or your fingers</span>
     </div>
     <div id="wrapper">
-        <iframe id="playing-frame" src="<?php _pr($siteDomain); ?>"></iframe>
+        <iframe id="playing-frame"></iframe>
         <div id="panzoom-layer"></div>
     </div>
     <div id="message-box"> <!-- can be generalized if needed -->
         A second person clicked Your link, while the first one is still
         recorded. Two people can't be recorded at the same time.
-        The second person was redirected to the main page of TheNetSpy.com.
+        The second person was redirected to the main page of SitePeek.tk.
     </div>
 </div>
 

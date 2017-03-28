@@ -5,7 +5,6 @@ var enableScrollLogging = true;
 var enableResizeLogging = true;
 var frames = [];
 var fps = 50; // more is nonsense
-var userIsLeaving = false;
 
 // recording and playing variables
 
@@ -14,13 +13,10 @@ var sitepeekAppDomain = 'http://sitepeek.dev';
 
 // playing variables
 
-var lastTimestamp = 0; // using this variable we will ask PHP for more data registered only after its value
-var playDelay = 1000;  // by how many miliseconds the playback will be delayed compared to the recording
 var scrollTop = 0;
+var scrollLeft = 0;
 var currentMouseX = 0;
 var currentMouseY = 0;
-var noLoadFramesExecutedYet = true;
-var userAppeared = false;
 
 function getCurrentTimestamp() {
     if (!Date.now) {
@@ -157,13 +153,14 @@ function addTextFrame(event) {
     $(event.target).removeProp('toBeFramed');
 }
 
-function addScrollFrame(scrollTop) {
+function addScrollFrame(scrollTop, scrollLeft) {
     if (enableScrollLogging) {
         // add new frame
         frames[frames.length] = {
             type: 'scroll',
             timestamp: getCurrentTimestamp(),
-            scrollTop: scrollTop
+            scrollTop: scrollTop,
+            scrollLeft: scrollLeft
         };
         enableScrollLogging = false;
     }
@@ -214,10 +211,8 @@ function putBatchedData(async) {
         },
         async: async,
         type: "POST",
-        success: function() {
-            if (!userIsLeaving) {
-                putBatchedData();
-            }
+        success: function () {
+            putBatchedData();
         },
         // DEBUG
         error: function (xhr, status, errorThrown) {
@@ -252,29 +247,33 @@ function unlockTestspace() {
     });
 }
 
-function notifyWatcherIfDidnt() {
-    // perform only the first time the user is seeing unload communicate
-    if (!userIsLeaving) {
-        userIsLeaving = true;
-        addUnloadFrame();
-        putBatchedData(false); // send data (in a synchronous way!) for the last time
-        unlockTestspace();
-        // TODO remove if all the functions above work without the lines below
-        var confirmationMessage = "Are you sure you want to leave?";
-        (event || window.event).returnValue = confirmationMessage;     // Gecko and Trident
-        return confirmationMessage;
-    }
-}
-
 function startPutting() {
     putBatchedData();
-    // not sure why not use jQuery here, but I was told by internet not to
-    window.addEventListener('beforeunload', notifyWatcherIfDidnt);
 }
 
 // CATCHING DOM EVENTS
 
-$(window).on('load', function () {
+function init() {
+    $(document).ready(function() {
+        // notify the testspace maker about current URL, so it knows what to save as a start page when user clicks "generate"
+        var message = {
+            type: 'currentUrl',
+            currentUrl: window.location.href
+        };
+        sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
+    });
+    // custom easing effect for hiding clicktraces
+    $.extend($.easing, {
+        easeOutQuint: function (x, t, b, c, d) {
+            return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+        }
+    });
+    setupEventCatching();
+    // adding load event (different from DOM load event), we add window size data, too, mainly for first load event
+    addLoadFrame($(window).width(), $(window).height(), location.href);
+}
+
+function setupEventCatching() {
     var $body = $('body');
     // catching mousemove events
     $body.on('mousemove', function (event) {
@@ -309,7 +308,7 @@ $(window).on('load', function () {
     });
     // catching scroll events
     $(window).on('scroll', function () {
-        addScrollFrame($(window).scrollTop());
+        addScrollFrame($(window).scrollTop(), ($(window).scrollLeft()));
     });
     // to only add new scrolling frames once in a while
     setInterval(function () {
@@ -323,10 +322,7 @@ $(window).on('load', function () {
     setInterval(function () {
         enableResizeLogging = true;
     }, 1000 / fps);
-    // catching load events (we are in load callback!)
-    // we add window size data, too, mainly for first load event
-    addLoadFrame($(window).width(), $(window).height(), location.href);
-});
+}
 
 /* ============= PLAYING ============= */
 
@@ -358,74 +354,20 @@ function setCaretPosition(el, caretPos) {
     }
 }
 
-function startPlaying() {
-    getNewFramesAndScheduleTheirActions();
-}
-
-function getNewFramesAndScheduleTheirActions() {
-    $.ajax({
-        url: sitepeekAppDomain + "/ajax/getFrames.php",
-        data: {
-            lastTimestamp: lastTimestamp,
-            testspaceId: testspaceId
-        },
-        dataType: "text",
-        type: "POST",
-        success: function (json) {
-            var frames = JSON.parse(json);
-            // if some frames were delivered...
-            if (frames.length > 0) {
-                // save the timestamp of most recent frame received from the server
-                lastTimestamp = frames[frames.length - 1].timestamp;
-                scheduleFrameActions(frames);
-                frames.length = 0;
-            }
-            getNewFramesAndScheduleTheirActions();
-        }
-    });
-}
-
-function scheduleFrameActions(frames) {
-    $.each(frames, function (index, frame) {
-        // parseInt because in PHP the value from database was sent as a string
-        var timeout = playDelay - (getCurrentTimestamp() - parseInt(frame.timestamp));
-        setTimeout(function () {
-            executeFrameActions(frame)
-        }, (timeout > 0 ? timeout : 0));
-        // load event means user presence, so detect it and count down
-        if (!userAppeared && (frame.type == 'load')) {
-            userAppeared = true;
-            var message = {
-                type: 'beginCountdown',
-                timeout: timeout
-            };
-            sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
-        }
-        if (frame.type == 'unload') {
-            // allow new user to come
-            userAppeared = false;
-        }
-    });
-}
-
-function executeFrameActions(frame) {
-    var pointer = $('#pointer');
+function executeFrameAction(frame) {
     var wrapper = $('#wrapper');
     if (frame.type == 'mousemove') {
+        if ($('#sitepeek-pointer').length == 0) {
+            $('body').append('<img id="sitepeek-pointer" src="' + sitepeekAppDomain + '/img/cursor.png" style="position: absolute; z-index: 10000;" />');
+        }
+        var pointer = $('#sitepeek-pointer');
         // move the image of mouse; we use parseFloat because some properties are text (from DB)
-        currentMouseX = frame.mouseX;
-        currentMouseY = frame.mouseY;
+        currentMouseX = parseFloat(frame.mouseX);
+        currentMouseY = parseFloat(frame.mouseY);
         pointer.offset({
-            left: parseFloat(currentMouseX),
-            top: parseFloat(currentMouseY)
+            left: currentMouseX,
+            top: currentMouseY
         });
-        // notify the parent frame to center the view on cursor
-        var message = {
-            type: 'centerViewOnCursor',
-            currentMouseX: currentMouseX,
-            currentMouseY: currentMouseY
-        };
-        sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
     }
     else if (frame.type == 'click') {
         $('<div class="clicktrace"></div>')
@@ -439,8 +381,8 @@ function executeFrameActions(frame) {
             })
             .offset({
                 // -15 because we want the click circle to be centered
-                left: parseFloat(currentMouseX) - 15,
-                top: parseFloat(currentMouseY) - 15
+                left: currentMouseX - 15,
+                top: currentMouseY - 15
             })
             .appendTo($('body'))
             .fadeOut(2000, 'easeOutQuint', function () {
@@ -464,77 +406,10 @@ function executeFrameActions(frame) {
     }
     else if (frame.type == 'scroll') {
         scrollTop = frame.scrollTop;
-        $('body').scrollTop(scrollTop);
-    }
-    else if (frame.type == 'resize') {
-        var messageWindowResized = {
-            type: 'windowResized',
-            width: frame.width,
-            height: frame.height
-        };
-        sendMessageToOrigin(window.parent, messageWindowResized, sitepeekAppDomain);
-    }
-    else if (frame.type == 'load') {
-        window.location.href = frame.href; // main action
-        // TODO make sure if it's necessary or not. If it is, make sure noLoadFramesExecutedYet is set to true when new user appears
-        // if (noLoadFramesExecutedYet) {
-        //     noLoadFramesExecutedYet = false;
-        //     // newly loaded website has to be resized too, in order to fit in viewer's browser width.
-        //     // needed only for first page load of each observed user
-        //     scrollTop = 0;
-        //     // smart way to reuse my code :)
-        //     executeFrameActions({
-        //         type: 'resize',
-        //         width: frame.width,
-        //         height: frame.height
-        //     });
-        // }
-    }
-    else if (frame.type == 'unload') {
-        // if a new user appeared between scheduling and execution of this frame, we won't execute at all
-        if (userAppeared) {
-            return false;
-        }
-        // otherwise, show the information that the user is gone
-        $('#stage6').fadeOut(400, function () {
-            $('#stage7').fadeIn(400, function () {
-                // select field content only if we're not on mobile - TODO but why?
-                if (!mobilecheck()) {
-                    $('#copybox2').find('input')
-                        .trigger('focus')
-                        .select();
-                }
-            });
-        });
-    }
-    else if (frame.type == 'secondvisitor') {
-        // show the information that a second user came
-        // while the first one was being recorded
-        $('#message-box').fadeIn(400, function () {
-            setTimeout(function () {
-                $('#message-box').fadeOut(400);
-            }, 8000)
-        });
+        scrollLeft = frame.scrollLeft;
+        $('body').scrollTop(scrollTop).scrollLeft(scrollLeft);
     }
 }
-
-//// end of functions
-
-$(document).on('ready', function () {
-    // notify the testspace maker about current URL, so it knows what to save as a start page when user clicks "generate"
-    var message = {
-        type: 'currentUrl',
-        currentUrl: window.location.href
-    };
-    sendMessageToOrigin(window.parent, message, sitepeekAppDomain);
-    // custom easing effect for hiding clicktraces
-    $.extend($.easing,
-        {
-            easeOutQuint: function (x, t, b, c, d) {
-                return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
-            }
-        });
-});
 
 $(window).on("message", function (event) {
     var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
@@ -546,10 +421,9 @@ $(window).on("message", function (event) {
     if (receivedMessage.type == 'startPutting') {
         testspaceId = receivedMessage.testspaceId;
         startPutting();
-    } else if (receivedMessage.type == 'startPlaying') {
-        testspaceId = receivedMessage.testspaceId;
-        startPlaying();
-    } else if (receivedMessage.type == 'newUserCame') {
-        noLoadFramesExecutedYet = true;
+    } else if (receivedMessage.type == 'executeFrameAction') {
+        executeFrameAction(receivedMessage.frame);
     }
 });
+
+init();
