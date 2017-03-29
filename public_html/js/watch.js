@@ -1,17 +1,20 @@
 // global variables
 var testspaceId = null;
-var scrollTop = 0; // TODO remove after making sure it's not needed for panning
+var scrollTop = 0;
+var scrollLeft = 0;
 var zoom = 1;
 var userAppeared = false;
 var pointerDown = false;
+var testspaceStartingUrl = null;
 var testspaceUrl = null;
-var currentRemoteUrl = null;
+var latestPreparationFrameHref = null;
 var playingFrame = $('#playing-frame');
 var panzoomLayer = $('#panzoom-layer');
 var wrapper = $('#wrapper');
 var lastTimestamp = 0; // using this variable we will ask PHP for more data registered only after its value
 var playDelay = 1000;  // by how many miliseconds the playback will be delayed compared to the recording
-var noLoadFramesExecutedYet = true;
+var playingFrameListens = false;
+var pendingFrames = [];
 
 function getCurrentTimestamp() {
     if (!Date.now) {
@@ -50,7 +53,7 @@ function sendMessageToOrigin(targetWindow, message, targetOrigin) {
 
 function centerViewOnCursor(currentMouseX, currentMouseY) {
     var matrix = panzoomLayer.panzoom('getMatrix');
-    var panX = parseFloat(wrapper.css('width')) / 2 - currentMouseX;
+    var panX = parseFloat(wrapper.css('width')) / 2 - (currentMouseX - scrollLeft);
     var panY = parseFloat(wrapper.css('height')) / 2 - (currentMouseY - scrollTop);
     // x and y translations respectively
     matrix[4] = panX;
@@ -97,7 +100,6 @@ function scheduleFrameActions(frames) {
         if (frame.type == 'load') {
             if (!userAppeared) {
                 userAppeared = true;
-                noLoadFramesExecutedYet = true;
                 $('#stage4').fadeOut(400, function () {
                     $('#stage6').fadeIn(400);
                 });
@@ -147,30 +149,20 @@ function executeFrameAction(frame) {
     }
     else if (frame.type == 'load') {
         playingFrame.attr("src", frame.href);
-
-        if (noLoadFramesExecutedYet) {
-            noLoadFramesExecutedYet = false;
-            // newly loaded website has to be resized too, in order to fit in viewer's browser width.
-            // needed only for first page load of each observed user
-            scrollTop = 0;
-            // smart way to reuse my code :)
-            executeFrameAction({
-                type: 'resize',
-                width: frame.width,
-                height: frame.height
-            });
-        }
+        playingFrameListens = false;
     }
     else if (frame.type == 'unload') {
-        // userAppeared is set to false when unload frame is being scheduled; if a new user appeared between
-        // scheduling and execution of this frame (which happens now), we do nothing
-        if (userAppeared) {
-            return;
-        }
-        // otherwise, show the information that the user is gone
+        // TODO remove after making sure it's not necessary anymore (after getting rid of the countdown)
+        // // userAppeared is set to false when unload frame is being scheduled; if a new user appeared between
+        // // scheduling and execution of this frame (which happens now), we do nothing
+        // if (userAppeared) {
+        //     return;
+        // }
+        // show the information that the user is gone
         $('#stage6').fadeOut(400, function () {
+            playingFrame.attr('src', 'about:blank');
             $('#stage7').fadeIn(400, function () {
-                // select field content only if we're not on mobile - TODO but why?
+                // select field content only if we're not on mobile, because on mobile it's not handy
                 if (!mobilecheck()) {
                     $('#copybox2').find('input')
                         .trigger('focus')
@@ -187,19 +179,26 @@ function executeFrameAction(frame) {
                 $('#message-box').fadeOut(400);
             }, 8000)
         });
-    } else {
-        // frames of other types are mostly handled by the script on the tracked website
-        var msgExecuteFrameAction = {
-            type: 'executeFrameAction',
-            frame: frame
-        };
-        sendMessageToOrigin(playingFrame[0].contentWindow, msgExecuteFrameAction, extractOrigin(siteStartAddress));
-        // though for some of them we do some handling on our side, too
-        if (frame.type == 'mousemove') {
-            // if we're not panning at the moment...
-            if (!pointerDown) {
-                centerViewOnCursor(frame.mouseX, frame.mouseY);
+    } else { // frames of other types are partially handled by the script on the tracked website
+        if (playingFrameListens) {
+            var msgExecuteFrameAction = {
+                type: 'executeFrameAction',
+                frame: frame
+            };
+            sendMessageToOrigin(playingFrame[0].contentWindow, msgExecuteFrameAction, extractOrigin(siteStartAddress));
+            if (frame.type == 'mousemove') {
+                // if we're not panning at the moment...
+                if (!pointerDown) {
+                    centerViewOnCursor(frame.mouseX, frame.mouseY);
+                }
+            } else if (frame.type == 'scroll') {
+                scrollTop = frame.scrollTop;
+                scrollLeft = frame.scrollLeft;
             }
+        } else {
+            // if scripts inside of playingFrame are not ready yet, we save the frame
+            // to be executed once it's ready
+            pendingFrames[pendingFrames.length] = frame;
         }
     }
 }
@@ -207,12 +206,13 @@ function executeFrameAction(frame) {
 $(document).ready(function () {
     $('#generate').on('click', function () {
         $('#stage2').fadeOut(400, function () {
-            $('#preparation-frame')[0].contentWindow.location.href = 'about:blank';
+            $('#preparation-frame').attr("src", 'about:blank');
             $('#stage3').fadeIn(400, function () {
+                testspaceStartingUrl = latestPreparationFrameHref;
                 $.ajax({
                     url: "ajax/addTestspace.php",
                     data: {
-                        url: currentRemoteUrl
+                        url: testspaceStartingUrl
                     },
                     dataType: "text",
                     type: "POST",
@@ -248,11 +248,10 @@ $(document).ready(function () {
         $('#stage6, #stage7')
             .fadeOut(400)
             .promise().done(function () {
-            $('#stage2').fadeIn(400, function () {
-                $('#dialog1').dialog('open');
-                userAppeared = false;
-                playingFrame[0].contentWindow.location.href = "about:blank";
-            });
+            playingFrame.attr('src', 'about:blank');
+            $('#preparation-frame').attr('src', testspaceStartingUrl);
+            userAppeared = false;
+            $('#stage2').fadeIn(400);
         });
         return false;
     });
@@ -301,7 +300,6 @@ $(window).on('resize', function () {
 });
 
 $('.fb-send-btn').on('click', function () {
-    console.log(testspaceUrl);
     FB.ui({
         method: 'send',
         link: testspaceUrl
@@ -310,7 +308,6 @@ $('.fb-send-btn').on('click', function () {
 });
 
 $('.fb-share-btn').on('click', function () {
-    console.log(testspaceUrl);
     FB.ui({
         method: 'share',
         href: testspaceUrl
@@ -320,16 +317,24 @@ $('.fb-share-btn').on('click', function () {
 });
 
 $(window).on("message", function (event) {
-    var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
+    var origin = event.origin || event.originalEvent.origin;
     if (origin !== extractOrigin(siteStartAddress))
         return;
+    var source = event.source || event.originalEvent.source;
     var data = event.data || event.originalEvent.data;
     var receivedMessage = JSON.parse(data);
     // checking for message type
-    if (receivedMessage.type == 'currentUrl') {
-        // this message is sent when the sitepeek-library.js file is loaded on a newly open page of the site we have loaded in one of iframes; its purpose is to notify the testspace creator about the starting url for the testspace
-        if (!userAppeared) {
-            currentRemoteUrl = receivedMessage.currentUrl;
+    if (receivedMessage.type == 'sitepeekLibLoaded') {
+        if (source == $('#preparation-frame')[0].contentWindow) {
+            // this message is sent each time the sitepeek-library.js file is loaded as a page resource in one of the
+            // iframes; here we use it to inform the testspace creator about the starting url for the testspace
+            latestPreparationFrameHref = receivedMessage.currentUrl;
+        } else if (source == playingFrame[0].contentWindow) {
+            playingFrameListens = true;
+            pendingFrames.forEach(function(pendingFrame) {
+                executeFrameAction(pendingFrame);
+            });
+            pendingFrames.length = 0;
         }
     }
 });

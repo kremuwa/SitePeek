@@ -11,7 +11,7 @@ try {
     ));
 
     $sql = "INSERT INTO testspaces (testspaceId, url)
-                VALUES (?, ?)";
+            VALUES (?, ?)";
 
     $stmt = $dbh->prepare($sql);
 

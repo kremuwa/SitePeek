@@ -174,10 +174,6 @@ html, body {
     border: none;
 }
 
-#dialog1 {
-    font-size: 0.8em;
-}
-
 #generateWrapper {
     position: absolute;
     bottom: 2em;
@@ -353,6 +349,7 @@ html, body {
 
 #panzoom-layer {
     position: absolute;
+    top: 0;
     z-index: 10002;
 }
 
