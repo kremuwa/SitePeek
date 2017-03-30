@@ -159,7 +159,7 @@ function addScrollFrame(scrollTop, scrollLeft) {
 }
 
 /**
- * The load frame means that a new URL was open and sitepeek-library.js was loaded on it
+ * The load frame means that a new URL was open and sitepeek.js was loaded on it
  *
  * @param href the URL that was open
  */
@@ -273,7 +273,7 @@ function executeFrameAction(frame) {
     var wrapper = $('#wrapper');
     if (frame.type == 'mousemove') {
         if ($('#sitepeek-pointer').length == 0) {
-            $('body').append('<img id="sitepeek-pointer" src="' + sitepeekAppDomain + '/img/cursor.png" style="position: absolute; z-index: 10000;" />');
+            $('body').append('<img id="sitepeek-cursor" src="' + sitepeekAppDomain + '/img/cursor.png" style="position: absolute; z-index: 10000;" />');
         }
         var pointer = $('#sitepeek-pointer');
         // move the image of mouse; we use parseFloat because some properties are text (from DB)

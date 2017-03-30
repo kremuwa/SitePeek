@@ -326,7 +326,7 @@ $(window).on("message", function (event) {
     // checking for message type
     if (receivedMessage.type == 'sitepeekLibLoaded') {
         if (source == $('#preparation-frame')[0].contentWindow) {
-            // this message is sent each time the sitepeek-library.js file is loaded as a page resource in one of the
+            // this message is sent each time the sitepeek.js file is loaded as a page resource in one of the
             // iframes; here we use it to inform the testspace creator about the starting url for the testspace
             latestPreparationFrameHref = receivedMessage.currentUrl;
         } else if (source == playingFrame[0].contentWindow) {
