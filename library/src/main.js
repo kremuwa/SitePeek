@@ -4,10 +4,6 @@ var enableMousemoveLogging = true;
 var enableScrollLogging = true;
 var fps = 50; // more is nonsense
 
-// recording and playing variables
-
-var sitepeekAppDomain = 'http://sitepeek.dev';
-
 // playing variables
 
 var currentMouseX = 0;
@@ -272,14 +268,13 @@ function setCaretPosition(el, caretPos) {
 function executeFrameAction(frame) {
     var wrapper = $('#wrapper');
     if (frame.type == 'mousemove') {
-        if ($('#sitepeek-pointer').length == 0) {
-            $('body').append('<img id="sitepeek-cursor" src="' + sitepeekAppDomain + '/img/cursor.png" style="position: absolute; z-index: 10000;" />');
+        if ($('#sitepeek-cursor').length == 0) {
+            $('body').append('<div id="sitepeek-cursor"></div>');
         }
-        var pointer = $('#sitepeek-pointer');
         // move the image of mouse; we use parseFloat because some properties are text (from DB)
         currentMouseX = parseFloat(frame.mouseX);
         currentMouseY = parseFloat(frame.mouseY);
-        pointer.offset({
+        $('#sitepeek-cursor').offset({
             left: currentMouseX,
             top: currentMouseY
         });
@@ -325,7 +320,7 @@ function executeFrameAction(frame) {
 }
 
 $(window).on("message", function (event) {
-    var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
+    var origin = event.origin || event.originalEvent.origin;
     if (origin !== sitepeekAppDomain) // if the message is not coming from a trusted source
         return;
     var data = event.data || event.originalEvent.data;
