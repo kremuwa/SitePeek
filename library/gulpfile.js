@@ -14,7 +14,7 @@ gulp.task('dev-build', ['dev-concat'], function() {
 
 gulp.task('dev-publish', ['dev-build'], function() {
     return gulp.src('./build/dev/*')
-        .pipe(gulp.dest('./../public_html/hosted-library'));
+        .pipe(gulp.dest('./../public_html/hosted-library/dev'));
 });
 
 gulp.task('prod-concat', function() {
@@ -30,9 +30,9 @@ gulp.task('prod-build', ['prod-concat'], function() {
 
 gulp.task('prod-publish', ['prod-build'], function() {
     return gulp.src('./build/prod/*')
-        .pipe(gulp.dest('./../public_html/hosted-library'));
+        .pipe(gulp.dest('./../public_html/hosted-library/prod'));
 });
 
-gulp.task('dev-watch', ['dev-publish', 'prod-build'], function() {
-    return gulp.watch(['./src*'], ['dev-publish', 'prod-build']);
+gulp.task('default', ['dev-publish', 'prod-publish'], function() {
+    return gulp.watch(['./src*'], ['dev-publish', 'prod-publish']);
 });
