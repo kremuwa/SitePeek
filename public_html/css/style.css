@@ -339,15 +339,19 @@ html, body {
 }
 
 #playing-frame {
-    /*position: absolute !important;*/
-    left: 0;
-    top: 0;
     border: none;
     pointer-events: none;
     background: #fff;
 }
 
 #panzoom-layer {
+    /** DIRTY HACK **/
+    /* Even though I disabled pointer-events for #playing-frame, mobile Chrome still detected moving finger
+     over #playing-frame as scrolling the site inside of the frame. It didn't even help that we have the
+     #panzoom-layer element covering the #playing-frame - the events somehow still came through.
+      They stopped to come through once I gave #panzoom-layer some almost-invisible background,
+       which is what the line below does. */
+    background: rgba(255, 0, 0, 0.01);
     position: absolute;
     top: 0;
     z-index: 10002;
@@ -416,6 +420,18 @@ html, body {
 
 #createYourOwn:hover {
     background: #F93A90;
+}
+
+#zoominfo, #zoominfo-mobile {
+    display: none;
+}
+
+#zoominfo-mobile {
+    margin-top: 5px;
+}
+
+#zoominfo-mobile > input[type="range"] {
+    height: 10px;
 }
 
 /* ==========================================================================

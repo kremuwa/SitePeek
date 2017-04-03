@@ -78,7 +78,10 @@ $siteDomain = $siteDomainRow['domain'];
 <div id="stage6">
     <div id="menu">
         <a class="again" href=".">Generate another link</a>
-        <span id="zoominfo">Pan and zoom using mouse or your fingers</span>
+        <span id="zoominfo">Drag & move to pan, zoom using mouse scroll</span>
+        <div id="zoominfo-mobile">
+            Zoom: <input type="range" id="zoom-range" title="A control to zoom the site preview in or out">
+        </div>
     </div>
     <div id="wrapper">
         <iframe id="playing-frame"></iframe>
@@ -136,8 +139,8 @@ $siteDomain = $siteDomainRow['domain'];
 
 </script>
 
+<script src="js/vendor/jquery.panzoom.js"></script>
 <script src="js/watch.js"></script>
-<script src="js/vendor/jquery.panzoom.min.js"></script>
 <!--suppress CommaExpressionJS -->
 <script type="text/javascript">if (typeof wabtn4fg === "undefined") {
         wabtn4fg = 1;
