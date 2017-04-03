@@ -106,24 +106,13 @@ html, body {
     overflow: hidden;
 }
 
-#stage2, #stage3, #stage4, #stage5, #stage6, #stage7 {
+#s1-preparation, #s2-loading, #s3-waiting, #s4-playing, #s5-subjectLeft {
     height: 100%;
     position: relative;
 }
 
-#stage3, #stage4, #stage5, #stage6, #stage7 {
+#s2-loading, #s3-waiting, #s4-playing, #s5-subjectLeft {
     display: none;
-}
-
-/* stages 1-5 */
-
-#stage1 {
-    height: 100%;
-    margin: 0;
-    top: 0;
-    width: 100%;
-    position: absolute;
-    overflow-y: auto;
 }
 
 .info {
@@ -166,8 +155,6 @@ html, body {
     background: #F93A90;
 }
 
-/* stage 2 */
-
 #preparation-frame {
     width: 100%;
     height: 100%;
@@ -201,9 +188,7 @@ html, body {
     opacity: 1;
 }
 
-/* stage 3-4 */
-
-#stage3, #stage4 {
+#s2-loading, #s3-waiting {
     background-color: rgb(3,166,134);
     color: #FAFF40;
     height: 100%;
@@ -221,7 +206,7 @@ html, body {
     width: 90%;
 }
 
-#stage4 #linkbox {
+#s3-waiting #linkbox {
     font-size: 1em;
     position: absolute;
     top: 50%;
@@ -231,13 +216,13 @@ html, body {
     width: 90%;
 }
 
-#stage4 #linkbox iframe {
+#s3-waiting #linkbox iframe {
     width: 204px;
     height: 37px;
 }
 
 .whatsapp-send-btn {
-    /*background: #5cbe4a url('../img/whatsapp-logo.png') left center no-repeat;*/
+    background: #25d366 url(../img/whatsapp-logo.png) left center no-repeat;
     display: block;
     margin: 0 auto;
     color: #fff;
@@ -248,18 +233,7 @@ html, body {
 }
 
 .fb-send-btn {
-    background: #0084ff url('../img/messenger-logo.png') left center no-repeat;
-    display: block;
-    margin: 0 auto;
-    color: #fff;
-    text-decoration: none;
-    padding: 0.5em 0 0.4em 2em;
-    background-size: contain;
-    width: 10.65em;
-}
-
-.fb-share-btn {
-    background: #3b5999 url('../img/fb-logo.png') left center no-repeat;
+    background: #0084ff url(../img/messenger-logo.png) left center no-repeat;
     display: block;
     margin: 0 auto;
     color: #fff;
@@ -285,28 +259,7 @@ html, body {
     margin-right: 0.2em;
 }
 
-/* stage5 - countdown */
-
-#stage5 {
-    background-color: rgb(3,166,134);
-    color: #FAFF40;
-    height: 100%;
-    overflow-y: auto;
-    text-align: center;
-    width: 100%;
-}
-
-#counter {
-    font-size: 4em;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-}
-
-/* stage6 - playing */
-
-#stage6 {
+#s4-playing {
     background-color: rgb(0, 51, 41);
     color: #FAFF40;
 }
@@ -373,9 +326,7 @@ html, body {
     display: none;
 }
 
-/* stage7 - user left */
-
-#stage7 {
+#s5-subjectLeft {
     background-color: rgb(3,166,134);
     color: #FAFF40;
     height: 100%;
@@ -384,7 +335,7 @@ html, body {
     width: 100%;
 }
 
-#stage7content {
+#s5content {
     font-size: 1em;
     position: absolute;
     top: 50%;
@@ -528,7 +479,7 @@ html, body {
         font-size: 6em;
     }
 
-    #stage4 #linkbox, #stage7content {
+    #s3-waiting #linkbox, #s5content {
         font-size: 1.3em;
     }
 
@@ -552,7 +503,7 @@ html, body {
         font-size: 10em;
     }
 
-    #stage4 #linkbox, #stage7content {
+    #s3-waiting #linkbox, #s5content {
         font-size: 2.0em;
     }
 

@@ -19,7 +19,26 @@ $siteDomain = $siteDomainRow['domain'];
 
 <?php include('header.php'); ?>
 
-<div id="stage2">
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '389335024755312',
+            xfbml      : true,
+            version    : 'v2.8'
+        });
+        FB.AppEvents.logPageView();
+    };
+
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<div id="s1-preparation">
     <iframe id="preparation-frame" src="<?php _pr($siteDomain); ?>"></iframe>
     <div id="generateWrapper">
         <div style="font-size: 0.8em">Navigate to the page from which <br/>you want to start watching.</div>
@@ -30,11 +49,11 @@ $siteDomain = $siteDomainRow['domain'];
     </div>
 </div>
 
-<div id="stage3">
+<div id="s2-loading">
     <div id="generating">Generating Your link...</div>
 </div>
 
-<div id="stage4">
+<div id="s3-waiting">
 
     <div id="linkbox">
 
@@ -59,8 +78,7 @@ $siteDomain = $siteDomainRow['domain'];
         </p>
 
         <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
-        <a href="#" class="fb-send-btn" style="display:none">Send using Messenger</a>
-        <a href="#" class="fb-share-btn">Share on Facebook</a>
+        <a href="#" class="fb-send-btn">Send using Messenger</a>
 
         <p>
             <img class="loading" src="img/loading.gif"/>
@@ -71,11 +89,7 @@ $siteDomain = $siteDomainRow['domain'];
 
 </div>
 
-<div id="stage5">
-    <div id="counter">N/A</div>
-</div>
-
-<div id="stage6">
+<div id="s4-playing">
     <div id="menu">
         <a class="again" href=".">Generate another link</a>
         <span id="zoominfo">Drag & move to pan, zoom using mouse scroll</span>
@@ -94,9 +108,9 @@ $siteDomain = $siteDomainRow['domain'];
     </div>
 </div>
 
-<div id="stage7">
+<div id="s5-subjectLeft">
 
-    <div id="stage7content">
+    <div id="s5content">
 
         <p>
             The user has left the site. As we told You before, they were notified about Your joke.
@@ -113,10 +127,8 @@ $siteDomain = $siteDomainRow['domain'];
             </label>
         </div>
 
-        <a href="whatsapp://send" data-text="Take a look:" data-href="" class="wa_btn wa_btn_l" style="display:none">Send
-            using WhatsApp</a>
-        <a href="#" class="fb-send-btn" style="display:none">Send with Messenger</a>
-        <a href="#" class="fb-share-btn">Share on Facebook</a>
+        <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
+        <a href="#" class="fb-send-btn">Send using Messenger</a>
 
         <p>
             ... or generate a new link by <a class="again" href=".">clicking here</a>
@@ -140,9 +152,15 @@ $siteDomain = $siteDomainRow['domain'];
 </script>
 
 <script src="js/vendor/jquery.panzoom.js"></script>
-<script src="js/watch.js"></script>
+<script src="js/Player.js"></script>
+<script>
+    $(document).ready(function() {
+        Player.init();
+    });
+</script>
 <!--suppress CommaExpressionJS -->
-<script type="text/javascript">if (typeof wabtn4fg === "undefined") {
+<script type="text/javascript">
+    if (typeof wabtn4fg === "undefined") {
         wabtn4fg = 1;
         h = document.head ||
             document.getElementsByTagName("head")[0],
@@ -152,5 +170,4 @@ $siteDomain = $siteDomainRow['domain'];
         h.appendChild(s);
     }
 </script>
-
 <?php include('footer.php'); ?>
