@@ -106,12 +106,12 @@ html, body {
     overflow: hidden;
 }
 
-#s1-preparation, #s2-loading, #s3-waiting, #s4-playing, #s5-subjectLeft {
+#s1-preparation, #s2-loading, #s3-waiting, #s4-playing, #s5-subject-left {
     height: 100%;
     position: relative;
 }
 
-#s2-loading, #s3-waiting, #s4-playing, #s5-subjectLeft {
+#s2-loading, #s3-waiting, #s4-playing, #s5-subject-left {
     display: none;
 }
 
@@ -161,7 +161,7 @@ html, body {
     border: none;
 }
 
-#generateWrapper {
+#add-testspace-wrapper {
     position: absolute;
     bottom: 2em;
     right: 3em;
@@ -172,7 +172,7 @@ html, body {
     color: #FAFF40;
 }
 
-#generate {
+#add-testspace-btn {
      background: #B984C6;
      border: 2px solid #adff00;
      border-radius: 1em;
@@ -183,7 +183,7 @@ html, body {
      margin-top: 0.2em;
  }
 
-#generate:hover {
+#add-testspace-btn:hover {
     background: #F93A90;
     opacity: 1;
 }
@@ -197,7 +197,7 @@ html, body {
     width: 100%;
 }
 
-#generating {
+#adding-testspace {
     font-size: 2em;
     position: absolute;
     top: 50%;
@@ -206,19 +206,12 @@ html, body {
     width: 90%;
 }
 
-#s3-waiting #linkbox {
-    font-size: 1em;
+.content-centerer-xy {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    max-width: 900px;
     width: 90%;
-}
-
-#s3-waiting #linkbox iframe {
-    width: 204px;
-    height: 37px;
 }
 
 .whatsapp-send-btn {
@@ -310,7 +303,7 @@ html, body {
     z-index: 10002;
 }
 
-#message-box {
+#second-visitor-msg-box {
     background: #008098;
     border: 1px solid #176f59;
     color: #fff;
@@ -326,22 +319,14 @@ html, body {
     display: none;
 }
 
-#s5-subjectLeft {
+#s5-subject-left {
     background-color: rgb(3,166,134);
     color: #FAFF40;
     height: 100%;
     overflow-y: auto;
     text-align: center;
     width: 100%;
-}
-
-#s5content {
     font-size: 1em;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    width: 90%;
 }
 
 #copybox2 {
@@ -467,11 +452,11 @@ html, body {
 
 @media only screen and (min-width: 50em) {
 
-    #generateWrapper {
+    #add-testspace-wrapper {
         font-size: 1.5em;
     }
 
-    #generating {
+    #adding-testspace {
         font-size: 4em;
     }
 
@@ -479,7 +464,7 @@ html, body {
         font-size: 6em;
     }
 
-    #s3-waiting #linkbox, #s5content {
+    #s3-waiting, #s5-subject-left {
         font-size: 1.3em;
     }
 
@@ -491,11 +476,11 @@ html, body {
 
 @media only screen and (min-width: 80em) {
 
-    #generateWrapper {
+    #add-testspace-wrapper {
         font-size: 2em;
     }
 
-    #generating {
+    #adding-testspace {
         font-size: 6.5em;
     }
 
@@ -503,7 +488,7 @@ html, body {
         font-size: 10em;
     }
 
-    #s3-waiting #linkbox, #s5content {
+    #s3-waiting, #s5-subject-left {
         font-size: 2.0em;
     }
 

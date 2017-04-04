@@ -20,19 +20,22 @@ $siteDomain = $siteDomainRow['domain'];
 <?php include('header.php'); ?>
 
 <script>
-    window.fbAsyncInit = function() {
+    window.fbAsyncInit = function () {
         FB.init({
-            appId      : '389335024755312',
-            xfbml      : true,
-            version    : 'v2.8'
+            appId: '389335024755312',
+            xfbml: true,
+            version: 'v2.8'
         });
         FB.AppEvents.logPageView();
     };
 
-    (function(d, s, id){
+    (function (d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
@@ -40,58 +43,48 @@ $siteDomain = $siteDomainRow['domain'];
 
 <div id="s1-preparation">
     <iframe id="preparation-frame" src="<?php _pr($siteDomain); ?>"></iframe>
-    <div id="generateWrapper">
-        <div style="font-size: 0.8em">Navigate to the page from which <br/>you want to start watching.</div>
+    <div id="add-testspace-wrapper">
+        <div style="font-size: 0.8em">
+            Navigate to the page from which<br/>
+            the subject will start the test.
+        </div>
         <div style="font-size: 1em"><strong>THEN</strong> click:</div>
-        <a id="generate" href="#">
+        <a id="add-testspace-btn" href="#">
             Generate
         </a>
     </div>
 </div>
 
 <div id="s2-loading">
-    <div id="generating">Generating Your link...</div>
+    <div id="adding-testspace">Adding new testspace...</div>
 </div>
 
 <div id="s3-waiting">
-
-    <div id="linkbox">
-
+    <div class="content-centerer-xy">
         <p>
-            Copy Your generated link and think of the best
-            way of sending it to Your friend (so that they don't
-            get suspicious!)<br/>
+            Copy Your generated link and send it to the test subject.
         </p>
-
         <p>
             To copy, press CTRL+C or touch & hold:
         </p>
-
         <div id="copybox1">
-            <label>
-                <input type="text"/>
-            </label>
+            <input type="text" title="Textfield with a link to added testspace."/>
         </div>
-
         <p>
             You can also use the buttons below:
         </p>
-
-        <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
+        <a href="#" class="whatsapp-send-btn hidden">Send using WhatsApp</a>
         <a href="#" class="fb-send-btn">Send using Messenger</a>
-
         <p>
             <img class="loading" src="img/loading.gif"/>
-            <strong>Waiting for Your friend to click the link...</strong>
+            <strong>Waiting for the test subject to enter the testspace...</strong>
         </p>
-
     </div>
-
 </div>
 
 <div id="s4-playing">
     <div id="menu">
-        <a class="again" href=".">Generate another link</a>
+        <a class="again" href=".">Create another testspace</a>
         <span id="zoominfo">Drag & move to pan, zoom using mouse scroll</span>
         <div id="zoominfo-mobile">
             Zoom: <input type="range" id="zoom-range" title="A control to zoom the site preview in or out">
@@ -99,48 +92,39 @@ $siteDomain = $siteDomainRow['domain'];
     </div>
     <div id="wrapper">
         <iframe id="playing-frame"></iframe>
+        <!-- user's dragging and scrolling events on the #panzoom-layer will pan and zoom the #playing-frame as well.
+        I had to use additional element for that, because I disabled all pointer events on #playing-frame, since
+        I don't want the user to be able to interfere with events simulated inside of the #playing-frame by affecting
+        its content directly (clicking links, scrolling, etc.) -->
         <div id="panzoom-layer"></div>
     </div>
-    <div id="message-box"> <!-- can be generalized if needed -->
-        A second person clicked Your link, while the first one is still
-        recorded. Two people can't be recorded at the same time.
-        The second person was redirected to the main page of SitePeek.tk.
+    <div id="second-visitor-msg-box"> <!-- can be generalized if needed -->
+        A second person clicked Your link, while the first one is still recorded. Two people can't be recorded at the
+        same time. The second person was redirected to the main page of SitePeek.tk.
     </div>
 </div>
 
-<div id="s5-subjectLeft">
-
-    <div id="s5content">
-
+<div id="s5-subject-left">
+    <div class="content-centerer-xy">
         <p>
-            The user has left the site. As we told You before, they were notified about Your joke.
-            We hope You'll survive until tomorrow :)
+            The test subject has left the site. We hope you've learned some usability insights from them!
         </p>
-
         <p>
-            You can now send the link to another person:
+            You can now send the link to another test subject:
         </p>
-
         <div id="copybox2">
-            <label>
-                <input type="text"/>
-            </label>
+            <input type="text" title="Textfield with a link to added testspace."/>
         </div>
-
         <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
         <a href="#" class="fb-send-btn">Send using Messenger</a>
-
         <p>
             ... or generate a new link by <a class="again" href=".">clicking here</a>
         </p>
-
         <p>
             <img class="loading" src="img/loading.gif"/>
-            <strong>Waiting for Your friend to click the link...</strong>
+            <strong>Waiting for the test subject to enter the testspace...</strong>
         </p>
-
     </div>
-
 </div>
 
 <?php include('postbody-scripts.php'); ?>
@@ -154,7 +138,7 @@ $siteDomain = $siteDomainRow['domain'];
 <script src="js/vendor/jquery.panzoom.js"></script>
 <script src="js/Player.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         Player.init();
     });
 </script>

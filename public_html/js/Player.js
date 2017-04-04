@@ -54,13 +54,13 @@ var Player = (function () {
     };
 
     var setupGuiEventHandlers = function () {
-        $('#generate').on('click', function () {
+        $('#add-testspace-btn').on('click', function () {
             $('#s1-preparation').fadeOut(400, addTestspace);
             return false;
         });
         $('.again').on('click', function () {
             // going to the stage1 and initializing some things
-            $('#s4-playing, #s5-subjectLeft')
+            $('#s4-playing, #s5-subject-left')
                 .fadeOut(400)
                 .promise().done(function () {
                 _playingFrame.attr('src', 'about:blank');
@@ -239,7 +239,7 @@ var Player = (function () {
             // show the information that the user is gone
             $('#s4-playing').fadeOut(400, function () {
                 _playingFrame.attr('src', 'about:blank');
-                $('#s5-subjectLeft').fadeIn(400, function () {
+                $('#s5-subject-left').fadeIn(400, function () {
                     // select field content only if we're not on mobile, because on mobile it's not handy
                     if (!userAgentIsMobile()) {
                         $('#copybox2').find('input')
@@ -252,9 +252,9 @@ var Player = (function () {
         else if (frame.type == 'secondvisitor') {
             // show the information that a second user came
             // while the first one was being recorded
-            $('#message-box').fadeIn(400, function () {
+            $('#second-visitor-msg-box').fadeIn(400, function () {
                 setTimeout(function () {
-                    $('#message-box').fadeOut(400);
+                    $('#second-visitor-msg-box').fadeOut(400);
                 }, 8000)
             });
         } else { // frames of other types are partially handled by the script on the tracked website
