@@ -49,17 +49,17 @@ $siteDomain = $siteDomainRow['domain'];
             the subject will start the test.
         </div>
         <div style="font-size: 1em"><strong>THEN</strong> click:</div>
-        <a id="add-testspace-btn" href="#">
-            Generate
+        <a id="add-testspace-btn" class="btn-sitepeek btn-sitepeek-big" href="#">
+            Add testspace
         </a>
     </div>
 </div>
 
-<div id="s2-loading">
-    <div id="adding-testspace">Adding new testspace...</div>
+<div id="s2-loading" class="text-board">
+    <div class="content-centerer-xy">Adding a new testspace...</div>
 </div>
 
-<div id="s3-waiting">
+<div id="s3-waiting" class="text-board">
     <div class="content-centerer-xy">
         <p>
             Copy Your generated link and send it to the test subject.
@@ -84,7 +84,7 @@ $siteDomain = $siteDomainRow['domain'];
 
 <div id="s4-playing">
     <div id="menu">
-        <a class="again" href=".">Create another testspace</a>
+        <a class="again btn-sitepeek btn-sitepeek-small" href=".">Create another testspace</a>
         <span id="zoominfo">Drag & move to pan, zoom using mouse scroll</span>
         <div id="zoominfo-mobile">
             Zoom: <input type="range" id="zoom-range" title="A control to zoom the site preview in or out">
@@ -104,7 +104,7 @@ $siteDomain = $siteDomainRow['domain'];
     </div>
 </div>
 
-<div id="s5-subject-left">
+<div id="s5-subject-left" class="text-board">
     <div class="content-centerer-xy">
         <p>
             The test subject has left the site. We hope you've learned some usability insights from them!
@@ -118,7 +118,7 @@ $siteDomain = $siteDomainRow['domain'];
         <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
         <a href="#" class="fb-send-btn">Send using Messenger</a>
         <p>
-            ... or generate a new link by <a class="again" href=".">clicking here</a>
+            ... or generate a new link by <a class="again btn-sitepeek btn-sitepeek-small" href=".">clicking here</a>
         </p>
         <p>
             <img class="loading" src="img/loading.gif"/>

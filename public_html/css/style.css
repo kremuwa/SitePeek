@@ -6,6 +6,8 @@
  * Kroc Camen, and the H5BP dev community and team.
  */
 
+/* Palette generated with: https://goo.gl/O2Ii8H */
+
 /* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */
@@ -115,46 +117,6 @@ html, body {
     display: none;
 }
 
-.info {
-    background: rgba(3,166,134,0.75); /* last-resort fallback */
-    background: -moz-linear-gradient(top,  rgba(3,166,134,0.75) 70%, rgba(173,255,0,0.4) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(70%,rgba(3,166,134,0.75)), color-stop(100%,rgba(173,255,0,0.4))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(3,166,134,0.75) 70%,rgba(173,255,0,0.4) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bf03a686', endColorstr='#66adff00',GradientType=0 ); /* IE6-9 */
-    border-radius: 1em;
-    color: #FAFF40;
-    text-shadow: 0 0 20px #000;
-    margin: 1.5em auto 0;
-    max-width: 800px;
-    width: 70%;
-    font-size: 0.9em;
-    padding: 1em 2em 1.5em;
-    border: 4px solid rgb(246, 248, 154);
-}
-
-.info h1 {
-    color: rgba(255, 243, 131, 1);
-    text-shadow: 1px 1px 0 #000;
-}
-
-#start {
-    display: inline-block;
-    font-size: 1.5em;
-    background: #B984C6;
-    padding: 0.5em 1em;
-    border-radius: 1em;
-    text-decoration: none;
-    text-shadow: 1px 1px 0 #000;
-    color: rgb(230, 255, 11);
-}
-
-#start:hover {
-    background: #F93A90;
-}
-
 #preparation-frame {
     width: 100%;
     height: 100%;
@@ -164,46 +126,55 @@ html, body {
 #add-testspace-wrapper {
     position: absolute;
     bottom: 2em;
+    border: 2px #A31053 solid;
     right: 3em;
     text-align: center;
-    background-color: rgb(3,166,134);
+    background-color: #FFFFF9;
     border-radius: 1em;
     padding: 0.5em;
-    color: #FAFF40;
+    color: #A31053;
 }
 
-#add-testspace-btn {
-     background: #B984C6;
-     border: 2px solid #adff00;
-     border-radius: 1em;
-     color: #FAFF40;
-     padding: 1.5em 2em;
-     text-decoration: none;
-     display: block;
-     margin-top: 0.2em;
- }
+.btn-sitepeek {
+    background: #A31053;
+    border: 2px solid #C7B5BD;
+    border-radius: 1em;
+    color: #fff;
+    text-decoration: none;
+    display: block;
+}
 
-#add-testspace-btn:hover {
-    background: #F93A90;
+.btn-sitepeek-small {
+    display: inline-block;
+    font-size: 1em;
+    padding: 0.5em 1em;
+    border-radius: 1em;
+}
+
+.btn-sitepeek-big {
+    padding: 1.5em 2em;
+    margin-top: 0.2em;
+}
+
+.btn-sitepeek:hover {
     opacity: 1;
+    color: #fff;
+    position: relative;
+    top: -1px;
+    box-shadow: 0 1px 0 black;
 }
 
-#s2-loading, #s3-waiting {
-    background-color: rgb(3,166,134);
-    color: #FAFF40;
+.text-board {
+    background-color: rgb(255, 255, 255);
+    color: #A31053;
     height: 100%;
     overflow-y: auto;
     text-align: center;
     width: 100%;
 }
 
-#adding-testspace {
+#s2-loading {
     font-size: 2em;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    width: 90%;
 }
 
 .content-centerer-xy {
@@ -226,7 +197,7 @@ html, body {
 }
 
 .fb-send-btn {
-    background: #0084ff url(../img/messenger-logo.png) left center no-repeat;
+    background: #0084ff url(../img/messenger-logo.png) -3px center no-repeat;
     display: block;
     margin: 0 auto;
     color: #fff;
@@ -238,9 +209,9 @@ html, body {
 
 #copybox1 input, #copybox2 input {
     background: transparent;
-    border: 2px solid #FAFF40;
+    border: 2px solid #A7C3DA;
     border-radius: 1em;
-    color: #adff00;
+    color: #3C3B3B;
     font-size: 0.8em;
     margin: 0.5em;
     padding: 0.5em;
@@ -253,29 +224,14 @@ html, body {
 }
 
 #s4-playing {
-    background-color: rgb(0, 51, 41);
-    color: #FAFF40;
-}
-
-.again {
-    display: inline-block;
-    font-size: 1em;
-    background: #B984C6;
-    padding: 0.5em 1em;
-    border-radius: 1em;
-    text-decoration: none;
-    text-shadow: 1px 1px 0 #000;
-    color: #FAFF40;
-}
-
-.again:hover {
-    background: #F93A90;
+    background-color: #C7B5BD;
+    color: #A31053;
 }
 
 #menu {
-    border-bottom: 3px solid rgb(0, 117, 94);
+    border-bottom: 3px solid #C7B5BD;
     padding: 0.3em 0.5em;
-    background-color: rgb(3,166,134);
+    background-color: #ffffff;
     font-size: 0.8em;
     text-align: left;
 }
@@ -319,43 +275,8 @@ html, body {
     display: none;
 }
 
-#s5-subject-left {
-    background-color: rgb(3,166,134);
-    color: #FAFF40;
-    height: 100%;
-    overflow-y: auto;
-    text-align: center;
-    width: 100%;
-    font-size: 1em;
-}
-
 #copybox2 {
     margin: 0.5em 0;
-}
-
-/* recording */
-
-#recording-frame {
-    border: none;
-    height: 100%;
-    width: 100%;
-    position: relative;
-    z-index: 0;
-}
-
-#createYourOwn {
-    display: inline-block;
-    font-size: 1em;
-    background: #B984C6;
-    padding: 0.2em 1em;
-    border-radius: 1em;
-    text-decoration: none;
-    text-shadow: 1px 1px 0 #000;
-    color: #FAFF40;
-}
-
-#createYourOwn:hover {
-    background: #F93A90;
 }
 
 #zoominfo, #zoominfo-mobile {
@@ -370,6 +291,16 @@ html, body {
     height: 10px;
 }
 
+/* recording */
+
+#recording-frame {
+    border: none;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 0;
+}
+
 /* ==========================================================================
    Helper classes
    ========================================================================== */
@@ -379,7 +310,7 @@ html, body {
  */
 
 .hidden {
-    display: none !important;
+    /* display: none !important; */
 }
 
 /*
@@ -460,17 +391,8 @@ html, body {
         font-size: 4em;
     }
 
-    #counter {
-        font-size: 6em;
-    }
-
     #s3-waiting, #s5-subject-left {
         font-size: 1.3em;
-    }
-
-    .info {
-        font-size: 1.1em;
-        margin-top: 2.5em;
     }
 }
 
@@ -484,24 +406,14 @@ html, body {
         font-size: 6.5em;
     }
 
-    #counter {
-        font-size: 10em;
-    }
-
     #s3-waiting, #s5-subject-left {
         font-size: 2.0em;
     }
-
-    .info {
-        font-size: 1.3em;
-        margin-top: 3.5em;
-    }
-
 }
 
 @media print,
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 120dpi) {
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 120dpi) {
     /* Style adjustments for high resolution devices */
 }
 
@@ -516,8 +428,9 @@ html, body {
     *:before,
     *:after {
         background: transparent !important;
-        color: #000 !important; /* Black prints faster:
-                                   http://www.sanbeiji.com/archives/953 */
+        color: #000 !important;
+        /* Black prints faster:
+                                          http://www.sanbeiji.com/archives/953 */
         box-shadow: none !important;
         text-shadow: none !important;
     }
@@ -539,7 +452,6 @@ html, body {
      * Don't show links that are fragment identifiers,
      * or use the `javascript:` pseudo protocol
      */
-
     a[href^="#"]:after,
     a[href^="javascript:"]:after {
         content: "";
@@ -555,7 +467,6 @@ html, body {
      * Printing Tables:
      * http://css-discuss.incutio.com/wiki/Printing_Tables
      */
-
     thead {
         display: table-header-group;
     }
