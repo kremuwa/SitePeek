@@ -1,1 +1,0 @@
-var sitepeekAppDomain = 'http://sitepeek.dev';

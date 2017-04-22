@@ -136,11 +136,9 @@ $siteDomain = $siteDomainRow['domain'];
 </script>
 
 <script src="js/vendor/jquery.panzoom.js"></script>
-<script src="js/Player.js"></script>
+<script src="js/player.js"></script>
 <script>
-    $(document).ready(function () {
-        Player.init();
-    });
+    player.init();
 </script>
 <!--suppress CommaExpressionJS -->
 <script type="text/javascript">

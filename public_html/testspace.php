@@ -92,5 +92,8 @@ include('header.php');
 <?php include('postbody-scripts.php'); ?>
 
 <script src="js/testspace.js"></script>
+<script>
+    testspace.init();
+</script>
 
 <?php include('footer.php'); ?>

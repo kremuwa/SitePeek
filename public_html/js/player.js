@@ -1,24 +1,23 @@
-var Player = (function () {
-
-    var _preparationFrame = $('#preparation-frame');
-    var _wrapper = $('#wrapper');
-    var _panzoomLayer = $('#panzoom-layer');
-    var _playingFrame = $('#playing-frame');
+var player = (function () {
+    var preparationFrame = $('#preparation-frame');
+    var wrapper = $('#wrapper');
+    var panzoomLayer = $('#panzoom-layer');
+    var playingFrame = $('#playing-frame');
     ////////////////////////////////////////////////
-    var _testspaceId = null;
-    var _testspaceUrl = null;
-    var _testEntryUrl = null;
-    var _latestPreparationFrameHref = null;
-    var _scrollTop = 0;
-    var _scrollLeft = 0;
-    var _currentMouseX = 0;
-    var _currentMouseY = 0;
-    var _zoom = 1;
-    var _panningInProgress = false;
-    var _lastTimestamp = 0; // using this variable we will ask PHP for more data registered only after its value
-    var _playDelay = 1000;  // by how many miliseconds the playback will be delayed compared to the recording
-    var _playingFrameListens = false;
-    var _pendingFrames = [];
+    var testspaceId = null;
+    var testspaceUrl = null;
+    var testEntryUrl = null;
+    var latestPreparationFrameHref = null;
+    var scrollTop = 0;
+    var scrollLeft = 0;
+    var currentMouseX = 0;
+    var currentMouseY = 0;
+    var zoom = 1;
+    var panningInProgress = false;
+    var lastTimestamp = 0; // using this variable we will ask PHP for more data registered only after its value
+    var playDelay = 1000;  // by how many miliseconds the playback will be delayed compared to the recording
+    var playingFrameListens = false;
+    var pendingFrames = [];
 
     var init = function () {
         initializePanzoom();
@@ -32,14 +31,14 @@ var Player = (function () {
             // clever reusing - resize to the same size of playing frame :)
             executeFrameAction({
                 type: 'resize',
-                width: parseFloat(_playingFrame.css('width')),
-                height: parseFloat(_playingFrame.css('height'))
+                width: parseFloat(playingFrame.css('width')),
+                height: parseFloat(playingFrame.css('height'))
             });
         });
     };
 
     var initializePanzoom = function () {
-        _panzoomLayer.panzoom({
+        panzoomLayer.panzoom({
             $set: $('#playing-frame, #panzoom-layer'),
             $zoomRange: $("#zoom-range"),
             contain: 'invert',
@@ -47,9 +46,9 @@ var Player = (function () {
             onZoom: (userAgentIsMobile() ? centerViewOnCursor : null),
             easing: 'linear'
         });
-        if (userAgentIsMobile) {
-            // on mobile, "disable panning" as it's faulty with touch anyway and invalidates _panningInProgress variable
-            _panzoomLayer.css('pointer-events', 'none');
+        if (userAgentIsMobile()) {
+            // on mobile, "disable panning" as it's faulty with touch anyway and invalidates panningInProgress variable
+            panzoomLayer.css('pointer-events', 'none');
         }
     };
 
@@ -63,29 +62,29 @@ var Player = (function () {
             $('#s4-playing, #s5-subject-left')
                 .fadeOut(400)
                 .promise().done(function () {
-                _playingFrame.attr('src', 'about:blank');
-                $('#preparation-frame').attr('src', _testEntryUrl);
+                playingFrame.attr('src', 'about:blank');
+                preparationFrame.attr('src', testEntryUrl);
                 $('#s1-preparation').fadeIn(400);
             });
             return false;
         });
         setupMousewheelPlayerZoom();
-        _panzoomLayer.on({
+        panzoomLayer.on({
             'panzoomstart': function () {
-                _panningInProgress = true;
+                panningInProgress = true;
             },
             'panzoomend': function () {
-                _panningInProgress = false;
+                panningInProgress = false;
             }
         });
     };
 
     var setupMousewheelPlayerZoom = function () {
-        _wrapper.on('mousewheel.focal', function (e) {
+        wrapper.on('mousewheel.focal', function (e) {
             e.preventDefault();
             var delta = e.delta || e.originalEvent.wheelDelta;
             var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-            _panzoomLayer.panzoom('zoom', zoomOut, {
+            panzoomLayer.panzoom('zoom', zoomOut, {
                 increment: 0.05,
                 animate: false,
                 focal: e
@@ -98,7 +97,7 @@ var Player = (function () {
             $('.fb-send-btn').on('click', function () {
                 FB.ui({
                     method: 'send',
-                    link: _testspaceUrl
+                    link: testspaceUrl
                 });
                 return false;
             });
@@ -106,21 +105,21 @@ var Player = (function () {
     };
 
     var addTestspace = function () {
-        _preparationFrame.attr("src", 'about:blank');
+        preparationFrame.attr("src", 'about:blank');
         $('#s2-loading').fadeIn(400, function () {
-            _testEntryUrl = _latestPreparationFrameHref;
+            testEntryUrl = latestPreparationFrameHref;
             $.ajax({
                 url: "ajax/addTestspace.php",
                 data: {
-                    url: _testEntryUrl
+                    url: testEntryUrl
                 },
                 dataType: "text",
                 type: "POST",
                 success: function (addedTestspaceId) {
-                    _testspaceId = addedTestspaceId;
-                    _testspaceUrl =
+                    testspaceId = addedTestspaceId;
+                    testspaceUrl =
                         window.location.protocol + "//" + window.location.hostname
-                        + "/testspace.php?id=" + _testspaceId;
+                        + "/testspace.php?id=" + testspaceId;
                     populateGuiWithTestspaceUrl();
                     $('#s2-loading').fadeOut(400, function () {
                         $('#s3-waiting').fadeIn(400, function () {
@@ -136,12 +135,12 @@ var Player = (function () {
     };
 
     var populateGuiWithTestspaceUrl = function () {
-        $('#copybox1, #copybox2').find('input').val(_testspaceUrl);
+        $('#copybox1, #copybox2').find('input').val(testspaceUrl);
         if (userAgentIsMobile()) {
             $('.fb-send-btn')
-                .attr('href', 'fb-messenger://share/?link=' + encodeURIComponent(_testspaceUrl)
+                .attr('href', 'fb-messenger://share/?link=' + encodeURIComponent(testspaceUrl)
                     + '&app_id=389335024755312');
-            $('.whatsapp-send-btn').attr('href', 'whatsapp://send?text=' + encodeURIComponent(_testspaceUrl));
+            $('.whatsapp-send-btn').attr('href', 'whatsapp://send?text=' + encodeURIComponent(testspaceUrl));
         }
     };
 
@@ -153,8 +152,8 @@ var Player = (function () {
         $.ajax({
             url: "/ajax/getFrames.php",
             data: {
-                lastTimestamp: _lastTimestamp,
-                testspaceId: _testspaceId
+                lastTimestamp: lastTimestamp,
+                testspaceId: testspaceId
             },
             dataType: "text",
             type: "POST",
@@ -163,7 +162,7 @@ var Player = (function () {
                 // if some frames were delivered...
                 if (frames.length > 0) {
                     // save the timestamp of most recent frame received from the server
-                    _lastTimestamp = frames[frames.length - 1].timestamp;
+                    lastTimestamp = frames[frames.length - 1].timestamp;
                     scheduleFrameActions(frames);
                     frames.length = 0;
                 }
@@ -175,11 +174,12 @@ var Player = (function () {
     var scheduleFrameActions = function (frames) {
         $.each(frames, function (index, frame) {
             // parseInt because in PHP the value from database was sent as a string
-            var timeout = _playDelay - (getCurrentTimestamp() - parseInt(frame.timestamp));
+            var timeout = playDelay - (getCurrentTimestamp() - parseInt(frame.timestamp));
             setTimeout(function () {
                 executeFrameAction(frame);
             }, (timeout > 0 ? timeout : 0));
             if (frame.type == 'load') {
+                // the below will work only if we didn't do it before (and that's great!)
                 $('#s3-waiting').fadeOut(400, function () {
                     $('#s4-playing').fadeIn(400);
                 });
@@ -191,23 +191,22 @@ var Player = (function () {
      * Executes an action related to given frame or delegates this task to a script on the tracked site
      * (for certain frame types, whose actions require access to the DOM of tracked site).
      *
-     * @param frame object with <em>type</em> property and other properties,
-     * depending on the value of the <em>type</em> property
+     * @param frame object with <em>type</em> property and other properties, depending on the value of the <em>type</em> property
      */
     var executeFrameAction = function (frame) {
         if (frame.type == 'resize') {
             var width = frame.width;
             var height = frame.height;
             // resize playing frame and its layer
-            _playingFrame.add(_panzoomLayer).css({
+            playingFrame.add(panzoomLayer).css({
                 'width': width,
                 'height': height
             });
             // to make all the screen visible at once
-            _zoom = Math.min($(window).width() / width, ($(window).height() - _wrapper.position().top) / height);
+            zoom = Math.min($(window).width() / width, ($(window).height() - wrapper.position().top) / height);
             // only zoom if we don't have enough space
-            if (_zoom > 1) {
-                _zoom = 1;
+            if (zoom > 1) {
+                zoom = 1;
                 if (userAgentIsMobile()) {
                     $('#zoominfo-mobile').fadeOut(400);
                 } else {
@@ -221,24 +220,24 @@ var Player = (function () {
                     $('#zoominfo').fadeIn(400);
                 }
             }
-            _wrapper.css('height', $(window).height() - _wrapper.position().top);
-            _panzoomLayer
+            wrapper.css('height', $(window).height() - wrapper.position().top);
+            panzoomLayer
                 .panzoom('option', {
-                    minScale: _zoom
+                    minScale: zoom
                 })
                 .panzoom('resetDimensions')
-                .panzoom('zoom', _zoom, {
+                .panzoom('zoom', zoom, {
                     focal: {clientX: 0, clientY: 0}
                 });
         }
         else if (frame.type == 'load') {
-            _playingFrame.attr("src", frame.href);
-            _playingFrameListens = false;
+            playingFrame.attr("src", frame.href);
+            playingFrameListens = false;
         }
         else if (frame.type == 'unload') {
             // show the information that the user is gone
             $('#s4-playing').fadeOut(400, function () {
-                _playingFrame.attr('src', 'about:blank');
+                playingFrame.attr('src', 'about:blank');
                 $('#s5-subject-left').fadeIn(400, function () {
                     // select field content only if we're not on mobile, because on mobile it's not handy
                     if (!userAgentIsMobile()) {
@@ -258,28 +257,29 @@ var Player = (function () {
                 }, 8000)
             });
         } else { // frames of other types are partially handled by the script on the tracked website
-            if (_playingFrameListens) {
+            if (playingFrameListens) {
                 var msgExecuteFrameAction = {
                     type: 'executeFrameAction',
                     frame: frame
                 };
                 sendMessageToOrigin(
-                    _playingFrame[0].contentWindow, msgExecuteFrameAction, extractOrigin(siteStartAddress)
+                    playingFrame[0].contentWindow, msgExecuteFrameAction, extractOrigin(siteStartAddress)
                 );
+                // ... but only partially
                 if (frame.type == 'mousemove') {
-                    _currentMouseX = frame.mouseX;
-                    _currentMouseY = frame.mouseY;
-                    if (!_panningInProgress) {
+                    currentMouseX = frame.mouseX;
+                    currentMouseY = frame.mouseY;
+                    if (!panningInProgress) {
                         centerViewOnCursor();
                     }
                 } else if (frame.type == 'scroll') {
-                    _scrollTop = frame.scrollTop;
-                    _scrollLeft = frame.scrollLeft;
+                    scrollTop = frame.scrollTop;
+                    scrollLeft = frame.scrollLeft;
                 }
             } else {
-                // if message listening scripts inside of _playingFrame are not ready yet, we save the frame
+                // if message listening scripts inside of playingFrame are not ready yet, we save the frame
                 // to be executed once they're ready
-                _pendingFrames[_pendingFrames.length] = frame;
+                pendingFrames[pendingFrames.length] = frame;
             }
         }
     };
@@ -293,16 +293,16 @@ var Player = (function () {
         var receivedMessage = JSON.parse(data);
         // checking for message type
         if (receivedMessage.type == 'sitepeekLibLoaded') {
-            if (source == $('#preparation-frame')[0].contentWindow) {
+            if (source == preparationFrame[0].contentWindow) {
                 // this message is sent each time the sitepeek.js file is loaded as a page resource in one of the
                 // iframes; here we use it to inform the testspace creator about the starting url for the testspace
-                _latestPreparationFrameHref = receivedMessage.currentUrl;
-            } else if (source == _playingFrame[0].contentWindow) {
-                _playingFrameListens = true;
-                _pendingFrames.forEach(function (pendingFrame) {
+                latestPreparationFrameHref = receivedMessage.currentUrl;
+            } else if (source == playingFrame[0].contentWindow) {
+                playingFrameListens = true;
+                pendingFrames.forEach(function (pendingFrame) {
                     executeFrameAction(pendingFrame);
                 });
-                _pendingFrames.length = 0;
+                pendingFrames.length = 0;
             }
         }
     };
@@ -317,9 +317,9 @@ var Player = (function () {
     };
 
     var centerViewOnCursor = function () {
-        var panX = parseFloat(_wrapper.css('width')) / 2 - (_currentMouseX - _scrollLeft);
-        var panY = parseFloat(_wrapper.css('height')) / 2 - (_currentMouseY - _scrollTop);
-        _panzoomLayer.panzoom('pan', panX, panY, {
+        var panX = parseFloat(wrapper.css('width')) / 2 - (currentMouseX - scrollLeft);
+        var panY = parseFloat(wrapper.css('height')) / 2 - (currentMouseY - scrollTop);
+        panzoomLayer.panzoom('pan', panX, panY, {
             animate: true
         });
     };
@@ -353,5 +353,4 @@ var Player = (function () {
     return {
         init: init
     }
-
 })();
