@@ -7,6 +7,9 @@
         }
     };
 
+    /**
+     * Notifies the parent frame about the URL of current page window.postMessage API
+     */
     var notifyParentYoureLoaded = function () {
         var message = {
             type: 'sitepeekLibLoaded',

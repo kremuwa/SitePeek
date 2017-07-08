@@ -115,7 +115,7 @@ $siteDomain = $siteDomainRow['domain'];
         <div id="copybox2">
             <input type="text" title="Textfield with a link to added testspace."/>
         </div>
-        <a href="#" class="whatsapp-send-btn" style="display:none">Send using WhatsApp</a>
+        <a href="#" class="whatsapp-send-btn hidden">Send using WhatsApp</a>
         <a href="#" class="fb-send-btn">Send using Messenger</a>
         <p>
             ... or generate a new link by <a class="again btn-sitepeek btn-sitepeek-small" href=".">clicking here</a>

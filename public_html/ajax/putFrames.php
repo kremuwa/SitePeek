@@ -1,5 +1,5 @@
 <?php
-header('Access-Control-Allow-Origin: *');
+
 error_reporting(-1); // DEBUG
 $frames = json_decode($_POST['frames']);
 $testspaceId = $_POST['testspaceId'];

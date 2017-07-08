@@ -24,7 +24,7 @@ var player = (function () {
         setupGuiEventHandlers();
         setupFacebookSendButton();
         if (userAgentIsMobile()) {
-            $('.whatsapp-send-btn').show(); // whatsapp button doesn't work on desktop
+            $('.whatsapp-send-btn').removeClass('hidden'); // whatsapp button doesn't work on desktop
         }
         $(window).on("message", handleMessages);
         $(window).on('resize', function () {

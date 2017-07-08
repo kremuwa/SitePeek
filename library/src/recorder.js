@@ -149,6 +149,7 @@ sitePeek.recorder = (function () {
                 mouseY: event.pageY
             });
             enableMousemoveLogging = false;
+            
         }
     };
 

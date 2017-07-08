@@ -65,7 +65,7 @@ function getLoggedInUserId() {
 
 function printMessages($messages) {
     foreach($messages as $message): ?>
-        <div><strong><?php _pr($message['msg']) ?></strong></div>
+        <div class="alert alert-danger"><?php _pr($message['msg']) ?></div>
     <?php endforeach;
 }
 

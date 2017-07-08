@@ -69,42 +69,61 @@
     }
 ?>
 
-    <?php include('header.php'); ?>
+    <?php include('header-site.php'); ?>
 
-    <?php printMessages($messages); ?>
+    <div class="container">
+        <div class="row">
 
-    <h2>Register</h2>
+            <div class="center-block wrapper">
 
-    <form method="post">
-        <div>
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username">
+                <div class="text-center logo">
+                    <a href="/">
+                        <img src="img/logo.png">
+                    </a>
+                </div>
+
+                <?php printMessages($messages); ?>
+
+                <h2>Register</h2>
+
+                <form method="post">
+                    <div class="form-group">
+                        <label for="username" class="control-label">Username</label>
+                        <input type="text" name="username" id="username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="control-label">Password</label>
+                        <input type="password" name="password" id="password" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="repeated-password" class="control-label">Repeat password</label>
+                        <input type="password" name="repeated-password" id="repeated-password" class="form-control">
+                    </div>
+
+                    <input type="submit" name="register" value="Register" class="btn btn-default">
+                </form>
+
+                <h2>Log in</h2>
+
+                <form method="post">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" class="form-control">
+                    </div>
+
+                    <input type="submit" name="login" value="Log in" class="btn btn-default">
+                </form>
+
+            </div>
         </div>
-        <div>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-        </div>
-        <div>
-            <label for="repeated-password">Repeat password</label>
-            <input type="password" name="repeated-password" id="repeated-password">
-        </div>
+    </div>
 
-        <input type="submit" name="register" value="Register">
-    </form>
 
-    <h2>Log in</h2>
 
-    <form method="post">
-        <div>
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username">
-        </div>
-        <div>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-        </div>
-
-        <input type="submit" name="login" value="Log in">
-    </form>
+<?php include('postbody-scripts.php'); ?>
 
 <?php include('footer.php') ?>
