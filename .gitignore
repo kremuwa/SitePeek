@@ -1,8 +1,5 @@
-/library/node_modules
 .idea/
 /starter
 /o_czym_pisac_w_pracy.txt
 /tasks
-
-# Include your project-specific ignores in this file
-# Read about how to use .gitignore: https://help.github.com/articles/ignoring-files
+/plugin/node_modules/
