@@ -8,7 +8,7 @@ gulp.task('dev-concat', function() {
 });
 
 gulp.task('dev-build', ['dev-concat'], function() {
-    return gulp.src(['./src/cursor.png', './src/sitepeek.css'])
+    return gulp.src('./src/cursor.png')
         .pipe(gulp.dest('./build/dev'));
 });
 
@@ -19,10 +19,10 @@ gulp.task('prod-concat', function() {
 });
 
 gulp.task('prod-build', ['prod-concat'], function() {
-    return gulp.src(['./src/cursor.png', './src/sitepeek.css'])
+    return gulp.src('./src/cursor.png')
         .pipe(gulp.dest('./build/prod'));
 });
 
-gulp.task('default', ['dev-publish', 'prod-publish'], function() {
+gulp.task('default', ['dev-build', 'prod-build'], function() {
     return gulp.watch(['./src/**/*'], ['dev-publish', 'prod-publish']);
 });

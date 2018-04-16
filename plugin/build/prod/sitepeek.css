@@ -1,7 +1,0 @@
-#sitepeek-cursor {
-    background: transparent url('cursor.png') no-repeat;
-    position: absolute;
-    width: 12px;
-    height: 20px;
-    z-index: 10000;
-}

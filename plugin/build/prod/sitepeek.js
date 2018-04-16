@@ -12,6 +12,9 @@ var sitePeek = {
         }
     };
 
+    /**
+     * Notifies the parent frame about the URL of current page window.postMessage API
+     */
     var notifyParentYoureLoaded = function () {
         var message = {
             type: 'sitepeekLibLoaded',
@@ -44,6 +47,18 @@ sitePeek.player = (function () {
             }
         });
         $(window).on("message", handleMessages);
+        // some CSS to style the cursor
+        document.write(
+            "<style type='text/css'>" +
+            "#sitepeek-cursor {\n" +
+            "    background: transparent url('cursor.png') no-repeat;\n" +
+            "    position: absolute;\n" +
+            "    width: 12px;\n" +
+            "    height: 20px;\n" +
+            "    z-index: 10000;\n" +
+            "}" +
+            "</style>"
+        );
     };
 
     var handleMessages = function () {
@@ -298,6 +313,7 @@ sitePeek.recorder = (function () {
                 mouseY: event.pageY
             });
             enableMousemoveLogging = false;
+            
         }
     };
 
