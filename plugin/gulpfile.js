@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var minify = require('gulp-minify');
 
 gulp.task('dev-concat', function() {
     return gulp.src(['./src/dev/config.js', './src/!(main)*.js', './src/main.js'])
@@ -7,7 +8,17 @@ gulp.task('dev-concat', function() {
         .pipe(gulp.dest('./build/dev'));
 });
 
-gulp.task('dev-build', ['dev-concat'], function() {
+gulp.task('dev-minify', function() {
+    return gulp.src('./build/dev/sitepeek.js')
+        .pipe(minify({
+            ext: {
+                min: '.min.js'
+            }
+        }))
+        .pipe(gulp.dest('./build/dev'));
+});
+
+gulp.task('dev-build', ['dev-concat', 'dev-minify'], function() {
     return gulp.src('./src/cursor.png')
         .pipe(gulp.dest('./build/dev'));
 });
@@ -18,7 +29,17 @@ gulp.task('prod-concat', function() {
         .pipe(gulp.dest('./build/prod'));
 });
 
-gulp.task('prod-build', ['prod-concat'], function() {
+gulp.task('prod-minify', function() {
+    return gulp.src('./build/prod/sitepeek.js')
+        .pipe(minify({
+            ext: {
+                min: '.min.js'
+            }
+        }))
+        .pipe(gulp.dest('./build/prod'));
+});
+
+gulp.task('prod-build', ['prod-concat', 'prod-minify'], function() {
     return gulp.src('./src/cursor.png')
         .pipe(gulp.dest('./build/prod'));
 });
