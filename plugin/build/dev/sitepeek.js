@@ -1,6 +1,6 @@
 var sitePeek = {
     config: {
-        appDomain: 'http://sitepeek.dev'
+        appDomain: 'http://sitepeek.test'
     }
 };
 sitePeek.player = (function () {

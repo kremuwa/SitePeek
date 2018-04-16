@@ -13,7 +13,7 @@ gulp.task('dev-build', ['dev-concat'], function() {
 });
 
 gulp.task('prod-concat', function() {
-    return gulp.src(['./src/prod/config.js', './src/*.js', './src/main.js'])
+    return gulp.src(['./src/prod/config.js', './src/!(main)*.js', './src/main.js'])
         .pipe(concat('sitepeek.js'))
         .pipe(gulp.dest('./build/prod'));
 });

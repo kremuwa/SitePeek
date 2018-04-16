@@ -3,38 +3,6 @@ var sitePeek = {
         appDomain: 'http://sitepeek.tk'
     }
 };
-(function () {
-    var inIframe = function () {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
-    };
-
-    /**
-     * Notifies the parent frame about the URL of current page window.postMessage API
-     */
-    var notifyParentYoureLoaded = function () {
-        var message = {
-            type: 'sitepeekLibLoaded',
-            currentUrl: window.location.href
-        };
-        sitePeek.utils.sendMessageToOrigin(window.parent, message, sitePeek.config.appDomain);
-    };
-
-    var init = function () {
-        if (!inIframe()) { // if the site is not even iframed, it's definitely not being tested with SitePeek right now
-            return;
-        }
-        notifyParentYoureLoaded();
-        sitePeek.recorder.init();
-        sitePeek.player.init();
-    };
-
-    // ENTRY POINT
-    init();
-})();
 sitePeek.player = (function () {
     var currentMouseX = 0;
     var currentMouseY = 0;
@@ -394,4 +362,36 @@ sitePeek.utils = (function () {
             targetWindow.postMessage(messageJSON, targetOrigin);
         }
     }
+})();
+(function () {
+    var inIframe = function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    };
+
+    /**
+     * Notifies the parent frame about the URL of current page window.postMessage API
+     */
+    var notifyParentYoureLoaded = function () {
+        var message = {
+            type: 'sitepeekLibLoaded',
+            currentUrl: window.location.href
+        };
+        sitePeek.utils.sendMessageToOrigin(window.parent, message, sitePeek.config.appDomain);
+    };
+
+    var init = function () {
+        if (!inIframe()) { // if the site is not even iframed, it's definitely not being tested with SitePeek right now
+            return;
+        }
+        notifyParentYoureLoaded();
+        sitePeek.recorder.init();
+        sitePeek.player.init();
+    };
+
+    // ENTRY POINT
+    init();
 })();
