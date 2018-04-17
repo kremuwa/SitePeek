@@ -31,7 +31,7 @@ var testspace = (function () {
     var extractOrigin = function (url) {
         var protocolLastCharIdx = url.indexOf("://") + 3;
         var finishingSlashIdx = url.indexOf('/', protocolLastCharIdx + 1);
-        return url.substr(0, finishingSlashIdx);
+        return url.substr(protocolLastCharIdx, (finishingSlashIdx != -1 ? finishingSlashIdx : undefined));
     };
 
     var sendMessageToOrigin = function (targetWindow, message, targetOrigin) {
