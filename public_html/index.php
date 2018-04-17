@@ -28,8 +28,10 @@
 
             $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-            $insertSite = $dbh->prepare('INSERT INTO users VALUES(?, ?, ?)');
-            $insertSite->execute([null, $_POST['username'], $hashedPassword]);
+            $insertUser = $dbh->prepare('INSERT INTO users VALUES(?, ?, ?)');
+            $insertUser->execute([null, $_POST['username'], $hashedPassword]);
+
+            $messages[] = ['status' => 'success', 'msg' => 'Registration successful. You can now log in below.'];
 
         } else if(isset($_POST['login'])) {
 

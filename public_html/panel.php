@@ -64,6 +64,16 @@ $userSites = $getUserSites->fetchAll();
 
     <h2>List of your sites</h2>
 
+    <div class="alert alert-info">
+        <p>Before you start the test on paticular site, add the following snippet of code right before
+            the &lt;/head&gt; tag of each page you want to make testable:</p>
+        <pre><code>&lt;script
+    src=&quot;https://code.jquery.com/jquery-1.12.4.min.js&quot;
+    integrity=&quot;sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=&quot;
+    crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://cdn.jsdelivr.net/gh/kremuwa/sitepeek@1.1.5/plugin/build/prod/sitepeek.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+    </div>
+
     <table class="table table-striped table-sites">
         <tr>
             <th>Domain</th>
@@ -84,6 +94,8 @@ $userSites = $getUserSites->fetchAll();
     <hr>
 
     <a href="logout.php" class="btn btn-danger">Log out</a>
+    <br/>
+    <br/>
 </div>
 
 <?php include('postbody-scripts.php'); ?>
