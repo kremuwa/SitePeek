@@ -10,6 +10,18 @@ sitePeek.player = (function () {
             }
         });
         $(window).on("message", handleMessages);
+        // some CSS to style the cursor
+        document.write(
+            "<style type='text/css'>" +
+            "#sitepeek-cursor {\n" +
+            "    background: transparent url('img/cursor.png') no-repeat;\n" +
+            "    position: absolute;\n" +
+            "    width: 12px;\n" +
+            "    height: 20px;\n" +
+            "    z-index: 10000;\n" +
+            "}" +
+            "</style>"
+        );
     };
 
     var handleMessages = function () {

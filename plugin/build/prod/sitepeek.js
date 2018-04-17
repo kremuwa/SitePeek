@@ -3,35 +3,6 @@ var sitePeek = {
         appDomain: 'http://sitepeek.tk'
     }
 };
-(function () {
-    var inIframe = function () {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
-    };
-
-    var notifyParentYoureLoaded = function () {
-        var message = {
-            type: 'sitepeekLibLoaded',
-            currentUrl: window.location.href
-        };
-        sitePeek.utils.sendMessageToOrigin(window.parent, message, sitePeek.config.appDomain);
-    };
-
-    var init = function () {
-        if (!inIframe()) { // if the site is not even iframed, it's definitely not being tested with SitePeek right now
-            return;
-        }
-        notifyParentYoureLoaded();
-        sitePeek.recorder.init();
-        sitePeek.player.init();
-    };
-
-    // ENTRY POINT
-    init();
-})();
 sitePeek.player = (function () {
     var currentMouseX = 0;
     var currentMouseY = 0;
@@ -44,6 +15,18 @@ sitePeek.player = (function () {
             }
         });
         $(window).on("message", handleMessages);
+        // some CSS to style the cursor
+        document.write(
+            "<style type='text/css'>" +
+            "#sitepeek-cursor {\n" +
+            "    background: transparent url('img/cursor.png') no-repeat;\n" +
+            "    position: absolute;\n" +
+            "    width: 12px;\n" +
+            "    height: 20px;\n" +
+            "    z-index: 10000;\n" +
+            "}" +
+            "</style>"
+        );
     };
 
     var handleMessages = function () {
@@ -298,6 +281,7 @@ sitePeek.recorder = (function () {
                 mouseY: event.pageY
             });
             enableMousemoveLogging = false;
+            
         }
     };
 
@@ -378,4 +362,36 @@ sitePeek.utils = (function () {
             targetWindow.postMessage(messageJSON, targetOrigin);
         }
     }
+})();
+(function () {
+    var inIframe = function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    };
+
+    /**
+     * Notifies the parent frame about the URL of current page window.postMessage API
+     */
+    var notifyParentYoureLoaded = function () {
+        var message = {
+            type: 'sitepeekLibLoaded',
+            currentUrl: window.location.href
+        };
+        sitePeek.utils.sendMessageToOrigin(window.parent, message, sitePeek.config.appDomain);
+    };
+
+    var init = function () {
+        if (!inIframe()) { // if the site is not even iframed, it's definitely not being tested with SitePeek right now
+            return;
+        }
+        notifyParentYoureLoaded();
+        sitePeek.recorder.init();
+        sitePeek.player.init();
+    };
+
+    // ENTRY POINT
+    init();
 })();
