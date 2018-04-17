@@ -55,7 +55,7 @@ $userSites = $getUserSites->fetchAll();
 
     <form method="post">
         <div class="form-group">
-            <label for="domain">Domain</label>
+            <label for="domain">Domain (with http[s])</label>
             <input type="text" name="domain" id="domain" class="form-control">
         </div>
 
