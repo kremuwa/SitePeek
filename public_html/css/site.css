@@ -19,3 +19,7 @@ body {
 .table-sites {
     background: #fff;
 }
+
+.code-snippet {
+    margin-top: .5em;
+}

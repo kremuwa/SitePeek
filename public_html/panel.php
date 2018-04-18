@@ -65,13 +65,9 @@ $userSites = $getUserSites->fetchAll();
     <h2>List of your sites</h2>
 
     <div class="alert alert-info">
-        <p>Before you start the test on paticular site, add the following snippet of code right before
-            the &lt;/head&gt; tag of each page you want to make testable:</p>
-        <pre><code>&lt;script
-    src=&quot;https://code.jquery.com/jquery-1.12.4.min.js&quot;
-    integrity=&quot;sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=&quot;
-    crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://cdn.jsdelivr.net/gh/kremuwa/sitepeek@1.1.5/plugin/build/prod/sitepeek.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+        <p>Before you start the test on paticular site, add the following snippet of code somewhere <strong>after the line where you include jQuery</strong>:</p>
+        <pre class="code-snippet"><code>&lt;script src=&quot;https://cdn.jsdelivr.net/gh/kremuwa/sitepeek@1.1.5/plugin/build/prod/sitepeek.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+        <p><strong>The earlier you add it, the faster the script will detect your test subject has loaded each new page</strong>. Tested with jQuery 1.x, possibly works with other versions, too.</p>
     </div>
 
     <table class="table table-striped table-sites">
