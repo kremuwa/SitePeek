@@ -28,10 +28,14 @@ var testspace = (function () {
         return Date.now(); // the result is in ms
     };
 
+    /**
+     * For a given URL, returns a string consisting of protocol and domain.
+     * E.g. for 'https://facebook.com/username' returns 'https://facebook.com'
+     */
     var extractOrigin = function (url) {
         var protocolLastCharIdx = url.indexOf("://") + 3;
         var finishingSlashIdx = url.indexOf('/', protocolLastCharIdx + 1);
-        return url.substr(protocolLastCharIdx, (finishingSlashIdx != -1 ? finishingSlashIdx : undefined));
+        return url.substr(0, (finishingSlashIdx != -1 ? finishingSlashIdx : undefined));
     };
 
     var sendMessageToOrigin = function (targetWindow, message, targetOrigin) {
