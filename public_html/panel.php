@@ -22,6 +22,8 @@ try {
 
         $insertSite = $dbh->prepare('INSERT INTO sites VALUES(?, ?, ?)');
         $insertSite->execute([null, getLoggedInUserId(), $_POST['domain']]);
+
+        $messages[] = ['status' => 'success', 'msg' => 'Site added. Please go to step 2'];
     }
 
 } catch (Exception $exception) {
