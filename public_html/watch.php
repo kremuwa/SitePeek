@@ -43,6 +43,9 @@ $siteDomain = $siteDomainRow['domain'];
 
 <div id="s1-preparation">
     <iframe id="preparation-frame" src="<?php _pr($siteDomain); ?>"></iframe>
+    <div class="btn-sitepeek btn-sitepeek-small button-go-back">
+        &larr; list of sites
+    </div>
     <div id="add-testspace-wrapper">
         <div style="font-size: 0.8em">
             Navigate to the page from which<br/>
@@ -60,6 +63,9 @@ $siteDomain = $siteDomainRow['domain'];
 </div>
 
 <div id="s3-waiting" class="text-board">
+    <div class="btn-sitepeek btn-sitepeek-small button-go-back">
+        &larr;
+    </div>
     <div class="content-centerer-xy">
         <p>
             Copy Your generated link and send it to the test subject.
@@ -105,6 +111,9 @@ $siteDomain = $siteDomainRow['domain'];
 </div>
 
 <div id="s5-subject-left" class="text-board">
+    <div class="btn-sitepeek btn-sitepeek-small button-go-back">
+        &larr;
+    </div>
     <div class="content-centerer-xy">
         <p>
             The test subject has left the site. We hope you've learned some usability insights from them!

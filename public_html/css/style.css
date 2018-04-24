@@ -135,6 +135,12 @@ html, body {
     color: #A31053;
 }
 
+.button-go-back {
+    position: absolute !important;
+    top: 5px !important;
+    left: 5px;
+}
+
 .btn-sitepeek {
     background: #A31053;
     border: 2px solid #C7B5BD;
