@@ -84,6 +84,16 @@
                     </a>
                 </div>
 
+                <h2>
+                    <a data-toggle="collapse" href="#howto-video" aria-expanded="false" aria-controls="howto-video">
+                        How to use <span class="glyphicon glyphicon-chevron-down" aria-hidden="true" style="font-size: 50%;"></span>
+                    </a>
+                </h2>
+
+                <div class="collapse" id="howto-video">
+                    <iframe width="100%" height="415" src="https://www.youtube.com/embed/ZkPU4LMfTbU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+
                 <?php printMessages($messages); ?>
 
                 <h2>Register</h2>
@@ -109,12 +119,12 @@
 
                 <form method="post">
                     <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" name="username" id="username" class="form-control">
+                        <label for="login-username">Username</label>
+                        <input type="text" name="username" id="login-username" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" class="form-control">
+                        <label for="login-password">Password</label>
+                        <input type="password" name="password" id="login-password" class="form-control">
                     </div>
 
                     <input type="submit" name="login" value="Log in" class="btn btn-default">
